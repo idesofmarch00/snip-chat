@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>{{ title }}</p>
+    <p class="">{{ title }}</p>
     <ul>
       <li v-for="todo in todos" :key="todo.id" @click="increment">
         {{ todo.id }} - {{ todo.content }}
@@ -33,5 +33,4 @@ function increment() {
 }
 
 const todoCount = computed(() => props.todos.length);
-
 </script>
