@@ -106,9 +106,9 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-tabs v-model="tab" class="bg-teal text-yellow shadow-2">
-            <q-route-tab name="chat" icon="question_answer" to="/pageTwo" />
+            <q-route-tab name="chat" icon="question_answer" to="/" />
             <q-route-tab name="camera" icon="camera" to="/pageThree" />
-            <q-route-tab name="map" icon="public" to="/pageOne" />
+            <q-route-tab name="map" icon="public" to="/pageTwo" />
           </q-tabs>
         </q-toolbar-title>
       </q-toolbar>
@@ -131,7 +131,6 @@ function toggleLeftDrawer() {
 }
 
 onMounted(() => {
-  console.log(route.name);
 });
 </script>
 
