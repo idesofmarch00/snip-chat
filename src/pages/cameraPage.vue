@@ -1,20 +1,113 @@
 <script setup lang="ts">
-import { ref,watch } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import { useChatStore } from '../stores/chatStore';
+
+// import Camera from 'simple-vue-camera';
 
 const chatStore = useChatStore();
 
-function clickPic(){
-  chatStore.setCurrentCamPic(Math.random()*100)
+const pic = ref();
+
+watch(chatStore, (updatedChatStore) => {
+  console.log(updatedChatStore.currentCamPic);
+});
+
+const isPhotoTaken = ref(false);
+
+const camera = ref();
+const canvas = ref();
+const downloadPhoto = ref();
+
+function createCameraElement() {
+  const constraints = {
+    audio: false,
+    video: {
+      width: { min: 1024, ideal: 1280, max: 1920 },
+      height: { min: 576, ideal: 720, max: 1080 },
+    },
+  };
+
+  navigator.mediaDevices
+    .getUserMedia(constraints)
+    .then((stream) => {
+      camera.value.srcObject = stream;
+    })
+    .catch((error) => {
+      console.log(error);
+      alert('May the browser didnt support or there is some errors.');
+    });
+}
+function stopCameraStream() {
+  const tracks = camera.value.srcObject.getTracks();
+  tracks.forEach((track: any) => {
+    track.stop();
+  });
 }
 
-watch(chatStore,(updatedChatStore) => {
-console.log(updatedChatStore.currentCamPic);
+function takePhoto() {
+  isPhotoTaken.value = !isPhotoTaken.value;
+
+  const context = canvas.value.getContext('2d');
+  const photoFromVideo = camera.value;
+
+  context.drawImage(photoFromVideo, 0, 0, 200, 400);
+
+  stopCameraStream();
+
+
+}
+
+function downloadImage() {
+  const download = downloadPhoto.value;
+  const downloadPic = canvas.value
+    .toDataURL('image/jpeg')
+    .replace('image/jpeg', 'image/octet-stream');
+  download.setAttribute('href', downloadPic);
+}
+
+onMounted(() => {
+  createCameraElement();
+});
+
+onUnmounted(() => {
+  stopCameraStream();
 });
 </script>
 
 <template>
-  <q-page class="row items-center justify-evenly">
-    <q-btn @click.prevent="clickPic" label="click"/>
+  <q-page class="row items-center justify-evenly h-10 w-10">
+    <div class="">
+      <video
+        class="camera-video"
+        ref="camera"
+        :width="100"
+        :height="200"
+        autoplay
+        playsinline
+      ></video>
+      <canvas
+        v-show="isPhotoTaken"
+        ref="canvas"
+        :width="100"
+        :height="200"
+      ></canvas>
+    </div>
+
+    <q-btn icon="camera" round @click="takePhoto" />
+
+    <button v-if="isPhotoTaken">
+      <a
+        ref="downloadPhoto"
+        download="snap.jpg"
+        class="button"
+        role="button"
+        @click="downloadImage"
+      >
+        <q-btn icon="download" round />
+      </a>
+    </button>
+
   </q-page>
 </template>
+
+<style scoped></style>
