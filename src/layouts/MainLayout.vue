@@ -12,8 +12,15 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer dark :width="200" v-model="leftDrawerOpen" side="left" overlay elevated>
-      <q-list bordered padding class="rounded-borders text-primary">
+    <q-drawer
+      dark
+      :width="200"
+      v-model="leftDrawerOpen"
+      side="left"
+      overlay
+      elevated
+    >
+      <q-list bordered padding class="rounded-borders text-primary ">
         <q-item
           clickable
           v-ripple
@@ -26,36 +33,6 @@
           </q-item-section>
 
           <q-item-section>Profile</q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          v-ripple
-          :active="link === 'about'"
-          @click="link = 'about'"
-          active-class="my-menu-link"
-        >
-          <q-item-section avatar>
-            <q-icon name="info" />
-          </q-item-section>
-
-          <q-item-section>About</q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          v-ripple
-          :active="link === 'logout'"
-          @click="link = 'logout'"
-          active-class="my-menu-link"
-        >
-          <q-item-section avatar>
-            <q-icon
-              name="logout"
-            />
-          </q-item-section>
-
-          <q-item-section>Trash</q-item-section>
         </q-item>
 
         <q-separator spaced />
@@ -87,7 +64,38 @@
 
           <q-item-section>Help</q-item-section>
         </q-item>
+
+        <q-item
+        clickable
+        v-ripple
+        :active="link === 'about'"
+        @click="link = 'about'"
+        active-class="my-menu-link"
+      >
+        <q-item-section avatar>
+          <q-icon name="info" />
+        </q-item-section>
+
+        <q-item-section>About</q-item-section>
+      </q-item>
       </q-list>
+
+
+
+      <q-item
+      class="fixed-bottom mb-2"
+        clickable
+        v-ripple
+        :active="link === 'logout'"
+        @click="link = 'logout'"
+        active-class="my-menu-link"
+      >
+        <q-item-section avatar>
+          <q-icon name="logout" />
+        </q-item-section>
+
+        <q-item-section>Logout</q-item-section>
+      </q-item>
     </q-drawer>
 
     <q-page-container>
@@ -131,5 +139,4 @@ onMounted(() => {
 .my-menu-link
   color: white
   background: #fffff
-
 </style>

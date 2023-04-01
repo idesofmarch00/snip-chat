@@ -4,7 +4,9 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const username = ref('');
+const firstName = ref('');
+const lastName = ref('');
+const email = ref('');
 const password = ref('');
 const isPwd = ref(true);
 
@@ -18,6 +20,7 @@ function simulateProgress() {
   setTimeout(() => {
     // we're done, we reset loading state
     loading.value = false;
+    alert('successfully registered');
     router.replace('/');
   }, 3000);
 }
@@ -26,14 +29,34 @@ function simulateProgress() {
 <template>
   <div class="p-4 flex flex-col items-center space-y-8">
     <div class="text-h4">CHAT APP LOGO</div>
-    <div class="text-h6">Welcome Back !</div>
+    <div class="text-h6">Register Now</div>
     <div class="flex flex-col items-center space-y-4 w-10/12">
+      <div class="flex space-x-4 items-center">
+        <q-input
+          outlined
+          standout
+          rounded
+          v-model="firstName"
+          label="First Name"
+          class="w-[47%]"
+        >
+        </q-input
+        ><q-input
+          outlined
+          standout
+          rounded
+          v-model="lastName"
+          label="Last Name"
+          class="w-[47%]"
+        >
+        </q-input>
+      </div>
       <q-input
         outlined
         standout
         rounded
-        v-model="username"
-        label="Username"
+        v-model="email"
+        label="Email"
         class="w-full"
       >
       </q-input>
@@ -62,30 +85,8 @@ function simulateProgress() {
         class="glossy w-10/12"
         rounded
         @click="simulateProgress"
-        label="Sign In"
+        label="Sign Up"
       />
-
-      <div
-        class="flex items-center flex-col space-y-2 border-b-2 p-4 w-full h-full my-4 "
-      >
-        <p class="font-bold text-gray-600">or</p>
-        <div class="flex space-x-4">
-          <q-btn padding="xs" color="primary" icon="g_translate" /><q-btn
-            padding="xs"
-            color="primary"
-            icon="class"
-          /><q-btn padding="xs" color="primary" icon="apple" />
-        </div>
-      </div>
-
-      <p class="text-sm">
-        Not a member ?
-        <router-link to="/register"
-          ><span class="underline font-bold text-red-500"
-            >Register Now</span
-          ></router-link
-        >
-      </p>
     </div>
   </div>
 </template>
