@@ -141,10 +141,8 @@ function toggleLeftDrawer() {
 watch(route, (updatedRoute) => {
   if (updatedRoute.name in ['Chats', 'Map', 'Camera']) {
     tab.value=updatedRoute.name
-    console.log(updatedRoute.name,tab)
   } else {
     tab.value=updatedRoute.name
-    console.log(updatedRoute.name,tab)
   }
 });
 </script>
