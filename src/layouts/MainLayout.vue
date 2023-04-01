@@ -35,13 +35,19 @@
 </template>
 
 <script setup lan="ts">
-import { ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { ref,onMounted } from 'vue';
 
 const leftDrawerOpen = ref(false);
+const tab = ref('chat');
+
+const route = useRoute();
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 
-const tab = ref('chat');
+onMounted(() => {
+  console.log(route.name)
+});
 </script>
