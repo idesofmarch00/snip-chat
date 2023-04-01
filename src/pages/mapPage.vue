@@ -4,7 +4,7 @@ import { ref } from 'vue';
 
 <template>
   <q-page class="row items-center justify-evenly">
-    camera
+    map
   </q-page>
 </template>
 

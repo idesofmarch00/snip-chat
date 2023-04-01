@@ -24,15 +24,25 @@ const routes: RouteRecordRaw[] = [
       },
 
       {
+        name: 'Map',
+        path: '/map',
+        component: () => import('src/pages/mapPage.vue'),
+      },
+
+      {
         name: 'Camera',
         path: '/camera',
         component: () => import('src/pages/cameraPage.vue'),
       },
-
       {
-        name: 'Map',
-        path: '/map',
-        component: () => import('src/pages/mapPage.vue'),
+        name: 'Profile',
+        path: '/profile',
+        component: () => import('src/pages/profilePage.vue'),
+      },
+      {
+        name: 'Settings',
+        path: '/settings',
+        component: () => import('src/pages/settingsPage.vue'),
       },
 
       {

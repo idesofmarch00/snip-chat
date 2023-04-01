@@ -27,6 +27,7 @@
           :active="link === 'profile'"
           @click="link = 'profile'"
           active-class="my-menu-link"
+          to="/profile"
         >
           <q-item-section avatar>
             <q-icon name="person" />
@@ -43,6 +44,7 @@
           :active="link === 'settings'"
           @click="link = 'settings'"
           active-class="my-menu-link"
+          to="/settings"
         >
           <q-item-section avatar>
             <q-icon name="settings" />

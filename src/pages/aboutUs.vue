@@ -1,10 +1,7 @@
-<script setup lang="ts">
-import { ref } from 'vue';
-</script>
-
 <template>
-  <q-page class="row items-center justify-evenly p-4">
-    <p>
+  <q-page class="q-pa-md">
+    <div class="q-pa-md q-gutter-md">
+      <p>
     Welcome to our real-time chatting progressive web app, built with the latest
     Quasar framework! Our app offers an unparalleled chatting experience with
     features that make communication easier and more engaging than ever before.
@@ -21,5 +18,20 @@ import { ref } from 'vue';
     their needs. Thank you for choosing our real-time chatting progressive web
     app. We look forward to helping you stay connected with the people that
     matter most. - by Sahil Ahmed </p>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Our Company</div>
+          <div class="text-body1">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod sem et enim bibendum vestibulum. Duis efficitur magna eget tellus finibus, vel pulvinar justo porttitor. Nullam vel faucibus ex. Fusce at ante ut lorem tristique lacinia. Maecenas consequat dictum ultricies.
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <div class="text-h6">Our Team</div>
+          <div class="text-body1">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod sem et enim bibendum vestibulum. Duis efficitur magna eget tellus finibus, vel pulvinar justo porttitor. Nullam vel faucibus ex. Fusce at ante ut lorem tristique lacinia. Maecenas consequat dictum ultricies.
+          </div>
+        </q-card-section>
+      </q-card>
+    </div>
   </q-page>
 </template>
