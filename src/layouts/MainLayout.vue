@@ -6,7 +6,7 @@
         <q-avatar @click="toggleLeftDrawer">
           <img src="https://cdn.quasar.dev/img/avatar.png" />
         </q-avatar>
-        <q-toolbar-title class="mt-1 ml-12"> {{route.name}} </q-toolbar-title>
+        <q-toolbar-title class="mt-1 ml-12"> {{ route.name }} </q-toolbar-title>
 
         <q-btn icon="person_add" round class="bg-black" />
       </q-toolbar>
@@ -127,26 +127,25 @@
 import { useRoute } from 'vue-router';
 import { ref, onMounted, watch } from 'vue';
 
+const route = useRoute();
+
 const leftDrawerOpen = ref(false);
 const tab = ref('');
 
-const route = useRoute();
 const link = ref('');
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 
-watch(tab, () => {
-  if (route.name in ['AboutUs', 'Help']) {
-    tab.value = '';
+watch(route, (updatedRoute) => {
+  if (updatedRoute.name in ['Chats', 'Map', 'Camera']) {
+    tab.value=updatedRoute.name
+    console.log(updatedRoute.name,tab)
   } else {
-    return;
+    tab.value=updatedRoute.name
+    console.log(updatedRoute.name,tab)
   }
-});
-
-onMounted(() => {
-  console.log(route.name);
 });
 </script>
 

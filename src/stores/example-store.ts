@@ -1,15 +1,17 @@
 import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
-export const useCounterStore = defineStore('counter', {
-  state: () => ({
-    counter: 0,
-  }),
-  getters: {
-    doubleCount: (state) => state.counter * 2,
-  },
-  actions: {
-    increment() {
-      this.counter++;
-    },
-  },
+export const useNavStore = defineStore('useNavStore', () => {
+  const tab = ref('');
+
+  function setTab(tab: any) {
+    tab.value = tab;
+  }
+
+  return {
+    tab,
+    setTab,
+  };
 });
+
+export default useNavStore;
