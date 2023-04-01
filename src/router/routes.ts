@@ -18,27 +18,33 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        name: 'Index',
+        name: 'Chats',
         path: '',
         component: () => import('pages/IndexPage.vue'),
       },
 
       {
-        name: 'Map',
-        path: '/pageOne',
-        component: () => import('src/pages/pageOne.vue'),
-      },
-
-      {
         name: 'Camera',
-        path: '/pageTwo',
-        component: () => import('src/pages/pageTwo.vue'),
+        path: '/camera',
+        component: () => import('src/pages/cameraPage.vue'),
       },
 
       {
-        name: 'Chats',
-        path: '/pageThree',
-        component: () => import('src/pages/pageThree.vue'),
+        name: 'Map',
+        path: '/map',
+        component: () => import('src/pages/mapPage.vue'),
+      },
+
+      {
+        name: 'About Us',
+        path: '/aboutUs',
+        component: () => import('src/pages/aboutUs.vue'),
+      },
+
+      {
+        name: 'Help',
+        path: '/helpSupport',
+        component: () => import('src/pages/helpSupport.vue'),
       },
     ],
   },

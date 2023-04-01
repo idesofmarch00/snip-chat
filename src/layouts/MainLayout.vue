@@ -1,12 +1,12 @@
 <template>
   <q-layout view="hHh LpR fFf">
-    <q-header reveal elevated class="bg-primary text-white" height-hint="98">
+    <q-header elevated class="bg-primary text-white" height-hint="98">
       <q-toolbar class="bg-gray-800 p-2">
         <!-- <q-btn dense flat round icon="menu" /> -->
         <q-avatar @click="toggleLeftDrawer">
           <img src="https://cdn.quasar.dev/img/avatar.png" />
         </q-avatar>
-        <q-toolbar-title class="mt-1 ml-12"> Chat </q-toolbar-title>
+        <q-toolbar-title class="mt-1 ml-12"> {{route.name}} </q-toolbar-title>
 
         <q-btn icon="person_add" round class="bg-black" />
       </q-toolbar>
@@ -20,7 +20,7 @@
       overlay
       elevated
     >
-      <q-list bordered padding class="rounded-borders text-primary ">
+      <q-list bordered padding class="rounded-borders text-primary">
         <q-item
           clickable
           v-ripple
@@ -57,6 +57,7 @@
           :active="link === 'help'"
           @click="link = 'help'"
           active-class="my-menu-link"
+          to="/helpSupport"
         >
           <q-item-section avatar>
             <q-icon name="help" />
@@ -66,24 +67,23 @@
         </q-item>
 
         <q-item
-        clickable
-        v-ripple
-        :active="link === 'about'"
-        @click="link = 'about'"
-        active-class="my-menu-link"
-      >
-        <q-item-section avatar>
-          <q-icon name="info" />
-        </q-item-section>
+          clickable
+          v-ripple
+          :active="link === 'about'"
+          @click="link = 'about'"
+          active-class="my-menu-link"
+          to="/aboutUs"
+        >
+          <q-item-section avatar>
+            <q-icon name="info" />
+          </q-item-section>
 
-        <q-item-section>About</q-item-section>
-      </q-item>
+          <q-item-section>About</q-item-section>
+        </q-item>
       </q-list>
 
-
-
       <q-item
-      class="fixed-bottom mb-2"
+        class="fixed-bottom mb-2"
         clickable
         v-ripple
         :active="link === 'logout'"
@@ -105,10 +105,15 @@
     <q-footer reveal elevated class="bg-gray-800 p-2 text-white">
       <q-toolbar>
         <q-toolbar-title>
-          <q-tabs v-model="tab" class="bg-teal text-yellow shadow-2">
-            <q-route-tab name="chat" icon="question_answer" to="/" />
-            <q-route-tab name="camera" icon="camera" to="/pageThree" />
-            <q-route-tab name="map" icon="public" to="/pageTwo" />
+          <q-tabs
+            v-model="tab"
+            class="bg-teal rounded-full text-yellow shadow-2"
+          >
+            <q-route-tab name="Chats" icon="question_answer" to="/" />
+            <q-separator vertical inset class="bg-yellow-2" />
+            <q-route-tab name="Camera" icon="camera" to="/camera" />
+            <q-separator vertical inset class="bg-yellow-2" />
+            <q-route-tab name="Map" icon="public" to="/map" />
           </q-tabs>
         </q-toolbar-title>
       </q-toolbar>
@@ -118,10 +123,10 @@
 
 <script setup lan="ts">
 import { useRoute } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 
 const leftDrawerOpen = ref(false);
-const tab = ref('chat');
+const tab = ref('');
 
 const route = useRoute();
 const link = ref('');
@@ -130,7 +135,16 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 
+watch(tab, () => {
+  if (route.name in ['AboutUs', 'Help']) {
+    tab.value = '';
+  } else {
+    return;
+  }
+});
+
 onMounted(() => {
+  console.log(route.name);
 });
 </script>
 
