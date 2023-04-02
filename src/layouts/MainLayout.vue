@@ -181,8 +181,9 @@
         >
           No User Found
         </div>
-        <div v-if="userSearch && search !== ''">
+        <button v-if="userSearch && search !== ''" @click.prevent="handleSelect">
           <q-item
+            
             class="flex items-center justify-between ml-2 my-2 w-11/12 rounded-lg p-2 border"
           >
             <q-item-section class="w-1/2">
@@ -193,16 +194,16 @@
 
             <q-item-section>
               <q-item-label class="text-black font-bold text-lg">{{
-                friend.name
+                friend.displayName
               }}</q-item-label>
               <q-item-label caption lines="1">{{ friend.email }}</q-item-label>
             </q-item-section>
 
-            <q-item-section side @click.prevent="handleSelect">
+            <q-item-section side>
               <q-icon name="chat_bubble" color="grey" />
             </q-item-section>
           </q-item>
-        </div>
+        </button>
 
         <q-card-actions align="right" class="bg-white text-teal">
           <q-btn flat label="Close" v-close-popup />
@@ -275,7 +276,7 @@ watch(search, (updatedSearch) => {
 });
 
 async function handleSearch(search) {
-  const q = query(collection(db, 'users'), where('name', '==', search));
+  const q = query(collection(db, 'users'), where('displayName', '==', search));
 
   try {
     const querySnapshot = await getDocs(q);
@@ -290,6 +291,7 @@ async function handleSearch(search) {
 }
 
 const handleSelect = async () => {
+  console.log('hey')
   //check whether the group(chats in firestore) exists, if not create
   const combinedId =
     userStore.user.uid > friend.value.uid
@@ -297,44 +299,52 @@ const handleSelect = async () => {
       : friend.value.uid + userStore.user.uid;
   try {
     const res = await getDoc(doc(db, 'chats', combinedId));
+    console.log('getchats',res)
 
     if (!res.exists()) {
+      console.log('1');
       //create a chat in chats collection
       await setDoc(doc(db, 'chats', combinedId), { messages: [] });
+      console.log('2');
 
       //create friend chats
-      await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+      const res1 = await updateDoc(doc(db, 'userChats', userStore.user.uid), {
         [combinedId + '.friendInfo']: {
           uid: friend.value.uid,
-          name: friend.value.displayName,
+          displayName: friend.value.displayName,
           photoURL: friend.value.photoURL,
         },
         [combinedId + '.date']: serverTimestamp(),
       });
+      console.log('r1',res1)
+      console.log('3');
 
-      await updateDoc(doc(db, 'userChats', friend.value.uid), {
+      const res2 = await updateDoc(doc(db, 'userChats', friend.value.uid), {
         [combinedId + '.friendInfo']: {
           uid: userStore.user.uid,
-          name: userStore.user.displayName,
+          displayName: userStore.user.displayName,
           photoURL: userStore.user.photoURL,
         },
         [combinedId + '.date']: serverTimestamp(),
       });
+      console.log('r2',res2)
+      console.log('4');
 
       $toast('Friend added successfully', 'success', 'top');
       addFriendModal.value = false;
     }
-  } catch (err) {}
+  } catch (err) {
+    console.log(err)
+  }
 };
 
 onMounted(() => {
-  
   console.log(
     'uid:',
     userStore.user.uid,
-    ' name:',
+    'displayName:',
     userStore.user.displayName,
-    ' photoURL:',
+    'photoURL:',
     userStore.user.photoURL
   );
 });
