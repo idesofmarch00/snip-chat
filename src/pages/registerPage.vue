@@ -76,6 +76,7 @@ function submitHandler() {
         (error) => {
           // Handle unsuccessful uploads
           console.log('error uploading coz:', error);
+          $toast('Error Uploading Image', 'error', 'top');
         },
         () => {
           // Handle successful uploads on complete
@@ -245,6 +246,13 @@ const createImage = async (e: any) => {
         @click="submitHandler"
         label="Sign Up"
       />
+
+      <p class="text-gray-700 absolute bottom-10">
+        Already have an account ?
+        <router-link to="/login" class="border-b-[1px] border-gray-800 pb-[0.1rem]  font-bold text-gray-800">
+          Login
+        </router-link>
+      </p>
     </form>
   </div>
 </template>

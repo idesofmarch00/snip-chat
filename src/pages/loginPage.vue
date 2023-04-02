@@ -2,9 +2,19 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+//imports firebase
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../boot/firebase';
+
+import { $toast } from '../utils/notification';
+
+//store
+import {useUserStore} from '../stores/userStore';
+const userStore = useUserStore();
+
 const router = useRouter();
 
-const username = ref('');
+const email = ref('');
 const password = ref('');
 const isPwd = ref(true);
 
@@ -15,11 +25,24 @@ function simulateProgress() {
   loading.value = true;
 
   // simulate a delay
-  setTimeout(() => {
+  setTimeout(async () => {
     // we're done, we reset loading state
-    loading.value = false;
-    router.replace('/');
-  }, 3000);
+
+    try {
+      const res = await signInWithEmailAndPassword(
+        auth,
+        email.value,
+        password.value
+      );
+      console.log(res.user)
+      loading.value = false;
+      userStore.setUser(res.user);
+      router.replace('/');
+    } catch (err) {
+      $toast('Error Login', 'error', 'top');
+      loading.value = false;
+    }
+  }, 2000);
 }
 </script>
 
@@ -32,8 +55,8 @@ function simulateProgress() {
         outlined
         standout
         rounded
-        v-model="username"
-        label="Username"
+        v-model="email"
+        label="Email"
         class="w-full"
       >
       </q-input>
@@ -66,7 +89,7 @@ function simulateProgress() {
       />
 
       <div
-        class="flex items-center flex-col space-y-2 border-b-2 p-4 w-full h-full my-4 "
+        class="flex items-center flex-col space-y-2 border-b-2 p-4 w-full h-full my-4"
       >
         <p class="font-bold text-gray-600">or</p>
         <div class="flex space-x-4">
