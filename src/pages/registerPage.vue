@@ -1,18 +1,24 @@
 <script setup lang="ts">
+//dependencies
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-//imports
+//imports firebase
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth, storage } from '../boot/firebase';
+import { auth, storage, db } from '../boot/firebase';
 import {
   ref as refStorage,
   uploadBytesResumable,
   getDownloadURL,
 } from 'firebase/storage';
+import { doc, setDoc } from 'firebase/firestore';
 
-// const router = useRouter();
+//other imports
+import { $toast } from '../utils/notification';
 
+const router = useRouter();
+
+//vars
 const firstName = ref('');
 const lastName = ref('');
 const email = ref('');
@@ -21,12 +27,13 @@ const isPwd = ref(true);
 
 const loading = ref(false);
 
-function simulateProgress() {
+//function
+function submitHandler() {
   // we set loading state
   loading.value = true;
 
-  const displayName = firstName.value + '' + lastName.value;
-  console.log(displayName);
+  const date = new Date().getTime();
+  const displayName = firstName.value + lastName.value;
 
   // simulate a delay
   setTimeout(async () => {
@@ -36,6 +43,7 @@ function simulateProgress() {
     // router.replace('/');
 
     try {
+      //create user
       const res = await createUserWithEmailAndPassword(
         auth,
         email.value,
@@ -43,7 +51,8 @@ function simulateProgress() {
       );
       console.log(res.user);
 
-      const storageRef = refStorage(storage, displayName);
+      //create unique pic name
+      const storageRef = refStorage(storage, `${displayName + date}`);
 
       const uploadTask = uploadBytesResumable(storageRef, imageSrc);
 
@@ -73,15 +82,29 @@ function simulateProgress() {
           // For instance, get the download URL: https://firebasestorage.googleapis.com/...
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
             console.log('File available at', downloadURL);
+            //update profile
             await updateProfile(res.user, {
               displayName: displayName,
               photoURL: downloadURL,
             });
+
+            //create user on firestore
+            await setDoc(doc(db, 'users', res.user.uid), {
+              uid: res.user.uid,
+              displayName,
+              email,
+              photoURL: downloadURL,
+            });
+
+            //create empty user chats on firestore
+            await setDoc(doc(db, 'userChats', res.user.uid), {});
+            router.replace('/');
           });
         }
       );
     } catch (error) {
       console.log(error);
+      $toast('Error Registering User', 'error', 'top');
       // ..
     }
   }, 2000);
@@ -219,7 +242,7 @@ const createImage = async (e: any) => {
         color="secondary"
         class="glossy w-1/2 absolute bottom-20"
         rounded
-        @click="simulateProgress"
+        @click="submitHandler"
         label="Sign Up"
       />
     </form>
