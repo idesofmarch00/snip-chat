@@ -1,8 +1,14 @@
+//import
+import { useRouter } from 'vue-router';
+import { useUserStore } from '../stores/userStore';
+
+const router = useRouter();
+
 // Firebase App (the core Firebase SDK) is always required and must be listed first
 import { initializeApp } from 'firebase/app';
 
 // Add the Firebase products that you want to use
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { getFirestore } from 'firebase/firestore';
 
@@ -21,3 +27,21 @@ export const firebaseApp = initializeApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
 export const storage = getStorage();
 export const db = getFirestore();
+
+onAuthStateChanged(auth, async (user) => {
+  const userStore = useUserStore();
+  userStore.setUser(user);
+});
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (user) => {
+        unsubscribe();
+        resolve(user);
+      },
+      reject
+    );
+  });
+};

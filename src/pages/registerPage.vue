@@ -52,9 +52,9 @@ function submitHandler() {
       console.log(res.user);
 
       //create unique pic name
-      const storageRef = refStorage(storage, `${displayName + date}`);
+      const storageRef = refStorage(storage, `${displayName + date}.jpg`);
 
-      const uploadTask = uploadBytesResumable(storageRef, imageSrc);
+      const uploadTask = uploadBytesResumable(storageRef, file.value);
 
       uploadTask.on(
         'state_changed',
@@ -92,8 +92,8 @@ function submitHandler() {
             //create user on firestore
             await setDoc(doc(db, 'users', res.user.uid), {
               uid: res.user.uid,
-              name:displayName,
-              email:email.value,
+              name: displayName,
+              email: email.value,
               photoURL: downloadURL,
             });
 
@@ -249,7 +249,10 @@ const createImage = async (e: any) => {
 
       <p class="text-gray-700 absolute bottom-10">
         Already have an account ?
-        <router-link to="/login" class="border-b-[1px] border-gray-800 pb-[0.1rem]  font-bold text-gray-800">
+        <router-link
+          to="/login"
+          class="border-b-[1px] border-gray-800 pb-[0.1rem] font-bold text-gray-800"
+        >
           Login
         </router-link>
       </p>

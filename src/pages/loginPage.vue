@@ -9,7 +9,7 @@ import { auth } from '../boot/firebase';
 import { $toast } from '../utils/notification';
 
 //store
-import {useUserStore} from '../stores/userStore';
+import { useUserStore } from '../stores/userStore';
 const userStore = useUserStore();
 
 const router = useRouter();
@@ -29,14 +29,8 @@ function simulateProgress() {
     // we're done, we reset loading state
 
     try {
-      const res = await signInWithEmailAndPassword(
-        auth,
-        email.value,
-        password.value
-      );
-      console.log(res.user)
+      await signInWithEmailAndPassword(auth, email.value, password.value);
       loading.value = false;
-      userStore.setUser(res.user);
       router.replace('/');
     } catch (err) {
       $toast('Error Login', 'error', 'top');

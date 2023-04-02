@@ -4,7 +4,7 @@
       <q-toolbar class="bg-gray-800 p-2">
         <!-- <q-btn dense flat round icon="menu" /> -->
         <q-avatar @click="toggleLeftDrawer">
-          <img :src="userStore.photoURL" />
+          <img :src="userStore.user.photoURL" />
         </q-avatar>
         <q-toolbar-title class="mt-1 ml-12"> {{ route.name }} </q-toolbar-title>
 
@@ -168,12 +168,22 @@
         class="w-full max-h-[calc(100vh-5rem)] flex flex-col space-y-0 overflow-auto bg-white"
       >
         <!-- card -->
-        <div v-if="!userSearch && search ===''" class="text-black font-bold text-lg text-center mt-2">Find users</div>
-        
-        <div v-if="!userSearch && search!==''" class="text-black font-bold text-lg text-center mt-2">No User Found</div>
-        <div v-if="userSearch && search!==''">
+        <div
+          v-if="!userSearch && search === ''"
+          class="text-black font-bold text-lg text-center mt-2"
+        >
+          Find users
+        </div>
+
+        <div
+          v-if="!userSearch && search !== ''"
+          class="text-black font-bold text-lg text-center mt-2"
+        >
+          No User Found
+        </div>
+        <div v-if="userSearch && search !== ''">
           <q-item
-            class=" flex items-center justify-between ml-2 my-2 w-11/12 rounded-lg p-2 border"
+            class="flex items-center justify-between ml-2 my-2 w-11/12 rounded-lg p-2 border"
           >
             <q-item-section class="w-1/2">
               <q-avatar>
@@ -182,11 +192,13 @@
             </q-item-section>
 
             <q-item-section>
-              <q-item-label class="text-black font-bold text-lg">{{ friend.name }}</q-item-label>
+              <q-item-label class="text-black font-bold text-lg">{{
+                friend.name
+              }}</q-item-label>
               <q-item-label caption lines="1">{{ friend.email }}</q-item-label>
             </q-item-section>
 
-            <q-item-section side>
+            <q-item-section side @click.prevent="handleSelect">
               <q-icon name="chat_bubble" color="grey" />
             </q-item-section>
           </q-item>
@@ -275,6 +287,52 @@ async function handleSearch(search) {
     userSearch.value = false;
   }
 }
+
+const handleSelect = async () => {
+  //check whether the group(chats in firestore) exists, if not create
+  const combinedId =
+    userStore.user.uid > friend.value.uid
+      ? userStore.user.uid + friend.value.uid
+      : friend.value.uid + userStore.user.uid;
+  try {
+    const res = await getDoc(doc(db, 'chats', combinedId));
+
+    if (!res.exists()) {
+      //create a chat in chats collection
+      await setDoc(doc(db, 'chats', combinedId), { messages: [] });
+
+      //create friend chats
+      await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+        [combinedId + '.friendInfo']: {
+          uid: friend.value.uid,
+          name: friend.value.displayName,
+          photoURL: friend.value.photoURL,
+        },
+        [combinedId + '.date']: serverTimestamp(),
+      });
+
+      await updateDoc(doc(db, 'userChats', friend.value.uid), {
+        [combinedId + '.friendInfo']: {
+          uid: userStore.user.uid,
+          name: userStore.user.displayName,
+          photoURL: userStore.user.photoURL,
+        },
+        [combinedId + '.date']: serverTimestamp(),
+      });
+    }
+  } catch (err) {}
+};
+
+onMounted(() => {
+  console.log(
+    'uid:',
+    userStore.user.uid,
+    ' name:',
+    userStore.user.displayName,
+    ' photoURL:',
+    userStore.user.photoURL
+  );
+});
 </script>
 
 <style scoped lang="sass">
