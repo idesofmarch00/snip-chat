@@ -2,7 +2,16 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const router = useRouter();
+//imports
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth, storage } from '../boot/firebase';
+import {
+  ref as refStorage,
+  uploadBytesResumable,
+  getDownloadURL,
+} from 'firebase/storage';
+
+// const router = useRouter();
 
 const firstName = ref('');
 const lastName = ref('');
@@ -16,21 +25,95 @@ function simulateProgress() {
   // we set loading state
   loading.value = true;
 
+  const displayName = firstName.value + '' + lastName.value;
+  console.log(displayName);
+
   // simulate a delay
-  setTimeout(() => {
+  setTimeout(async () => {
     // we're done, we reset loading state
     loading.value = false;
-    alert('successfully registered');
-    router.replace('/');
-  }, 3000);
+    // alert('successfully registered');
+    // router.replace('/');
+
+    try {
+      const res = await createUserWithEmailAndPassword(
+        auth,
+        email.value,
+        password.value
+      );
+      console.log(res.user);
+
+      const storageRef = refStorage(storage, displayName);
+
+      const uploadTask = uploadBytesResumable(storageRef, imageSrc);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          // Observe state change events such as progress, pause, and resume
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+          switch (snapshot.state) {
+            case 'paused':
+              console.log('Upload is paused');
+              break;
+            case 'running':
+              console.log('Upload is running');
+              break;
+          }
+        },
+        (error) => {
+          // Handle unsuccessful uploads
+          console.log('error uploading coz:', error);
+        },
+        () => {
+          // Handle successful uploads on complete
+          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            console.log('File available at', downloadURL);
+            await updateProfile(res.user, {
+              displayName: displayName,
+              photoURL: downloadURL,
+            });
+          });
+        }
+      );
+    } catch (error) {
+      console.log(error);
+      // ..
+    }
+  }, 2000);
 }
+
+//img upload
+const imageSrc = ref<any>('');
+const clickimage = ref<HTMLDivElement | null>();
+const file = ref<any>();
+
+function clickImage(e: Event) {
+  if (e.target) {
+    clickimage.value?.click();
+  }
+}
+
+const createImage = async (e: any) => {
+  file.value = e.target.files[0];
+  if (file.value) {
+    imageSrc.value = URL.createObjectURL(e.target.files[0]);
+    console.log(imageSrc.value);
+  } else {
+    imageSrc.value = '';
+  }
+};
 </script>
 
 <template>
   <div class="p-4 flex flex-col items-center space-y-8">
     <div class="text-h4">CHAT APP LOGO</div>
     <div class="text-h6">Register Now</div>
-    <div class="flex flex-col items-center space-y-4 w-10/12">
+    <form class="flex flex-col items-center space-y-4 w-10/12">
       <div class="flex space-x-4 items-center">
         <q-input
           outlined
@@ -79,14 +162,66 @@ function simulateProgress() {
         </template>
       </q-input>
 
+      <form
+        class="w-full flex flex-col space-y-1 items-center justify-center"
+        @submit.prevent=""
+      >
+        <div class="h-20 w-20 bg-slate-200 rounded-lg relative">
+          <!-- <Spinner
+            :size="'spinner-lg'"
+            :color="'green-spin'"
+            v-if="loading"
+            class="absolute top-36 left-40"
+          /> -->
+          <button
+            v-if="imageSrc"
+            @click="
+              () => {
+                file = null;
+                imageSrc = '';
+              }
+            "
+            class="absolute w-5 h-5 -top-2 -right-2 bg-gray-600 text-white text-md border rounded-full container-center justify-center"
+          >
+            <span class="">x</span>
+          </button>
+          <img
+            v-show="imageSrc"
+            :src="imageSrc"
+            alt="totalizer"
+            class="rounded-lg h-full w-full"
+          />
+        </div>
+        <div class="flex flex-col w-full items-center">
+          <button
+            @click="clickImage"
+            name="clickimage"
+            class="bg-blue-600 rounded-lg h-6 w-24 text-xs text-white p-1"
+          >
+            Upload Avatar
+          </button>
+          <input
+            @change="createImage"
+            name="upload"
+            type="file"
+            placeholder="upload"
+            class="text-base"
+            accept="image/*"
+            capture="environment"
+            ref="clickimage"
+            hidden
+          />
+        </div>
+      </form>
+
       <q-btn
         :loading="loading"
         color="secondary"
-        class="glossy w-10/12"
+        class="glossy w-1/2 absolute bottom-20"
         rounded
         @click="simulateProgress"
         label="Sign Up"
       />
-    </div>
+    </form>
   </div>
 </template>

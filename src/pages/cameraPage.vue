@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useChatStore } from '../stores/chatStore';
 
 // import Camera from 'simple-vue-camera';
@@ -50,11 +50,9 @@ function takePhoto() {
   const context = canvas.value.getContext('2d');
   const photoFromVideo = camera.value;
 
-  context.drawImage(photoFromVideo, 0, 0, 200, 400);
+  context.drawImage(photoFromVideo, 0, 0, 1920, 1080);
 
   stopCameraStream();
-
-
 }
 
 function downloadImage() {
@@ -69,7 +67,7 @@ onMounted(() => {
   createCameraElement();
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   stopCameraStream();
 });
 </script>
@@ -106,7 +104,6 @@ onUnmounted(() => {
         <q-btn icon="download" round />
       </a>
     </button>
-
   </q-page>
 </template>
 
