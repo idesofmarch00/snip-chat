@@ -8,8 +8,14 @@ export const useUserStore = defineStore('userStore', () => {
     user.value = user;
   }
 
+  const userChats = ref();
+
+  const allUsers = ref();
+
   return {
     user,
     setUser,
+    userChats,
+    allUsers,
   };
 });

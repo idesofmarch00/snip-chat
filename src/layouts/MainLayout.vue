@@ -142,47 +142,58 @@
         dark
         dense
         standout
-        v-model="text"
-        input-class="text-right"
+        placeholder="Search by username or email"
+        v-model="search"
+        input-class="text-left"
         class="w-11/12 ml-4 mb-2"
       >
         <template v-slot:append>
-          <q-icon v-if="text === ''" name="search" />
+          <q-icon v-if="search === ''" name="search" />
           <q-icon
             v-else
             name="clear"
             class="cursor-pointer"
-            @click="text = ''"
+            @click="
+              () => {
+                userSearch = false;
+                search = '';
+              }
+            "
           />
         </template>
       </q-input>
 
       <!-- list of users -->
-      <q-spinner color="primary" size="3em" :thickness="2" v-if="!users" />
       <q-card
-        v-else
         class="w-full max-h-[calc(100vh-5rem)] flex flex-col space-y-0 overflow-auto bg-white"
       >
         <!-- card -->
-        <div class="container gap-y-4">
+        <div v-if="!userSearch && search ===''" class="text-black font-bold text-lg text-center mt-2">Find users</div>
+        
+        <div v-if="!userSearch && search!==''" class="text-black font-bold text-lg text-center mt-2">No User Found</div>
+        <div v-if="userSearch && search!==''">
           <q-item
-            class="q-mb-sm flex items-center justify-between bg-gray-300 rounded-lg p-2"
+            class=" flex items-center justify-between ml-2 my-2 w-11/12 rounded-lg p-2 border"
           >
-            <div class="flex space-x-2 items-center w-full">
-              <q-icon name="account_circle" color="black my-4" size="2.5rem" />
+            <q-item-section class="w-1/2">
+              <q-avatar>
+                <img :src="friend.photoURL" />
+              </q-avatar>
+            </q-item-section>
 
-              <div class="flex flex-col space-y-2 items-start w-2/3">
-                <div class="text-black font-bold">Name</div>
-                <div class="text-gray-600">Email</div>
-              </div>
-            </div>
+            <q-item-section>
+              <q-item-label class="text-black font-bold text-lg">{{ friend.name }}</q-item-label>
+              <q-item-label caption lines="1">{{ friend.email }}</q-item-label>
+            </q-item-section>
 
-            <q-btn icon="send" color="black" class="h-4 w-10" />
+            <q-item-section side>
+              <q-icon name="chat_bubble" color="grey" />
+            </q-item-section>
           </q-item>
         </div>
 
         <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="OK" v-close-popup />
+          <q-btn flat label="Close" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-card>
@@ -219,7 +230,7 @@ const router = useRouter();
 const leftDrawerOpen = ref(false);
 const addFriendModal = ref(false);
 const users = ref(true);
-const text = ref('');
+const search = ref('');
 const tab = ref('');
 
 const link = ref('');
@@ -243,23 +254,25 @@ watch(route, (updatedRoute) => {
   }
 });
 
-watch(text, (updatedText) => {
-  handleSearch(updatedText);
+const friend = ref();
+const userSearch = ref(false);
+watch(search, (updatedSearch) => {
+  friend.value = '';
+  handleSearch(updatedSearch);
 });
 
 async function handleSearch(search) {
-  const q = query(
-    collection(db, 'users'),
-    where('name', '==', search)
-  );
+  const q = query(collection(db, 'users'), where('name', '==', search));
 
   try {
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-       console.log(doc.id, " => ", doc.data());
+      friend.value = doc.data();
+      userSearch.value = true;
     });
   } catch (err) {
-    setErr(true);
+    console.log(err);
+    userSearch.value = false;
   }
 }
 </script>
