@@ -233,6 +233,7 @@ import {
 
 //store
 import { useUserStore } from '../stores/userStore';
+import { $toast } from 'src/utils/notification';
 
 const userStore = useUserStore();
 
@@ -319,11 +320,15 @@ const handleSelect = async () => {
         },
         [combinedId + '.date']: serverTimestamp(),
       });
+
+      $toast('Friend added successfully', 'success', 'top');
+      addFriendModal.value = false;
     }
   } catch (err) {}
 };
 
 onMounted(() => {
+  
   console.log(
     'uid:',
     userStore.user.uid,
