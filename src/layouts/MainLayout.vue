@@ -195,7 +195,18 @@ import { ref, onMounted, watch } from 'vue';
 
 //firebase
 import { signOut } from 'firebase/auth';
-import { auth } from '../boot/firebase';
+import { auth, db } from '../boot/firebase';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  setDoc,
+  doc,
+  updateDoc,
+  serverTimestamp,
+  getDoc,
+} from 'firebase/firestore';
 
 //store
 import { useUserStore } from '../stores/userStore';
@@ -231,6 +242,26 @@ watch(route, (updatedRoute) => {
     tab.value = updatedRoute.name;
   }
 });
+
+watch(text, (updatedText) => {
+  handleSearch(updatedText);
+});
+
+async function handleSearch(search) {
+  const q = query(
+    collection(db, 'users'),
+    where('name', '==', search)
+  );
+
+  try {
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+       console.log(doc.id, " => ", doc.data());
+    });
+  } catch (err) {
+    setErr(true);
+  }
+}
 </script>
 
 <style scoped lang="sass">

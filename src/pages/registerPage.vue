@@ -92,8 +92,8 @@ function submitHandler() {
             //create user on firestore
             await setDoc(doc(db, 'users', res.user.uid), {
               uid: res.user.uid,
-              displayName,
-              email,
+              name:displayName,
+              email:email.value,
               photoURL: downloadURL,
             });
 
