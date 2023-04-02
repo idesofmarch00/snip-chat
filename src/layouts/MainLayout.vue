@@ -291,7 +291,6 @@ async function handleSearch(search) {
 }
 
 const handleSelect = async () => {
-  console.log('hey')
   //check whether the group(chats in firestore) exists, if not create
   const combinedId =
     userStore.user.uid > friend.value.uid
@@ -299,16 +298,12 @@ const handleSelect = async () => {
       : friend.value.uid + userStore.user.uid;
   try {
     const res = await getDoc(doc(db, 'chats', combinedId));
-    console.log('getchats',res)
 
     if (!res.exists()) {
-      console.log('1');
       //create a chat in chats collection
       await setDoc(doc(db, 'chats', combinedId), { messages: [] });
-      console.log('2');
-
       //create friend chats
-      const res1 = await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+await updateDoc(doc(db, 'userChats', userStore.user.uid), {
         [combinedId + '.friendInfo']: {
           uid: friend.value.uid,
           displayName: friend.value.displayName,
@@ -316,10 +311,7 @@ const handleSelect = async () => {
         },
         [combinedId + '.date']: serverTimestamp(),
       });
-      console.log('r1',res1)
-      console.log('3');
-
-      const res2 = await updateDoc(doc(db, 'userChats', friend.value.uid), {
+ await updateDoc(doc(db, 'userChats', friend.value.uid), {
         [combinedId + '.friendInfo']: {
           uid: userStore.user.uid,
           displayName: userStore.user.displayName,
@@ -327,8 +319,6 @@ const handleSelect = async () => {
         },
         [combinedId + '.date']: serverTimestamp(),
       });
-      console.log('r2',res2)
-      console.log('4');
 
       $toast('Friend added successfully', 'success', 'top');
       addFriendModal.value = false;
