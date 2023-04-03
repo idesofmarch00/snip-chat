@@ -38,10 +38,14 @@ function createCameraElement() {
     });
 }
 function stopCameraStream() {
-  const tracks = camera.value.srcObject.getTracks();
-  tracks.forEach((track: any) => {
-    track.stop();
-  });
+  if (camera.value.srcObject) {
+    const tracks = camera.value.srcObject.getTracks();
+    if (tracks.length > 0) {
+      tracks.forEach((track: any) => {
+        track.stop();
+      });
+    }
+  }
 }
 
 function takePhoto() {

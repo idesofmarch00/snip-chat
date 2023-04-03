@@ -1,8 +1,11 @@
-<script setup lang='ts' async>
+<script setup lang="ts" async>
 //dependencies
 import { onMounted, ref, watch } from 'vue';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 //store,actions
 import { useMapStore } from '../stores/mapStore';
@@ -19,20 +22,33 @@ const defaultCoords = ref({
 });
 const coords = ref<any>();
 const markers = ref<any>();
+
 onMounted(async () => {
   mapboxgl.accessToken =
-    import.meta.env.MAPBOX_ACCESS_TOKEN;
+    'pk.eyJ1IjoidXNhaWYxMzExIiwiYSI6ImNsZDdoc3J6NDBlenkzcXBiOTEzZml1cDcifQ.vj73_blmjljI0sUEHAwOcw';
+
   coords.value = await getLocation();
   defaultCoords.value = coords.value;
+
   mapStore.map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/dark-v11',
-    zoom: 12,
+    style: 'mapbox://styles/mapbox/navigation-night-v1',
+    zoom: 13,
     center: [defaultCoords.value.lng, defaultCoords.value.lat],
   });
+
   mapStore.map.on('load', () => {
     mapStore.maploader = false;
   });
+
+  // Create a default Marker and add it to the map.
+  const marker1 = new mapboxgl.Marker()
+    .setLngLat([defaultCoords.value.lng, defaultCoords.value.lat])
+    .addTo(mapStore.map);
+
+  // Add zoom and rotation controls to the map.
+  map.addControl(new mapboxgl.NavigationControl());
+
   // mapStore.filterMarkers = evData;
   mapStore.filterMarkers.forEach((marker: any, index: any) => {
     const el = document.createElement('div');
@@ -60,13 +76,23 @@ onMounted(async () => {
             </div>
           </div>
         </div>`);
+
     markers.value = new mapboxgl.Marker(el)
       .setLngLat([Number(marker?.longitude), Number(marker?.lattitude)])
       .setPopup(popup)
       .addTo(mapStore.map!);
-      console.log(markers.value);
+    console.log(markers.value);
   });
+
+  // Add the control to the map.
+  mapStore.map.addControl(
+    new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+    })
+  );
 });
+
 watch(
   () => mapStore.filterMarkers,
   () => {
@@ -113,7 +139,7 @@ watch(
 </script>
 
 <template>
-  <div id='map' class='h-full'></div>
+  <div id="map" class="h-full"></div>
 </template>
 
 <style scoped>
