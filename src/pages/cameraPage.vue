@@ -54,7 +54,7 @@ function takePhoto() {
   const context = canvas.value.getContext('2d');
   const photoFromVideo = camera.value;
 
-  context.drawImage(photoFromVideo, 0, 0, 1920, 1080);
+  context.drawImage(photoFromVideo, 0, 0, 450, 337);
 
   stopCameraStream();
 }
@@ -77,21 +77,19 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <q-page class="row items-center justify-evenly h-10 w-10">
+  <q-page
+    class="row items-center justify-evenly relative h-[calc(100vh-8rem)] bg-blue-50"
+  >
     <div class="">
       <video
         class="camera-video"
         ref="camera"
-        :width="100"
-        :height="200"
         autoplay
         playsinline
       ></video>
       <canvas
         v-show="isPhotoTaken"
         ref="canvas"
-        :width="100"
-        :height="200"
       ></canvas>
     </div>
 

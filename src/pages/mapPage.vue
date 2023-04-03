@@ -11,7 +11,7 @@ const mapStore = useMapStore();
 
 <template>
   <div class="relative overflow-hidden">
-    <div class="relative h-[calc(100vh-5.3rem)]">
+    <div class="relative h-[calc(100vh-5.5rem)]">
       <mapboxMap class="" />
     </div>
     <!-- <div class="absolute w-full md:w-[36.5rem] left-0 md:left-4 top-6 shadow-xl">

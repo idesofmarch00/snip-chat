@@ -49,6 +49,17 @@ onMounted(async () => {
   // Add zoom and rotation controls to the map.
   mapStore.map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
 
+  // mapStore.map.addControl(new mapboxgl.FullscreenControl());
+
+  // Add the geocoder control to the map.
+  mapStore.map.addControl(
+    new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+    })
+  );
+
+  // Add the userlocation geolocation control to the map.
   mapStore.map.addControl(
     new mapboxgl.GeolocateControl({
       positionOptions: {
@@ -57,7 +68,7 @@ onMounted(async () => {
       trackUserLocation: true,
       showUserHeading: true,
     }),
-    'bottom-left'
+    'bottom-right'
   );
   // mapStore.filterMarkers = evData;
   mapStore.filterMarkers.forEach((marker: any, index: any) => {
@@ -93,14 +104,6 @@ onMounted(async () => {
       .addTo(mapStore.map!);
     console.log(markers.value);
   });
-
-  // Add the control to the map.
-  mapStore.map.addControl(
-    new MapboxGeocoder({
-      accessToken: mapboxgl.accessToken,
-      mapboxgl: mapboxgl,
-    })
-  );
 });
 
 watch(
