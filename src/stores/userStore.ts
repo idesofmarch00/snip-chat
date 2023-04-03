@@ -8,8 +8,6 @@ export const useUserStore = defineStore('userStore', () => {
 
   const userChats = ref();
 
-  const allUsers = ref();
-
   function setUser(firebaseUser: any) {
     user.value = firebaseUser;
   }
@@ -22,9 +20,6 @@ export const useUserStore = defineStore('userStore', () => {
     userChats.value = chats;
   }
 
-  function setAllUsers(users: any) {
-    allUsers.value = users;
-  }
 
   return {
     user,
@@ -33,8 +28,6 @@ export const useUserStore = defineStore('userStore', () => {
     setUser,
     setUserClaim,
     userChats,
-    allUsers,
     setUserChats,
-    setAllUsers,
   };
 });
