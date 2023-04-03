@@ -42,13 +42,23 @@ onMounted(async () => {
   });
 
   // Create a default Marker and add it to the map.
-  const marker1 = new mapboxgl.Marker()
+  const myMarker = new mapboxgl.Marker()
     .setLngLat([defaultCoords.value.lng, defaultCoords.value.lat])
     .addTo(mapStore.map);
 
   // Add zoom and rotation controls to the map.
-  map.addControl(new mapboxgl.NavigationControl());
+  mapStore.map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
 
+  mapStore.map.addControl(
+    new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackUserLocation: true,
+      showUserHeading: true,
+    }),
+    'bottom-left'
+  );
   // mapStore.filterMarkers = evData;
   mapStore.filterMarkers.forEach((marker: any, index: any) => {
     const el = document.createElement('div');
