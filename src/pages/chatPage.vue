@@ -19,16 +19,29 @@
     <q-page-container class="bg-red-50">
       <q-page>
         <div class="px-4 column col justify-end">
-          <q-chat-message
-            v-for="(message, key) in messages"
-            :key="key"
-            :name="
-              message.from == 'me' ? userDetails.name : otherUserDetails.name
-            "
-            :text="[message.text]"
-            :sent="message.from == 'me' ? true : false"
-            :bg-color="message.from == 'me' ? 'white' : 'light-green-2'"
-          />
+          <q-chat-message label="Sunday, 19th" />
+          <div v-for="(message, key) in userStore.currentChat" :key="key" class="mb-4">
+            <q-chat-message
+              :name="message.senderId == userStore.user.uid ? 'Me' : 'You'"
+              :sent="message.senderId == userStore.user.uid ? true : false"
+              :bg-color="
+                message.senderId == userStore.user.uid
+                  ? 'light-blue-2'
+                  : 'light-green-2'
+              "
+              :avatar="
+                message.senderId == userStore.user.uid
+                  ? userStore.user.photoURL
+                  : ''
+              "
+              ><span v-if="message.text">{{ message.text }}</span
+              ><img v-if="message.img" :src="message.img" />
+            </q-chat-message>
+            <span v-if="message.date" class="text-gray-800 font-bold text-[0.5rem]" :class="`${message.senderId == userStore.user.uid ? 'absolute right-[3.8rem]' : 'absolute left-[3.8rem]'}`">{{
+              message.date.seconds
+            }} min ago</span>
+          </div>
+          
         </div>
         <!-- place QPageScroller at end of page -->
         <q-page-scroller
@@ -149,6 +162,7 @@ import {
   getDocs,
   setDoc,
   doc,
+  onSnapshot,
   updateDoc,
   arrayUnion,
   Timestamp,
@@ -195,7 +209,7 @@ const friendId: any = chatId.replace(userStore.user.uid, '');
 //send msg
 const handleSend = async () => {
   if (file.value) {
-    const storageRef = fireStorageRef(storage, uuid() + '.jpg');
+    const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
 
     const uploadTask = uploadBytesResumable(storageRef, file.value);
 
@@ -251,60 +265,11 @@ function scrollToBottom() {
   console.log('blur scroll');
 }
 
-const userDetails = {
-  name: 'sahil',
-};
-
-const otherUserDetails = {
-  name: 'sohail',
-};
-
-const messages = [
-  {
-    from: 'me',
-    text: 'hey',
-  },
-  {
-    from: 'you',
-    text: 'new phone who dis?',
-  },
-  {
-    from: 'me',
-    text: 'i am batman',
-  },
-  {
-    from: 'you',
-    text: 'stop inventing',
-  },
-  {
-    from: 'me',
-    text: 'Noooooo',
-  },
-  {
-    from: 'me',
-    text: 'i am batman',
-  },
-  {
-    from: 'you',
-    text: 'stop inventing',
-  },
-  {
-    from: 'me',
-    text: 'Noooooo',
-  },
-  {
-    from: 'me',
-    text: 'i am batman',
-  },
-  {
-    from: 'you',
-    text: 'stop inventing',
-  },
-  {
-    from: 'me',
-    text: 'Noooooo',
-  },
-];
+onMounted(() => {
+  const msg = onSnapshot(doc(db, 'chats', chatId), (doc) => {
+    userStore.setCurrentChat(doc.data()?.messages);
+  });
+});
 </script>
 
 <style scoped></style>

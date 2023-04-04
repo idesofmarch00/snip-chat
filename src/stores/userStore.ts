@@ -9,6 +9,7 @@ export const useUserStore = defineStore('userStore', () => {
   const userClaim = ref<any>();
   const userIdToken = ref<any>();
   const userChats = ref();
+  const currentChat = ref();
 
   function setUser(firebaseUser: any) {
     user.value = firebaseUser;
@@ -30,6 +31,10 @@ export const useUserStore = defineStore('userStore', () => {
     showLocationPopup.value = displayState;
   }
 
+  function setCurrentChat(messages:any){
+    currentChat.value=messages;
+  }
+
   return {
     user,
     userClaim,
@@ -42,5 +47,7 @@ export const useUserStore = defineStore('userStore', () => {
     toggleLocationPopup,
     setAllUsers,
     allUsers,
+    setCurrentChat,
+currentChat,
   };
 });
