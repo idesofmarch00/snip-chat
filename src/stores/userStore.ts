@@ -2,16 +2,20 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useUserStore = defineStore('userStore', () => {
-
   const showLocationPopup = ref<boolean>(false);
 
   const user = ref<any>(null);
+  const allUsers = ref<any>(null);
   const userClaim = ref<any>();
   const userIdToken = ref<any>();
   const userChats = ref();
 
   function setUser(firebaseUser: any) {
     user.value = firebaseUser;
+  }
+
+  function setAllUsers(users: any) {
+    allUsers.value = users;
   }
 
   function setUserClaim(userRole: any) {
@@ -26,7 +30,6 @@ export const useUserStore = defineStore('userStore', () => {
     showLocationPopup.value = displayState;
   }
 
-
   return {
     user,
     userClaim,
@@ -37,5 +40,7 @@ export const useUserStore = defineStore('userStore', () => {
     setUserChats,
     showLocationPopup,
     toggleLocationPopup,
+    setAllUsers,
+    allUsers,
   };
 });

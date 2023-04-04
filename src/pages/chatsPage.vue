@@ -33,28 +33,30 @@ const today = new Date();
 
 <template>
   <q-page class="items-center justify-evenly">
-    <div v-if="userStore.userChats">
+    <div v-if="userStore.userChats" class="my-2 flex flex-col items-center space-y-3">
       <q-item
-        :to="'chat/'+ chat[0]"
+        :to="'chat/' + chat[0]"
         clickable
         v-ripple
         v-for="chat in Object.entries(userStore.userChats)"
         :key="chat[1]?.friendInfo.uid"
+        class="bg-gray-50 w-full"
       >
         <q-item-section side>
           <q-avatar rounded size="48px">
             <img :src="chat[1]?.friendInfo.photoURL" />
+            <div class="rounded-full h-3 w-3 absolute -top-1 -right-1 shadow border z-10"
+              :class="`${chat[1]?.friendInfo.online ? 'bg-green-600' : 'bg-red-600'}`"
+            />
           </q-avatar>
         </q-item-section>
         <q-item-section>
           <q-item-label class="text-black">{{
             chat[1]?.friendInfo.displayName
           }}</q-item-label>
-          <q-item-label caption></q-item-label>
+          <q-item-label caption>2 new messages</q-item-label>
         </q-item-section>
-        <q-item-section side>
-          {{ chat[1]?.date.seconds }}
-        </q-item-section>
+        <q-item-section side> 3 min ago </q-item-section>
       </q-item>
     </div>
   </q-page>

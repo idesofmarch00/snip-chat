@@ -309,6 +309,7 @@ const handleSelect = async () => {
           uid: friend.value.uid,
           displayName: friend.value.displayName,
           photoURL: friend.value.photoURL,
+          online:true,
         },
         [combinedId + '.date']: serverTimestamp(),
       });
@@ -317,12 +318,16 @@ const handleSelect = async () => {
           uid: userStore.user.uid,
           displayName: userStore.user.displayName,
           photoURL: userStore.user.photoURL,
+          online:true,
         },
         [combinedId + '.date']: serverTimestamp(),
       });
 
       $toast('Friend added successfully', 'success', 'top');
       addFriendModal.value = false;
+    }
+    else{
+      alert('User is already a friend.')
     }
   } catch (err) {
     console.log(err);

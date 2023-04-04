@@ -7,7 +7,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot ,collection, getDocs} from 'firebase/firestore';
+
 import { db } from '../boot/firebase';
 
 //store,actions
@@ -28,16 +29,17 @@ const defaultCoords = ref({
 const coords = ref<any>();
 const markers = ref<any>();
 
-function fetchAllUsers() {
-  onMounted(() => {
-    const users = onSnapshot(doc(db, 'users'), (doc) => {
-      console.log('all users', doc.data());
-    });
-  });
+async function fetchAllUsers() {
+
+const querySnapshot = await getDocs(collection(db, 'users'));
+querySnapshot.forEach((doc) => {
+  // doc.data() is never undefined for query doc snapshots
+  userStore.setAllUsers(doc.data());
+});
 }
 
 onMounted(async () => {
-  fetchAllUsers();
+ await fetchAllUsers();
 
   mapboxgl.accessToken =
     'pk.eyJ1IjoidXNhaWYxMzExIiwiYSI6ImNsZDdoc3J6NDBlenkzcXBiOTEzZml1cDcifQ.vj73_blmjljI0sUEHAwOcw';
