@@ -194,10 +194,10 @@ const chatId: any = route.params.combinedUserId;
 const friendId: any = chatId.replace(userStore.user.uid, '');
 //send msg
 const handleSend = async () => {
-  if (imageSrc.value) {
-    const storageRef = fireStorageRef(storage, uuid());
+  if (file.value) {
+    const storageRef = fireStorageRef(storage, uuid() + '.jpg');
 
-    const uploadTask = uploadBytesResumable(storageRef, imageSrc.value);
+    const uploadTask = uploadBytesResumable(storageRef, file.value);
 
     uploadTask.on(
       (error) => {
