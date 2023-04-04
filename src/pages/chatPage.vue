@@ -144,12 +144,23 @@ import {
   ref as fireStorageRef,
   uploadBytesResumable,
 } from 'firebase/storage';
+import {
+  collection,
+  getDocs,
+  setDoc,
+  doc,
+  updateDoc,
+  arrayUnion,
+  Timestamp,
+  serverTimestamp,
+  getDoc,
+} from 'firebase/firestore';
+
+import { useUserStore } from 'src/stores/userStore';
+const userStore = useUserStore();
 
 //lifecycle hooks
 const route = useRoute();
-onMounted(() => {
-  console.log(route.params.combinedUserId);
-});
 
 //refs states
 const newMessage = ref('');
@@ -174,30 +185,32 @@ const createImage = async (e: any) => {
     imageSrc.value = URL.createObjectURL(e.target.files[0]);
     loading.value = false;
     imagePreviewModal.value = true;
-
   } else {
     imageSrc.value = '';
   }
 };
 
+const chatId: any = route.params.combinedUserId;
+const friendId: any = chatId.replace(userStore.user.uid, '');
 //send msg
 const handleSend = async () => {
-  if (img) {
-    const storageRef = ref(storage, uuid());
+  if (imageSrc.value) {
+    const storageRef = fireStorageRef(storage, uuid());
 
-    const uploadTask = uploadBytesResumable(storageRef, img);
+    const uploadTask = uploadBytesResumable(storageRef, imageSrc.value);
 
     uploadTask.on(
       (error) => {
         //TODO:Handle Error
       },
       () => {
+        const docRef = doc(db, 'chats', chatId as string);
         getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          await updateDoc(doc(db, 'chats', data.chatId), {
+          await updateDoc(docRef, {
             messages: arrayUnion({
               id: uuid(),
-              text,
-              senderId: currentUser.uid,
+              text: newMessage.value,
+              senderId: userStore.user.uid,
               date: Timestamp.now(),
               img: downloadURL,
             }),
@@ -206,32 +219,32 @@ const handleSend = async () => {
       }
     );
   } else {
-    await updateDoc(doc(db, 'chats', data.chatId), {
+    await updateDoc(doc(db, 'chats', chatId as string), {
       messages: arrayUnion({
         id: uuid(),
-        text,
-        senderId: currentUser.uid,
+        text: newMessage.value,
+        senderId: userStore.user.uid,
         date: Timestamp.now(),
       }),
     });
   }
 
-  await updateDoc(doc(db, 'userChats', currentUser.uid), {
-    [data.chatId + '.lastMessage']: {
-      text,
+  await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+    [chatId + '.lastMessage']: {
+      text: newMessage.value,
     },
-    [data.chatId + '.date']: serverTimestamp(),
+    [chatId + '.date']: serverTimestamp(),
   });
 
-  await updateDoc(doc(db, 'userChats', data.user.uid), {
-    [data.chatId + '.lastMessage']: {
-      text,
+  await updateDoc(doc(db, 'userChats', friendId), {
+    [chatId + '.lastMessage']: {
+      text: newMessage.value,
     },
-    [data.chatId + '.date']: serverTimestamp(),
+    [chatId + '.date']: serverTimestamp(),
   });
 
-  setText('');
-  setImg(null);
+  newMessage.value = '';
+  imageSrc.value = '';
 };
 
 function scrollToBottom() {
