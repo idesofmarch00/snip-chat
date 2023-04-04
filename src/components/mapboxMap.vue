@@ -9,12 +9,14 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 //store,actions
 import { useMapStore } from '../stores/mapStore';
+import { useUserStore } from '../stores/userStore';
 
 //imports
 import { getLocation } from '../utils/map';
 // import { evData } from '../../data/data';
 
 const mapStore = useMapStore();
+const userStore = useUserStore();
 
 const defaultCoords = ref({
   lat: 28.509379,
@@ -27,8 +29,19 @@ onMounted(async () => {
   mapboxgl.accessToken =
     'pk.eyJ1IjoidXNhaWYxMzExIiwiYSI6ImNsZDdoc3J6NDBlenkzcXBiOTEzZml1cDcifQ.vj73_blmjljI0sUEHAwOcw';
 
-  coords.value = await getLocation();
-  defaultCoords.value = coords.value;
+  navigator.permissions
+    .query({ name: 'geolocation' })
+    .then(async function (PermissionStatus) {
+      if (PermissionStatus.state == 'granted') {
+        //allowed
+        userStore.toggleLocationPopup(false);
+        coords.value = await getLocation();
+        defaultCoords.value = coords.value;
+      } else {
+        //denied
+        userStore.toggleLocationPopup(true);
+      }
+    });
 
   mapStore.map = new mapboxgl.Map({
     container: 'map',

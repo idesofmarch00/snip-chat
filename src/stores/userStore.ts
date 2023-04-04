@@ -2,10 +2,12 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useUserStore = defineStore('userStore', () => {
+
+  const showLocationPopup = ref<boolean>(false);
+
   const user = ref<any>(null);
   const userClaim = ref<any>();
   const userIdToken = ref<any>();
-
   const userChats = ref();
 
   function setUser(firebaseUser: any) {
@@ -20,6 +22,10 @@ export const useUserStore = defineStore('userStore', () => {
     userChats.value = chats;
   }
 
+  function toggleLocationPopup(displayState: boolean) {
+    showLocationPopup.value = displayState;
+  }
+
 
   return {
     user,
@@ -29,5 +35,7 @@ export const useUserStore = defineStore('userStore', () => {
     setUserClaim,
     userChats,
     setUserChats,
+    showLocationPopup,
+    toggleLocationPopup,
   };
 });

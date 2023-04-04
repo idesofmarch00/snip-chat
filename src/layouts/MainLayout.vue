@@ -183,7 +183,7 @@
         </div>
         <button v-if="userSearch && search !== ''" @click.prevent="handleSelect">
           <q-item
-            
+
             class="flex items-center justify-between ml-2 my-2 w-11/12 rounded-lg p-2 border"
           >
             <q-item-section class="w-1/2">
@@ -256,7 +256,6 @@ function toggleLeftDrawer() {
 function logOut() {
   link.value = 'logout';
   signOut(auth);
-  console.log;
   router.replace('/login');
 }
 
