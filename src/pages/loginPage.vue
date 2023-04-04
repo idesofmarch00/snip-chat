@@ -31,7 +31,7 @@ function simulateProgress() {
     try {
       await signInWithEmailAndPassword(auth, email.value, password.value);
       loading.value = false;
-      router.replace('/');
+      router.replace('/dashboard');
     } catch (err) {
       $toast('Error Login', 'error', 'top');
       loading.value = false;

@@ -116,7 +116,7 @@
             v-model="tab"
             class="bg-teal rounded-full text-yellow shadow-2"
           >
-            <q-route-tab name="Chats" icon="question_answer" to="/" />
+            <q-route-tab name="Chats" icon="question_answer" to="/dashboard" />
             <q-separator vertical inset class="bg-yellow-2" />
             <q-route-tab name="Camera" icon="camera" to="/camera" />
             <q-separator vertical inset class="bg-yellow-2" />
@@ -181,9 +181,11 @@
         >
           No User Found
         </div>
-        <button v-if="userSearch && search !== ''" @click.prevent="handleSelect">
+        <button
+          v-if="userSearch && search !== ''"
+          @click.prevent="handleSelect"
+        >
           <q-item
-
             class="flex items-center justify-between ml-2 my-2 w-11/12 rounded-lg p-2 border"
           >
             <q-item-section class="w-1/2">
@@ -302,7 +304,7 @@ const handleSelect = async () => {
       //create a chat in chats collection
       await setDoc(doc(db, 'chats', combinedId), { messages: [] });
       //create friend chats
-await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+      await updateDoc(doc(db, 'userChats', userStore.user.uid), {
         [combinedId + '.friendInfo']: {
           uid: friend.value.uid,
           displayName: friend.value.displayName,
@@ -310,7 +312,7 @@ await updateDoc(doc(db, 'userChats', userStore.user.uid), {
         },
         [combinedId + '.date']: serverTimestamp(),
       });
- await updateDoc(doc(db, 'userChats', friend.value.uid), {
+      await updateDoc(doc(db, 'userChats', friend.value.uid), {
         [combinedId + '.friendInfo']: {
           uid: userStore.user.uid,
           displayName: userStore.user.displayName,
@@ -323,7 +325,7 @@ await updateDoc(doc(db, 'userChats', userStore.user.uid), {
       addFriendModal.value = false;
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 };
 

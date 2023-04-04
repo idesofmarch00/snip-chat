@@ -14,13 +14,26 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
+    name: 'Index',
     path: '/',
+    component: () => import('src/pages/indexPage.vue'),
+  },
+
+  {
+    name: 'Chat',
+    path: '/chat/:combinedUserId',
+    component: () => import('src/pages/chatPage.vue'),
+  },
+
+  {
+    name: 'Dashboard',
+    path: '/dashboard',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
         name: 'Chats',
-        path: '',
-        component: () => import('pages/IndexPage.vue'),
+        path: '/dashboard',
+        component: () => import('pages/chatsPage.vue'),
       },
 
       {
