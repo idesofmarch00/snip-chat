@@ -33,7 +33,7 @@ const today = new Date();
 
 <template>
   <q-page class="items-center justify-evenly">
-    <div v-if="userStore.userChats.length>0" class="my-2 flex flex-col items-center space-y-3">
+    <div v-if="userStore.userChats" class="my-2 flex flex-col items-center space-y-3">
       <q-item
         :to="'chat/' + chat[0]"
         clickable
