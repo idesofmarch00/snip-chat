@@ -13,8 +13,10 @@ import {
 } from 'firebase/storage';
 import { doc, setDoc } from 'firebase/firestore';
 
+
 //other imports
 import { $toast } from '../utils/notification';
+import { getLocation } from '../utils/map';
 
 const router = useRouter();
 
@@ -26,6 +28,7 @@ const password = ref('');
 const isPwd = ref(true);
 
 const loading = ref(false);
+const coords = ref();
 
 //function
 function submitHandler() {
@@ -85,12 +88,16 @@ function submitHandler() {
               photoURL: downloadURL,
             });
 
+            coords.value = await getLocation();
+
             //create user on firestore
             await setDoc(doc(db, 'users', res.user.uid), {
               uid: res.user.uid,
               displayName: displayName,
               email: email.value,
               photoURL: downloadURL,
+              location:coords.value,
+              online:true,
             });
 
             //create empty user chats on firestore
