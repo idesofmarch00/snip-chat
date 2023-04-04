@@ -79,9 +79,9 @@ onMounted(async () => {
   });
 
   // Create a default Marker and add it to the map.
-  const myMarker = new mapboxgl.Marker()
-    .setLngLat([defaultCoords.value.lng, defaultCoords.value.lat])
-    .addTo(mapStore.map);
+  // const myMarker = new mapboxgl.Marker()
+  //   .setLngLat([defaultCoords.value.lng, defaultCoords.value.lat])
+  //   .addTo(mapStore.map);
 
   // Add zoom and rotation controls to the map.
   mapStore.map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
@@ -108,7 +108,7 @@ onMounted(async () => {
     'bottom-right'
   );
 
-  mapStore.usersMarkers = userStore.allUsers;
+  mapStore.setUsersMarkers(userStore.allUsers);
   mapStore.usersMarkers.forEach((marker: any) => {
     const el = document.createElement('div');
     el.className = 'marker ';

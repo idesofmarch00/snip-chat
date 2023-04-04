@@ -33,7 +33,7 @@ const today = new Date();
 
 <template>
   <q-page class="items-center justify-evenly">
-    <div v-if="userStore.userChats" class="my-2 flex flex-col items-center space-y-3">
+    <div v-if="userStore.userChats.length>0" class="my-2 flex flex-col items-center space-y-3">
       <q-item
         :to="'chat/' + chat[0]"
         clickable
@@ -59,5 +59,7 @@ const today = new Date();
         <q-item-section side> 3 min ago </q-item-section>
       </q-item>
     </div>
+    <div v-else class="flex flex-col space-y-4 items-center justify-center my-10 font-bold"><p class="text-lg">You have no recent chats.</p>
+    <p>Add a friend to start chatting.</p></div>
   </q-page>
 </template>
