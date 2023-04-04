@@ -7,8 +7,15 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
-import { doc, onSnapshot ,collection, getDocs} from 'firebase/firestore';
-
+import {
+  collection,
+  getDocs,
+  setDoc,
+  doc,
+  updateDoc,
+  serverTimestamp,
+  getDoc,
+} from 'firebase/firestore';
 import { db } from '../boot/firebase';
 
 //store,actions
@@ -29,17 +36,19 @@ const defaultCoords = ref({
 const coords = ref<any>();
 const markers = ref<any>();
 
-async function fetchAllUsers() {
+const allUsersArray: Array<any> = [];
 
-const querySnapshot = await getDocs(collection(db, 'users'));
-querySnapshot.forEach((doc) => {
-  // doc.data() is never undefined for query doc snapshots
-  userStore.setAllUsers(doc.data());
-});
+async function fetchAllUsers() {
+  const querySnapshot = await getDocs(collection(db, 'users'));
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    allUsersArray.push(doc.data());
+    userStore.setAllUsers(allUsersArray);
+  });
 }
 
 onMounted(async () => {
- await fetchAllUsers();
+  await fetchAllUsers();
 
   mapboxgl.accessToken =
     'pk.eyJ1IjoidXNhaWYxMzExIiwiYSI6ImNsZDdoc3J6NDBlenkzcXBiOTEzZml1cDcifQ.vj73_blmjljI0sUEHAwOcw';
@@ -98,85 +107,107 @@ onMounted(async () => {
     }),
     'bottom-right'
   );
-  // mapStore.filterMarkers = evData;
-  mapStore.filterMarkers.forEach((marker: any, index: any) => {
+
+  mapStore.usersMarkers = userStore.allUsers;
+  mapStore.usersMarkers.forEach((marker: any) => {
     const el = document.createElement('div');
-    el.className = `marker marker-${index}`;
-    el.style.backgroundImage = `url('src/assets/${marker.type}.png')`;
+    el.className = 'marker ';
+    el.style.backgroundImage = `${marker.photoURL}`;
     el.style.width = '20px';
     el.style.height = '27px';
     const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`<div class=''>
           <div>
             <div class='m-2 font-normal'><span class='font-bold'>Name</span>
-
-              ${marker?.name}
-              <br>
+              ${marker?.displayName}
             </div>
-            <div class='m-2 font-normal'><span class='font-bold'>Address:  </span>
-              ${marker?.address}
-              <br>
+            </br>
+            <a onclick='alert("friend add click!"); class='m-2 font-bold underline'>
+              Add as friend
+            </a>
             </div>
-            <div class='m-2 font-normal'><span class='font-bold'>Company:  </span>
-
-                 ${marker?.type}
-              <br>
-            </div>
-            <div href='https://www.google.com/maps/dir/?api=1&destination=238%20Bedford%20Ave%2C%20Brooklyn%2C%20NY%2C%2011249%2C%20United%20States' class='m-2 link text-blue-500'>Get Direction<br></div>
-            </div>
-          </div>
-        </div>`);
+          </div>`);
 
     markers.value = new mapboxgl.Marker(el)
-      .setLngLat([Number(marker?.longitude), Number(marker?.lattitude)])
+      .setLngLat([Number(marker?.location.lng), Number(marker?.location.lat)])
       .setPopup(popup)
-      .addTo(mapStore.map!);
-    console.log(markers.value);
+      .addTo(mapStore.map);
   });
 });
 
-watch(
-  () => mapStore.filterMarkers,
-  () => {
-    console.log(mapStore.filterMarkers);
+// watch(
+//   () => mapStore.filterMarkers,
+//   () => {
+//     console.log(mapStore.filterMarkers);
 
-    Object.keys(markers.value).forEach(function (marker: any) {
-      console.log(marker.value);
-      marker.value.remove();
-    });
+//     Object.keys(markers.value).forEach(function (marker: any) {
+//       console.log(marker.value);
+//       marker.value.remove();
+//     });
 
-    mapStore.filterMarkers.forEach((marker: any, index: any) => {
-      const el = document.createElement('div');
-      el.className = `marker marker-${index}`;
-      el.style.backgroundImage = `url('src/assets/${marker.type}.png')`;
-      el.style.width = '20px';
-      el.style.height = '27px';
-      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`<div class=''>
-          <div>
-            <div class='m-2 font-normal'><span class='font-bold'>Name</span>
+//     mapStore.filterMarkers.forEach((marker: any, index: any) => {
+//       const el = document.createElement('div');
+//       el.className = `marker marker-${index}`;
+//       el.style.backgroundImage = `url('src/assets/${marker.type}.png')`;
+//       el.style.width = '20px';
+//       el.style.height = '27px';
+//     const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`<div class=''>
+//           <div>
+//             <div class='m-2 font-normal'><span class='font-bold'>Name</span>
+//               ${marker?.displayName}
+//             </div>
+//             </div>
+//           </div>`);
+//       new mapboxgl.Marker(el)
+//         .setLngLat([Number(marker?.lng), Number(marker?.lat)])
+//         .setPopup(popup)
+//         .addTo(mapStore.map!);
+//     });
+//   }
+// );
 
-              ${marker?.name}
-              <br>
-            </div>
-            <div class='m-2 font-normal'><span class='font-bold'>Address:  </span>
-              ${marker?.address}
-              <br>
-            </div>
-            <div class='m-2 font-normal'><span class='font-bold'>Company:  </span>
+// const handleSelect = async (e) => {
+//   console.log('friend is',e)
+//   //check whether the group(chats in firestore) exists, if not create
+//   const combinedId =
+//     userStore.user.uid > friend.value.uid
+//       ? userStore.user.uid + friend.value.uid
+//       : friend.value.uid + userStore.user.uid;
+//   try {
+//     const res = await getDoc(doc(db, 'chats', combinedId));
 
-                 ${marker?.type}
-              <br>
-            </div>
-            <div href='https://www.google.com/maps/dir/?api=1&destination=238%20Bedford%20Ave%2C%20Brooklyn%2C%20NY%2C%2011249%2C%20United%20States' class='m-2 link text-blue-500'>Get Direction<br></div>
-            </div>
-          </div>
-        </div>`);
-      new mapboxgl.Marker(el)
-        .setLngLat([Number(marker?.longitude), Number(marker?.lattitude)])
-        .setPopup(popup)
-        .addTo(mapStore.map!);
-    });
-  }
-);
+//     if (!res.exists()) {
+//       //create a chat in chats collection
+//       await setDoc(doc(db, 'chats', combinedId), { messages: [] });
+//       //create friend chats
+//       await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+//         [combinedId + '.friendInfo']: {
+//           uid: friend.value.uid,
+//           displayName: friend.value.displayName,
+//           photoURL: friend.value.photoURL,
+//           online:true,
+//         },
+//         [combinedId + '.date']: serverTimestamp(),
+//       });
+//       await updateDoc(doc(db, 'userChats', friend.value.uid), {
+//         [combinedId + '.friendInfo']: {
+//           uid: userStore.user.uid,
+//           displayName: userStore.user.displayName,
+//           photoURL: userStore.user.photoURL,
+//           online:true,
+//         },
+//         [combinedId + '.date']: serverTimestamp(),
+//       });
+
+//       $toast('Friend added successfully', 'success', 'top');
+//     }
+//     else{
+//       alert('User is already a friend.')
+//     }
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
+
 </script>
 
 <template>

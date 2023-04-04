@@ -5,7 +5,7 @@ export const useUserStore = defineStore('userStore', () => {
   const showLocationPopup = ref<boolean>(false);
 
   const user = ref<any>(null);
-  const allUsers = ref<any>(null);
+  const allUsers = ref([]);
   const userClaim = ref<any>();
   const userIdToken = ref<any>();
   const userChats = ref();

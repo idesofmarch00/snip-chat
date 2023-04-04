@@ -6,21 +6,18 @@ export const useMapStore = defineStore('mapStore', () => {
   const map = ref<any>();
   const maploader = ref<boolean>(true);
   const formattedAddress = ref<string>('');
-  const filterMarkers = ref<any[]>([]);
+  const usersMarkers = ref<any[]>([]);
 
   //actions
   const toggleMaploader = (map: boolean) => {
     maploader.value = map;
   };
-  const setFormattedAddress = (address: string) =>
-    (formattedAddress.value = address);
 
   return {
     map,
     maploader,
     formattedAddress,
-    filterMarkers,
+    usersMarkers,
     toggleMaploader,
-    setFormattedAddress,
   };
 });
