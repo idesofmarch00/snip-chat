@@ -112,25 +112,49 @@ onMounted(async () => {
   mapStore.usersMarkers.forEach((marker: any) => {
     const el = document.createElement('div');
     el.className = 'marker ';
-    el.style.backgroundImage = `${marker.photoURL}`;
-    el.style.width = '20px';
-    el.style.height = '27px';
-    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`<div class=''>
-          <div>
-            <div class='m-2 font-normal'><span class='font-bold'>Name</span>
-              ${marker?.displayName}
-            </div>
-            </br>
-            <a onclick='alert("friend add click!"); class='m-2 font-bold underline'>
-              Add as friend
+    el.style.backgroundImage = 'url(https://picsum.photos/70/70)';
+    el.style.objectFit = 'contain';
+    el.style.width = '60px';
+    el.style.height = '60px';
+    const popup = new mapboxgl.Popup({ offset: 25 })
+      .setHTML(` <div class="btn-slot text-zinc-600 max w-40">
+    <div class="w-full flex items-center justify-between">
+      <p class="font-bold w-8/12 truncate">
+        ${marker.displayName}
+      </p>
+    </div>
+    <div class="text-[0.65rem] font-medium">
+      <p class="m-0 leading-3">User is ....</p>
+      <p class="m-0 leading-3">User is .........</p>
+    </div>
+    <div class="w-full mt-3 flex items-center justify-between">
+      <div class="flex items-center gap-x-4">
+      </div>
+
+      <button onClick='doIt(this.id)' class="text-blue-500 font-bold text-xs" id=${marker.uid}>
+       Start Chat
+      </button>
+
+      <button  class="text-blue-500 font-bold text-xs">
+        <a href="https://www.google.com/maps/dir/?api=1&dir_action=navigate&travelmode=driving&destination=${defaultCoords.value?.lat},${defaultCoords.value?.lng}&origin=${marker?.location?.lat},${marker?.location?.lng}" target="
+          _blank">
+            Navigate
             </a>
-            </div>
-          </div>`);
+      </button>
+    </div>
+  </div>
+`);
 
     markers.value = new mapboxgl.Marker(el)
       .setLngLat([Number(marker?.location.lng), Number(marker?.location.lat)])
       .setPopup(popup)
       .addTo(mapStore.map);
+
+  //     function reply_click(clicked_id)
+  // {
+  //     alert(clicked_id);
+  // }
+
   });
 });
 
@@ -208,6 +232,7 @@ onMounted(async () => {
 //   }
 // };
 
+
 </script>
 
 <template>
@@ -221,8 +246,11 @@ onMounted(async () => {
   bottom: 0;
   width: 100%;
 }
-.marker.marker-1 {
-  background-image: url('../../assets/fb.png');
-  background-size: cover;
+.marker {
+  display: block;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
 }
 </style>

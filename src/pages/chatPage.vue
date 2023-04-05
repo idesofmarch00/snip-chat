@@ -6,7 +6,9 @@
           <router-link to="/dashboard" class="absolute left-6"
             ><q-icon name="arrow_back" round class=""
           /></router-link>
-          <span class="text-xl">{{}}Chat</span>
+          <span class="text-xl">{{
+            userStore.currentChatFriend[1].friendInfo.displayName
+          }}</span>
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -20,9 +22,17 @@
       <q-page>
         <div class="px-4 column col justify-end">
           <q-chat-message label="Sunday, 19th" />
-          <div v-for="(message, key) in userStore.currentChat" :key="key" class="mb-4">
+          <div
+            v-for="(message, key) in userStore.currentChat"
+            :key="key"
+            class="mb-4"
+          >
             <q-chat-message
-              :name="message.senderId == userStore.user.uid ? 'Me' : 'You'"
+              :name="
+                message.senderId == userStore.user.uid
+                  ? 'Me'
+                  : userStore.currentChatFriend[1].friendInfo.displayName
+              "
               :sent="message.senderId == userStore.user.uid ? true : false"
               :bg-color="
                 message.senderId == userStore.user.uid
@@ -32,16 +42,25 @@
               :avatar="
                 message.senderId == userStore.user.uid
                   ? userStore.user.photoURL
-                  : ''
+                  : userStore.currentChatFriend[1].friendInfo.photoURL
               "
-              ><span v-if="message.text">{{ message.text }}</span
-              ><img v-if="message.img" :src="message.img" />
+            >
+              <div class="flex flex-col space-y-2">
+                <span>{{ message.text }}</span>
+                <img :src="message.img" />
+              </div>
             </q-chat-message>
-            <span v-if="message.date" class="text-gray-800 font-bold text-[0.5rem]" :class="`${message.senderId == userStore.user.uid ? 'absolute right-[3.8rem]' : 'absolute left-[3.8rem]'}`">{{
-              message.date.seconds
-            }} min ago</span>
+            <span
+              v-if="message.date"
+              class="text-gray-800 font-bold text-[0.5rem]"
+              :class="`${
+                message.senderId == userStore.user.uid
+                  ? 'absolute right-[3.8rem]'
+                  : 'absolute left-[3.8rem]'
+              }`"
+              >{{new Date(message.date.seconds).toUTCString() }} min ago</span
+            >
           </div>
-          
         </div>
         <!-- place QPageScroller at end of page -->
         <q-page-scroller
@@ -78,6 +97,15 @@
                 ref="clickimage"
                 hidden
               />
+              <input
+                @change="uploadFile"
+                name="upload"
+                type="file"
+                placeholder="upload"
+                class="text-base"
+                ref="uploadFileRef"
+                hidden
+              />
               <template v-slot:after>
                 <q-btn
                   @click="clickImage"
@@ -87,7 +115,15 @@
                   color="white"
                   icon="photo_camera"
                 />
-                <q-btn round dense flat color="white" icon="attach_file" />
+                <q-btn
+                  round
+                  dense
+                  flat
+                  color="white"
+                  icon="attach_file"
+                  @click.prevent="getFile"
+                />
+
                 <q-btn
                   round
                   dense
@@ -110,36 +146,92 @@
     transition-show="scale"
     transition-hide="scale"
   >
-    <q-card class="pt-2 text-white" style="width: 200px">
+    <q-card class="pt-2 text-white relative" style="width: 200px">
       <div
         class="w-full flex flex-col space-y-1 items-center justify-center"
         @submit.prevent=""
       >
         <div class="h-40 w-40 bg-slate-200 rounded-lg relative">
           <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
-          <button
-            v-if="imageSrc"
-            @click="
-              () => {
-                file = null;
-                imageSrc = '';
-              }
-            "
-            class="absolute w-5 h-5 -top-2 -right-2 bg-gray-600 text-white text-md border rounded-full container-center justify-center"
-          >
-            <span class="">x</span>
-          </button>
           <img
             v-show="imageSrc"
             :src="imageSrc"
-            alt="totalizer"
+            alt="alt"
             class="rounded-lg h-full w-full"
           />
         </div>
       </div>
 
-      <q-card-actions align="center" class="bg-white text-teal mb-2 p-0">
-        <q-btn flat label="Save" v-close-popup />
+      <q-card-actions
+        class="flex space-x-6 items-center justify-center bg-white mb-2 p-0"
+      >
+        <q-btn
+          flat
+          label="Cancel"
+          @click="
+            () => {
+              file = null;
+              imageSrc = '';
+              imagePreviewModal = false;
+            }
+          "
+          class="text-red"
+        />
+        <q-btn
+          flat
+          label="Send"
+          @click.prevent="
+            () => {
+              handleSend();
+              imagePreviewModal = false;
+            }
+          "
+          class="text-green"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog
+    v-model="filePreviewModal"
+    persistent
+    transition-show="scale"
+    transition-hide="scale"
+  >
+    <q-card class="pt-2 text-white relative" style="width: 200px">
+      <div
+        class="w-full flex flex-col space-y-1 items-center justify-center text-black"
+      >
+          <q-icon name="task" size="lg"/>
+          <p class="font-lg">{{ docx.name }}</p>
+      </div>
+
+      <q-card-actions
+        class="flex space-x-6 items-center justify-center bg-white mb-2 p-0"
+      >
+        <q-btn
+          flat
+          label="Cancel"
+          @click="
+            () => {
+              docx = null;
+              fileSrc = '';
+              filePreviewModal = false;
+            }
+          "
+          class="text-red"
+        />
+        <q-btn
+          flat
+          label="Send"
+          @click.prevent="
+            () => {
+              handleSend();
+              filePreviewModal = false;
+            }
+          "
+          class="text-green"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -195,6 +287,7 @@ function clickImage(e: Event) {
 const createImage = async (e: any) => {
   loading.value = true;
   file.value = e.target.files[0];
+  console.log(file.value);
   if (file.value) {
     imageSrc.value = URL.createObjectURL(e.target.files[0]);
     loading.value = false;
@@ -204,11 +297,67 @@ const createImage = async (e: any) => {
   }
 };
 
+//uplaod doc
+const fileSrc = ref<any>('');
+const uploadFileRef = ref<HTMLDivElement | null>();
+const docx = ref<any>();
+const filePreviewModal = ref<boolean>(false);
+
+function getFile(e: Event) {
+  if (e.target) {
+    uploadFileRef.value?.click();
+  }
+}
+
+const uploadFile = async (e: any) => {
+  docx.value = e.target.files[0];
+
+  if (docx.value) {
+    filePreviewModal.value = true;
+    fileSrc.value = URL.createObjectURL(e.target.files[0]);
+  } else {
+    fileSrc.value = '';
+  }
+};
+
 const chatId: any = route.params.combinedUserId;
 const friendId: any = chatId.replace(userStore.user.uid, '');
 //send msg
 const handleSend = async () => {
-  if (file.value) {
+  if (file.value && !newMessage.value) {
+    const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
+
+    const uploadTask = uploadBytesResumable(storageRef, file.value);
+
+    uploadTask.on(
+      (error) => {
+        //TODO:Handle Error
+      },
+      () => {
+        const docRef = doc(db, 'chats', chatId as string);
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          await updateDoc(docRef, {
+            messages: arrayUnion({
+              id: uuid(),
+              text: newMessage.value,
+              senderId: userStore.user.uid,
+              date: Timestamp.now(),
+              img: downloadURL,
+            }),
+          });
+        });
+      }
+    );
+  } else if (!file.value && newMessage.value) {
+    await updateDoc(doc(db, 'chats', chatId as string), {
+      messages: arrayUnion({
+        id: uuid(),
+        text: newMessage.value,
+        senderId: userStore.user.uid,
+        date: Timestamp.now(),
+      }),
+    });
+  } else if (file.value && newMessage.value) {
     const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
 
     const uploadTask = uploadBytesResumable(storageRef, file.value);
@@ -233,14 +382,7 @@ const handleSend = async () => {
       }
     );
   } else {
-    await updateDoc(doc(db, 'chats', chatId as string), {
-      messages: arrayUnion({
-        id: uuid(),
-        text: newMessage.value,
-        senderId: userStore.user.uid,
-        date: Timestamp.now(),
-      }),
-    });
+    return;
   }
 
   await updateDoc(doc(db, 'userChats', userStore.user.uid), {
@@ -258,7 +400,7 @@ const handleSend = async () => {
   });
 
   newMessage.value = '';
-  imageSrc.value = '';
+  file.value = '';
 };
 
 function scrollToBottom() {

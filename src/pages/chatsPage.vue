@@ -29,13 +29,18 @@ onMounted(async () => {
 });
 
 const today = new Date();
+
+function saveFriend(friend:any){
+  router.replace('/chat/'+friend[0]);
+  userStore.setCurrentChatFriend(friend)
+}
 </script>
 
 <template>
   <q-page class="items-center justify-evenly">
     <div v-if="userStore.userChats" class="my-2 flex flex-col items-center space-y-3">
       <q-item
-        :to="'chat/' + chat[0]"
+        @click.prevent='saveFriend(chat)'
         clickable
         v-ripple
         v-for="chat in Object.entries(userStore.userChats)"

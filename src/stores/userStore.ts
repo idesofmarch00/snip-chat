@@ -10,6 +10,7 @@ export const useUserStore = defineStore('userStore', () => {
   const userIdToken = ref<any>();
   const userChats = ref();
   const currentChat = ref();
+  const currentChatFriend = ref();
 
   function setUser(firebaseUser: any) {
     user.value = firebaseUser;
@@ -35,6 +36,10 @@ export const useUserStore = defineStore('userStore', () => {
     currentChat.value=messages;
   }
 
+  function setCurrentChatFriend(friend:any){
+    currentChatFriend.value=friend;
+  }
+
   return {
     user,
     userClaim,
@@ -49,5 +54,7 @@ export const useUserStore = defineStore('userStore', () => {
     allUsers,
     setCurrentChat,
 currentChat,
+setCurrentChatFriend,
+currentChatFriend,
   };
 });
