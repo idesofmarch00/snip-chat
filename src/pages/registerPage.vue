@@ -89,7 +89,8 @@ function submitHandler() {
 
             coords.value = await getLocation();
 
-            //create user on firestore
+         try {
+             //create user on firestore
             await setDoc(doc(db, 'users', res.user.uid), {
               uid: res.user.uid,
               displayName: displayName,
@@ -102,6 +103,10 @@ function submitHandler() {
             //create empty user chats on firestore
             await setDoc(doc(db, 'userChats', res.user.uid), {});
             router.replace('/');
+         } catch (e) {
+          throw new Error("error creating suer on firestore",{cause:e});
+          
+         }
           });
         }
       );

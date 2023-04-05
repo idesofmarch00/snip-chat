@@ -67,9 +67,10 @@ function saveFriend(friend: any) {
           <q-item-label class="text-black">{{
             chat[1]?.friendInfo.displayName
           }}</q-item-label>
-          <q-item-label caption>{{ chat[1]?.lastMessage?.text }}</q-item-label>
+          <q-item-label caption v-if="chat[1]?.lastMessage?.text">{{ chat[1]?.lastMessage?.text }}</q-item-label>
+          <img :src="chat[1]?.lastMessage?.img" v-if="chat[1]?.lastMessage?.img" class="h-4 w-4"/>
         </q-item-section>
-        <q-item-section side>{{ timeago.format(chat[1]?.date.toDate().toISOString())}}</q-item-section>
+        <q-item-section side>{{ timeago.format(chat[1]?.date?.toDate().toISOString())}}</q-item-section>
       </q-item>
     </div>
     <div
