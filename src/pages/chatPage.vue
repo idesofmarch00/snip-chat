@@ -23,11 +23,12 @@
         <div class="px-4 column col justify-end">
           <q-chat-message label="Sunday, 19th" />
           <div
-            v-for="(message, key) in userStore.currentChat"
+            v-for="(message, key) in currentChat"
             :key="key"
             class="mb-4"
           >
             <q-chat-message
+            ref="chatMessageeRef"
               :name="
                 message.senderId == userStore.user.uid
                   ? 'Me'
@@ -58,8 +59,9 @@
                   ? 'absolute right-[3.8rem]'
                   : 'absolute left-[3.8rem]'
               }`"
-              >{{new Date(message.date.seconds).toUTCString() }} min ago</span
+              >{{timeago.format(new Date(message.date).toUTCString()) }}</span
             >
+           
           </div>
         </div>
         <!-- place QPageScroller at end of page -->
@@ -239,7 +241,7 @@
 
 <script setup lang="ts">
 //dependencies
-import { ref, onMounted } from 'vue';
+import { ref, onMounted,watch } from 'vue';
 import { useRoute } from 'vue-router';
 //imports
 import { db, storage } from '../boot/firebase';
@@ -261,12 +263,22 @@ import {
   serverTimestamp,
   getDoc,
 } from 'firebase/firestore';
+import * as timeago from 'timeago.js';
 
 import { useUserStore } from 'src/stores/userStore';
-const userStore = useUserStore();
+import { storeToRefs } from 'pinia'
 
+const userStore = useUserStore();
+const { currentChat } = storeToRefs(userStore)
+ 
 //lifecycle hooks
 const route = useRoute();
+
+const chatMessageRef = ref();
+
+watch(currentChat,()=>{
+  chatMessageRef.value?.scrollIntoView({ behavior: 'smooth' })
+})
 
 //refs states
 const newMessage = ref('');
