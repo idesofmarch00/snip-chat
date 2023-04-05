@@ -17,18 +17,16 @@ const isPhotoTaken = ref(false);
 const camera = ref();
 const canvas = ref();
 const downloadPhoto = ref();
+const constraints = ref();
 
 function createCameraElement() {
-  const constraints = {
+   constraints.value = {
     audio: false,
-    video: {
-      width: { min: 1024, ideal: 1280, max: 1920 },
-      height: { min: 576, ideal: 720, max: 1080 },
-    },
+    video: true,
   };
 
   navigator.mediaDevices
-    .getUserMedia(constraints)
+    .getUserMedia(constraints.value)
     .then((stream) => {
       camera.value.srcObject = stream;
     })
@@ -54,7 +52,7 @@ function takePhoto() {
   const context = canvas.value.getContext('2d');
   const photoFromVideo = camera.value;
 
-  context.drawImage(photoFromVideo, 0, 0, 450, 337);
+  context.drawImage(photoFromVideo, 0, 0, 1920, 1080, 0, 0, 1920, 1080);
 
   stopCameraStream();
 }
@@ -109,4 +107,9 @@ onBeforeUnmount(() => {
   </q-page>
 </template>
 
-<style scoped></style>
+<style scoped>
+.camera-video{
+  height:max-content;
+  width:max-content;
+}
+</style>

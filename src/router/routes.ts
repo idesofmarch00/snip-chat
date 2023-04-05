@@ -26,6 +26,12 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
+    name: 'Capture',
+    path: '/capture',
+    component: () => import('src/pages/captureImage.vue'),
+  },
+
+  {
     name: 'Dashboard',
     path: '/dashboard',
     component: () => import('layouts/MainLayout.vue'),

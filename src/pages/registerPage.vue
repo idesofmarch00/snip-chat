@@ -1,6 +1,6 @@
 <script setup lang="ts">
 //dependencies
-import { ref } from 'vue';
+import { ref,onBeforeMount } from 'vue';
 import { useRouter } from 'vue-router';
 
 //imports firebase
@@ -137,6 +137,12 @@ const createImage = async (e: any) => {
     imageSrc.value = '';
   }
 };
+
+onBeforeMount(() => {
+  if (localStorage.getItem('user')==='true'){
+    router.replace('/dashboard')
+  }
+});
 </script>
 
 <template>

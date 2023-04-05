@@ -4,7 +4,7 @@
       <q-toolbar class="bg-gray-800 p-2">
         <!-- <q-btn dense flat round icon="menu" /> -->
         <q-avatar @click="toggleLeftDrawer">
-          <img :src="userStore.user.photoURL" />
+          <img :src="userStore?.user?.photoURL" />
         </q-avatar>
         <q-toolbar-title class="mt-1 ml-12"> {{ route.name }} </q-toolbar-title>
 
@@ -118,7 +118,7 @@
           >
             <q-route-tab name="Chats" icon="question_answer" to="/dashboard" />
             <q-separator vertical inset class="bg-yellow-2" />
-            <q-route-tab name="Camera" icon="camera" to="/camera" />
+            <q-route-tab name="Camera" icon="camera" to="/capture" />
             <q-separator vertical inset class="bg-yellow-2" />
             <q-route-tab name="Map" icon="public" to="/map" />
           </q-tabs>
@@ -190,7 +190,7 @@
           >
             <q-item-section class="w-1/2">
               <q-avatar>
-                <img :src="friend.photoURL" />
+                <img :src="friend?.photoURL" />
               </q-avatar>
             </q-item-section>
 
@@ -258,7 +258,9 @@ function toggleLeftDrawer() {
 function logOut() {
   link.value = 'logout';
   signOut(auth);
+  localStorage.setItem('user',false.toString());
   router.replace('/login');
+  
 }
 
 watch(route, (updatedRoute) => {
@@ -315,9 +317,9 @@ const handleSelect = async () => {
       });
       await updateDoc(doc(db, 'userChats', friend.value.uid), {
         [combinedId + '.friendInfo']: {
-          uid: userStore.user.uid,
-          displayName: userStore.user.displayName,
-          photoURL: userStore.user.photoURL,
+          uid: userStore?.user?.uid,
+          displayName: userStore?.user?.displayName,
+          photoURL: userStore?.user?.photoURL,
           online:true,
         },
         [combinedId + '.date']: serverTimestamp(),
@@ -333,17 +335,6 @@ const handleSelect = async () => {
     console.log(err);
   }
 };
-
-onMounted(() => {
-  console.log(
-    'uid:',
-    userStore.user.uid,
-    'displayName:',
-    userStore.user.displayName,
-    'photoURL:',
-    userStore.user.photoURL
-  );
-});
 </script>
 
 <style scoped lang="sass">

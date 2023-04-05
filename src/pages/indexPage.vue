@@ -9,9 +9,11 @@ import { useUserStore } from '../stores/userStore';
 //imports
 
 const userStore = useUserStore();
+const userFromLocalStorage = localStorage.getItem('user')
 
 onMounted(()=>{
-  if (userStore.user) {
+  console.log(userFromLocalStorage)
+  if (userStore.user || userFromLocalStorage==='true') {
     router.push('/dashboard');
   } else {
     router.push('/login');

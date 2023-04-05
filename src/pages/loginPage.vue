@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref,onBeforeMount } from 'vue';
 import { useRouter } from 'vue-router';
 
 //imports firebase
@@ -31,6 +31,7 @@ function simulateProgress() {
     try {
       await signInWithEmailAndPassword(auth, email.value, password.value);
       loading.value = false;
+      localStorage.setItem('user', true.toString());
       router.replace('/dashboard');
     } catch (err) {
       $toast('Error Login', 'error', 'top');
@@ -38,6 +39,12 @@ function simulateProgress() {
     }
   }, 2000);
 }
+
+onBeforeMount(() => {
+  if (localStorage.getItem('user')==='true'){
+    router.replace('/dashboard')
+  }
+});
 </script>
 
 <template>

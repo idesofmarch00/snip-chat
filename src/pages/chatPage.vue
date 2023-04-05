@@ -334,7 +334,6 @@ const chatId: any = route.params.combinedUserId;
 const friendId: any = chatId.replace(userStore.user.uid, '');
 //send msg
 const handleSend = async () => {
-  debugger;
   if (file.value && !newMessage.value && !docx.value) {
     const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
 

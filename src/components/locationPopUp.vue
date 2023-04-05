@@ -51,6 +51,7 @@ const logout = () => {
 
 function signOutUser() {
   signOut(auth);
+  localStorage.setItem('user', false.toString());
   router.replace('/login');
 }
 </script>
