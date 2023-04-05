@@ -19,16 +19,12 @@
 
     <!-- <div class="bg-red-50 max-h-[calc(100vh-20rem)] mt-12"></div> -->
     <q-page-container class="bg-red-50">
-      <q-page>
+      <q-page ref="pageChat">
         <div class="px-4 column col justify-end">
           <q-chat-message label="Sunday, 19th" />
-          <div
-            v-for="(message, key) in currentChat"
-            :key="key"
-            class="mb-4"
-          >
+          <div v-for="(message, key) in currentChat" :key="key" class="mb-4">
             <q-chat-message
-            ref="chatMessageeRef"
+              ref="chatMessageeRef"
               :name="
                 message.senderId == userStore.user.uid
                   ? 'Me'
@@ -59,13 +55,13 @@
                   ? 'absolute right-[3.8rem]'
                   : 'absolute left-[3.8rem]'
               }`"
-              >{{timeago.format(new Date(message.date).toUTCString()) }}</span
+              >{{ timeago.format(message.date.toDate().toISOString()) }}</span
             >
-           
           </div>
         </div>
         <!-- place QPageScroller at end of page -->
         <q-page-scroller
+          ref="scroller"
           reverse
           position="top"
           :scroll-offset="2000"
@@ -82,7 +78,6 @@
           <q-form @submit="handleSend" class="full-width">
             <q-input
               v-model="newMessage"
-              @blur="scrollToBottom"
               bg-color="white"
               outlined
               rounded
@@ -204,8 +199,8 @@
       <div
         class="w-full flex flex-col space-y-1 items-center justify-center text-black"
       >
-          <q-icon name="task" size="lg"/>
-          <p class="font-lg">{{ docx.name }}</p>
+        <q-icon name="task" size="lg" />
+        <p class="font-lg">{{ docx.name }}</p>
       </div>
 
       <q-card-actions
@@ -241,7 +236,7 @@
 
 <script setup lang="ts">
 //dependencies
-import { ref, onMounted,watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 //imports
 import { db, storage } from '../boot/firebase';
@@ -266,19 +261,20 @@ import {
 import * as timeago from 'timeago.js';
 
 import { useUserStore } from 'src/stores/userStore';
-import { storeToRefs } from 'pinia'
+import { storeToRefs } from 'pinia';
 
 const userStore = useUserStore();
-const { currentChat } = storeToRefs(userStore)
- 
+const { currentChat } = storeToRefs(userStore);
+
 //lifecycle hooks
 const route = useRoute();
 
 const chatMessageRef = ref();
+const pageChat = ref();
 
-watch(currentChat,()=>{
-  chatMessageRef.value?.scrollIntoView({ behavior: 'smooth' })
-})
+watch(currentChat, () => {
+  // scrollToBottom()
+});
 
 //refs states
 const newMessage = ref('');
@@ -415,14 +411,11 @@ const handleSend = async () => {
   file.value = '';
 };
 
-function scrollToBottom() {
-  console.log('blur scroll');
-}
-
 onMounted(() => {
   const msg = onSnapshot(doc(db, 'chats', chatId), (doc) => {
     userStore.setCurrentChat(doc.data()?.messages);
   });
+
 });
 </script>
 
