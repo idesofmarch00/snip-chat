@@ -13,8 +13,22 @@
       </q-toolbar>
     </q-header>
 
-    <q-banner :class="`${userStore?.currentChatFriend[1]?.friendInfo?.online?'bg-green-4 text-white font-bold text-lg':'bg-red-4 text-white'}`" class="text-center sticky top-10 z-10">
-      user is {{ `${userStore?.currentChatFriend[1]?.friendInfo?.online?'online':'offline'}` }}.
+    <q-banner
+      :class="`${
+        userStore?.currentChatFriend[1]?.friendInfo?.online
+          ? 'bg-green-4 text-white font-bold text-lg'
+          : 'bg-red-4 text-white'
+      }`"
+      class="text-center sticky top-10 z-10"
+    >
+      user is
+      {{
+        `${
+          userStore?.currentChatFriend[1]?.friendInfo?.online
+            ? 'online'
+            : 'offline'
+        }`
+      }}.
     </q-banner>
 
     <!-- <div class="bg-red-50 max-h-[calc(100vh-20rem)] mt-12"></div> -->
@@ -343,45 +357,46 @@ const handleSend = async () => {
       (error) => {
         //TODO:Handle Error
       },
-      async() => {
+      async () => {
         const docRef = doc(db, 'chats', chatId as string);
-        await getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          await updateDoc(docRef, {
-            messages: arrayUnion({
-              id: uuid(),
-              text: newMessage.value,
-              senderId: userStore.user.uid,
-              date: Timestamp.now(),
-              img: downloadURL,
-              file: '',
-            }),
-          });
+        await getDownloadURL(uploadTask.snapshot.ref).then(
+          async (downloadURL) => {
+            await updateDoc(docRef, {
+              messages: arrayUnion({
+                id: uuid(),
+                text: newMessage.value,
+                senderId: userStore.user.uid,
+                date: Timestamp.now(),
+                img: downloadURL,
+                file: '',
+              }),
+            });
 
-          await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-            [chatId + '.lastMessage']: {
-              text: newMessage.value,
-              img: downloadURL,
-              file: '',
-            },
-            [chatId + '.date']: serverTimestamp(),
-          });
+            await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+              [chatId + '.lastMessage']: {
+                text: newMessage.value,
+                img: downloadURL,
+                file: '',
+              },
+              [chatId + '.date']: serverTimestamp(),
+            });
 
-          await updateDoc(doc(db, 'userChats', friendId), {
-            [chatId + '.lastMessage']: {
-              text: newMessage.value,
-              img: downloadURL,
-              file: '',
-            },
-            [chatId + '.date']: serverTimestamp(),
-          });
-        });
+            await updateDoc(doc(db, 'userChats', friendId), {
+              [chatId + '.lastMessage']: {
+                text: newMessage.value,
+                img: downloadURL,
+                file: '',
+              },
+              [chatId + '.date']: serverTimestamp(),
+            });
+          }
+        );
         docx.value = null;
         newMessage.value = '';
         file.value = null;
       }
     );
   } else if (!file.value && newMessage.value && !docx.value) {
-
     await updateDoc(doc(db, 'chats', chatId as string), {
       messages: arrayUnion({
         id: uuid(),
@@ -391,6 +406,24 @@ const handleSend = async () => {
         img: '',
         file: '',
       }),
+    });
+
+    await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+      [chatId + '.lastMessage']: {
+        text: newMessage.value,
+        img: '',
+        file: '',
+      },
+      [chatId + '.date']: serverTimestamp(),
+    });
+
+    await updateDoc(doc(db, 'userChats', friendId), {
+      [chatId + '.lastMessage']: {
+        text: newMessage.value,
+        img: '',
+        file: '',
+      },
+      [chatId + '.date']: serverTimestamp(),
     });
     docx.value = null;
     newMessage.value = '';
@@ -404,38 +437,40 @@ const handleSend = async () => {
       (error) => {
         //TODO:Handle Error
       },
-      async() => {
+      async () => {
         const docRef = doc(db, 'chats', chatId as string);
-        await getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          await updateDoc(docRef, {
-            messages: arrayUnion({
-              id: uuid(),
-              text: newMessage.value,
-              senderId: userStore.user.uid,
-              date: Timestamp.now(),
-              img: downloadURL,
-              file: '',
-            }),
-          });
+        await getDownloadURL(uploadTask.snapshot.ref).then(
+          async (downloadURL) => {
+            await updateDoc(docRef, {
+              messages: arrayUnion({
+                id: uuid(),
+                text: newMessage.value,
+                senderId: userStore.user.uid,
+                date: Timestamp.now(),
+                img: downloadURL,
+                file: '',
+              }),
+            });
 
-          await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-            [chatId + '.lastMessage']: {
-              text: newMessage.value,
-              img: downloadURL,
-              file: '',
-            },
-            [chatId + '.date']: serverTimestamp(),
-          });
+            await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+              [chatId + '.lastMessage']: {
+                text: newMessage.value,
+                img: downloadURL,
+                file: '',
+              },
+              [chatId + '.date']: serverTimestamp(),
+            });
 
-          await updateDoc(doc(db, 'userChats', friendId), {
-            [chatId + '.lastMessage']: {
-              text: newMessage.value,
-              img: downloadURL,
-              file: '',
-            },
-            [chatId + '.date']: serverTimestamp(),
-          });
-        });
+            await updateDoc(doc(db, 'userChats', friendId), {
+              [chatId + '.lastMessage']: {
+                text: newMessage.value,
+                img: downloadURL,
+                file: '',
+              },
+              [chatId + '.date']: serverTimestamp(),
+            });
+          }
+        );
         docx.value = null;
         newMessage.value = '';
         file.value = null;
@@ -450,38 +485,40 @@ const handleSend = async () => {
       (error) => {
         //TODO:Handle Error
       },
-      async() => {
+      async () => {
         const docRef = doc(db, 'chats', chatId as string);
-        await getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          await updateDoc(docRef, {
-            messages: arrayUnion({
-              id: uuid(),
-              text: newMessage.value,
-              senderId: userStore.user.uid,
-              date: Timestamp.now(),
-              img: downloadURL,
-              file: '',
-            }),
-          });
+        await getDownloadURL(uploadTask.snapshot.ref).then(
+          async (downloadURL) => {
+            await updateDoc(docRef, {
+              messages: arrayUnion({
+                id: uuid(),
+                text: newMessage.value,
+                senderId: userStore.user.uid,
+                date: Timestamp.now(),
+                img: downloadURL,
+                file: '',
+              }),
+            });
 
-          await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-            [chatId + '.lastMessage']: {
-              text: newMessage.value,
-              img: downloadURL,
-              file: '',
-            },
-            [chatId + '.date']: serverTimestamp(),
-          });
+            await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+              [chatId + '.lastMessage']: {
+                text: newMessage.value,
+                img: downloadURL,
+                file: '',
+              },
+              [chatId + '.date']: serverTimestamp(),
+            });
 
-          await updateDoc(doc(db, 'userChats', friendId), {
-            [chatId + '.lastMessage']: {
-              text: newMessage.value,
-              img: downloadURL,
-              file: '',
-            },
-            [chatId + '.date']: serverTimestamp(),
-          });
-        });
+            await updateDoc(doc(db, 'userChats', friendId), {
+              [chatId + '.lastMessage']: {
+                text: newMessage.value,
+                img: downloadURL,
+                file: '',
+              },
+              [chatId + '.date']: serverTimestamp(),
+            });
+          }
+        );
         docx.value = null;
         newMessage.value = '';
         file.value = null;

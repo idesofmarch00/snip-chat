@@ -118,7 +118,7 @@
           >
             <q-route-tab name="Chats" icon="question_answer" to="/dashboard" />
             <q-separator vertical inset class="bg-yellow-2" />
-            <q-route-tab name="Camera" icon="camera" to="/capture" />
+            <q-route-tab name="Capture" icon="camera" to="/capture" />
             <q-separator vertical inset class="bg-yellow-2" />
             <q-route-tab name="Map" icon="public" to="/map" />
           </q-tabs>
@@ -264,7 +264,7 @@ function logOut() {
 }
 
 watch(route, (updatedRoute) => {
-  if (updatedRoute.name in ['Chats', 'Map', 'Camera']) {
+  if (updatedRoute.name in ['Chats', 'Map', 'Capture']) {
     tab.value = updatedRoute.name;
   } else {
     tab.value = updatedRoute.name;

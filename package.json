@@ -23,6 +23,7 @@
     "timeago.js": "^4.0.2",
     "uuid": "^9.0.0",
     "vue": "^3.0.0",
+    "vue-camera-lib": "^1.0.4",
     "vue-media-recorder": "^0.1.25",
     "vue-router": "^4.0.0",
     "vue-toast-notification": "^3.1.1"
