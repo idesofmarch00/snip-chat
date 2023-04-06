@@ -49,8 +49,8 @@ function saveFriend(friend: any) {
 function Sort() {
   sortedChats.value = Object.entries(allChats)?.sort(
     (a: any, b: any) =>
-      new Date(b[1].date.toDate().toISOString()).getTime() -
-      new Date(a[1].date.toDate().toISOString()).getTime()
+      new Date(b[1]?.date?.toDate().toISOString()).getTime() -
+      new Date(a[1]?.date?.toDate().toISOString()).getTime()
   );
 }
 </script>
@@ -81,11 +81,11 @@ function Sort() {
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <q-item-label class="text-black">{{
+          <q-item-label class="text-black text-lg">{{
             chat[1]?.friendInfo.displayName
           }}</q-item-label>
 
-          <div class="flex space-x-2 items-end">
+          <div class="flex space-x-2 items-end mt-1">
             <img
               :src="chat[1]?.lastMessage?.img"
               v-if="chat[1]?.lastMessage?.img"

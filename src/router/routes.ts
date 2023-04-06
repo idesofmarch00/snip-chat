@@ -32,6 +32,18 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
+    name: 'Camera',
+    path: '/camera',
+    component: () => import('src/pages/cameraPage.vue'),
+  },
+
+  {
+    name: 'Preview',
+    path: '/preview',
+    component: () => import('src/pages/imagePreview.vue'),
+  },
+
+  {
     name: 'Dashboard',
     path: '/dashboard',
     component: () => import('layouts/MainLayout.vue'),
@@ -48,11 +60,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/mapPage.vue'),
       },
 
-      {
-        name: 'Camera',
-        path: '/camera',
-        component: () => import('src/pages/cameraPage.vue'),
-      },
       {
         name: 'Profile',
         path: '/profile',

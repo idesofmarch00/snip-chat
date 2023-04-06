@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useChatStore } from '../stores/chatStore';
+import { useRouter } from 'vue-router';
 
 // import Camera from 'simple-vue-camera';
 
 const chatStore = useChatStore();
+const router = useRouter();
 
 const pic = ref();
 
@@ -20,9 +22,12 @@ const downloadPhoto = ref();
 const constraints = ref();
 
 function createCameraElement() {
-   constraints.value = {
+  constraints.value = {
     audio: false,
-    video: true,
+    video: {
+        "width": 640,
+        "height": 480
+    },
   };
 
   navigator.mediaDevices
@@ -49,11 +54,10 @@ function stopCameraStream() {
 function takePhoto() {
   isPhotoTaken.value = !isPhotoTaken.value;
 
-  const context = canvas.value.getContext('2d');
+  const context = canvas.value.getContext('2d').drawImage(0, 0, 160, 120);
   const photoFromVideo = camera.value;
-
-  context.drawImage(photoFromVideo, 0, 0, 1920, 1080, 0, 0, 1920, 1080);
-
+  console.log("1",photoFromVideo,"2",context)
+  router.replace('/preview');
   stopCameraStream();
 }
 
@@ -75,23 +79,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <q-page
-    class="row items-center justify-evenly relative h-[calc(100vh-8rem)] bg-blue-50"
-  >
+  <div class="row items-center justify-evenly h-[calc(100vh)] bg-black">
     <div class="">
-      <video
-        class="camera-video"
-        ref="camera"
-        autoplay
-        playsinline
-      ></video>
-      <canvas
-        v-show="isPhotoTaken"
-        ref="canvas"
-      ></canvas>
+      <video class="camera-video" ref="camera" autoplay playsinline></video>
+      <canvas v-show="isPhotoTaken" ref="canvas" width="160" height="120"></canvas>
     </div>
 
-    <q-btn icon="camera" round @click="takePhoto" />
+    <q-btn icon="camera" round @click="takePhoto" class="text-white text-lg" />
 
     <button v-if="isPhotoTaken">
       <a
@@ -104,12 +98,12 @@ onBeforeUnmount(() => {
         <q-btn icon="download" round />
       </a>
     </button>
-  </q-page>
+  </div>
 </template>
 
 <style scoped>
-.camera-video{
-  height:max-content;
-  width:max-content;
+.camera-video {
+  height: 100%;
+  width: 100%;
 }
 </style>
