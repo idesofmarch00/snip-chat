@@ -114,18 +114,19 @@ onMounted(async () => {
     el.className = 'marker ';
     el.style.backgroundImage = `url('${marker.photoURL}.png')`;
     el.style.objectFit = 'contain';
-    el.style.width = '40px';
-    el.style.height = '40px';
+    el.style.width = '80px';
+    el.style.height = '80px';
+    el.style.borderRadius = "40px";
     const popup = new mapboxgl.Popup({ offset: 25 })
-      .setHTML(` <div class="btn-slot text-zinc-600 max w-40">
+      .setHTML(` <div class="btn-slot text-zinc-600 max w-40 flex flex-col space-y-2">
     <div class="w-full flex items-center justify-between">
-      <p class="font-bold w-8/12 truncate">
+      <p class="font-bold text-lg w-8/12 truncate">
         ${marker.displayName}
       </p>
     </div>
-    <div class="text-[0.65rem] font-medium">
-      <p class="m-0 leading-3">User is ....</p>
-      <p class="m-0 leading-3">User is .........</p>
+    <div class="text-[0.65rem] font-medium flex flex-col space-y-1">
+      <p class="m-0 leading-3">${marker.email}</p>
+      <p class="m-0 leading-3">Online : <span class="text-green font-bold">${marker.online}</span></p>
     </div>
     <div class="w-full mt-3 flex items-center justify-between">
       <div class="flex items-center gap-x-4">
