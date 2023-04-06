@@ -44,6 +44,12 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
+    name: 'NewSnap',
+    path: '/newSnap',
+    component: () => import('src/pages/newSnap.vue'),
+  },
+
+  {
     name: 'Dashboard',
     path: '/dashboard',
     component: () => import('layouts/MainLayout.vue'),
