@@ -121,7 +121,6 @@ function Sort() {
 
 let selectedArray:any = []
 function addToSend(friend:any){
-  console.log(friend);
   if (selectedArray.includes(friend[0])){
 selectedArray.splice(selectedArray.indexOf(friend[0]),1)
   }
@@ -138,7 +137,7 @@ function sendNewSnap(){
     const uploadTask = uploadBytesResumable(storageRef, chatStore.currentCamPicURL);
 
     uploadTask.on(
-      (error) => {
+      (error:any) => {
         //TODO:Handle Error
       },
       async () => {

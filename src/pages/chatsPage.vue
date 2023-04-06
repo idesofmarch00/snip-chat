@@ -7,6 +7,8 @@ import {
   query,
   getDocs,
   orderBy,
+  updateDoc,
+serverTimestamp,
 } from 'firebase/firestore';
 import { db, getCurrentUser } from '../boot/firebase';
 import { useUserStore } from '../stores/userStore';
@@ -44,9 +46,27 @@ onMounted(async () => {
 const loading = ref<boolean>(false);
 const today = new Date();
 
-function saveFriend(friend: any) {
-  router.replace('/chat/' + friend[0]);
-  userStore.setCurrentChatFriend(friend);
+async function saveFriend(friend: any) {
+  if (friend[1]?.lastMessage?.snap) {
+    router.replace('/newSnap');
+    await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+              [friend[0] + '.lastMessage']: {
+                msg:'You viewed a snap'
+              },
+              [friend[0] + '.date']: serverTimestamp(),
+            });
+
+            await updateDoc(doc(db, 'userChats', friend[0].replace(userStore.user.uid, '')), {
+              [friend[0] + '.lastMessage']: {
+                msg:'You viewed a snap'
+              },
+              [friend[0] + '.date']: serverTimestamp(),
+            });
+    userStore.setCurrentChatFriend(friend);
+  } else {
+    router.replace('/chat/' + friend[0]);
+    userStore.setCurrentChatFriend(friend);
+  }
 }
 
 function Sort() {
@@ -89,7 +109,10 @@ function Sort() {
             chat[1]?.friendInfo.displayName
           }}</q-item-label>
 
-          <div class="flex space-x-2 items-end mt-1">
+          <div
+            class="flex space-x-2 items-end mt-1"
+            v-if="!chat[1]?.lastMessage.snap && !chat[1]?.lastMessage.msg"
+          >
             <img
               :src="chat[1]?.lastMessage?.img"
               v-if="chat[1]?.lastMessage?.img"
@@ -99,10 +122,21 @@ function Sort() {
               chat[1]?.lastMessage?.text
             }}</q-item-label>
           </div>
+          <div v-if="chat[1]?.lastMessage?.snap" class="text-xs text-gray-600 mt-1">
+            {{ timeago.format(chat[1]?.date?.toDate().toISOString()) }}
+          </div>
+          <div v-if="chat[1]?.lastMessage?.msg" class="py-[0.15rem] px-1 border border-gray-400 rounded-lg h-5 w-24 bg-slate-50 text-[0.6rem] text-gray-700 mt-1">
+            {{ chat[1]?.lastMessage?.msg }}
+          </div>
         </q-item-section>
-        <q-item-section side>{{
+        <q-item-section side v-if="!chat[1]?.lastMessage?.snap && !chat[1]?.lastMessage.msg">{{
           timeago.format(chat[1]?.date?.toDate().toISOString())
         }}</q-item-section>
+        <q-item-section side v-if="chat[1]?.lastMessage?.snap"
+          ><img src="../assets/red.svg"
+        /></q-item-section>
+        <q-item-section side v-if="chat[1]?.lastMessage?.msg"
+          ><q-icon name='crop_square' size="xl" color="red"/></q-item-section>
       </q-item>
     </div>
     <div
@@ -112,6 +146,14 @@ function Sort() {
       <p class="text-lg">You have no recent chats.</p>
       <p>Add a friend to start chatting.</p>
     </div>
-    <q-spinner v-if="loading" color="green" size="3em" :thickness="2" class="left-[45%] top-[45%] absolute"/>
+    <q-spinner
+      v-if="loading"
+      color="green"
+      size="3em"
+      :thickness="2"
+      class="left-[45%] top-[45%] absolute"
+    />
   </q-page>
 </template>
+
+<style scoped></style>

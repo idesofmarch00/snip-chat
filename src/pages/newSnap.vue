@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useChatStore } from '../stores/chatStore';
+import { useUserStore } from 'src/stores/userStore';
 import { useRouter } from 'vue-router';
 
 import {
@@ -14,6 +15,7 @@ import { v4 as uuid } from 'uuid';
 // import Camera from 'simple-vue-camera';
 
 const chatStore = useChatStore();
+const userStore = useUserStore();
 const router = useRouter();
 
 const downloadRef = ref();
@@ -100,8 +102,8 @@ onMounted(()=>{
         class="absolute top-3 left-3 text-white text-md container-center justify-center"
       />
       <img
-        v-show="chatStore?.currentCamPicURL"
-        :src="chatStore?.currentCamPic"
+        v-show="userStore?.currentChatFriend[1]?.lastMessage?.snap"
+        :src="userStore?.currentChatFriend[1]?.lastMessage?.snap"
         alt="totalizer"
         class="rounded-lg h-full w-full"
       />
