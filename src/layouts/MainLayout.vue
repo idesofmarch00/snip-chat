@@ -118,7 +118,7 @@
           >
             <q-route-tab name="Chats" icon="question_answer" to="/dashboard" />
             <q-separator vertical inset class="bg-yellow-2" />
-            <q-route-tab name="Camera" icon="camera" to="/camera" />
+            <q-route-tab name="Capture" icon="camera" to="/capture" />
             <q-separator vertical inset class="bg-yellow-2" />
             <q-route-tab name="Map" icon="public" to="/map" />
           </q-tabs>
@@ -258,13 +258,12 @@ function toggleLeftDrawer() {
 function logOut() {
   link.value = 'logout';
   signOut(auth);
-  localStorage.setItem('user',false.toString());
+  localStorage.setItem('user', false.toString());
   router.replace('/login');
-
 }
 
 watch(route, (updatedRoute) => {
-  if (updatedRoute.name in ['Chats', 'Map', 'Camera']) {
+  if (updatedRoute.name in ['Chats', 'Map', 'Capture']) {
     tab.value = updatedRoute.name;
   } else {
     tab.value = updatedRoute.name;
@@ -311,7 +310,7 @@ const handleSelect = async () => {
           uid: friend.value.uid,
           displayName: friend.value.displayName,
           photoURL: friend.value.photoURL,
-          online:true,
+          online: true,
         },
         [combinedId + '.date']: serverTimestamp(),
       });
@@ -320,16 +319,15 @@ const handleSelect = async () => {
           uid: userStore?.user?.uid,
           displayName: userStore?.user?.displayName,
           photoURL: userStore?.user?.photoURL,
-          online:true,
+          online: true,
         },
         [combinedId + '.date']: serverTimestamp(),
       });
 
       $toast('Friend added successfully', 'success', 'top');
       addFriendModal.value = false;
-    }
-    else{
-      alert('User is already a friend.')
+    } else {
+      alert('User is already a friend.');
     }
   } catch (err) {
     console.log(err);
