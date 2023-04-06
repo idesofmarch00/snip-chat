@@ -112,13 +112,22 @@
     <q-footer reveal elevated class="bg-gray-800 p-2 text-white">
       <q-toolbar>
         <q-toolbar-title>
+          <input
+            @change="createImage"
+            type="file"
+            class="text-base"
+            accept="image/*"
+            capture="environment"
+            ref="clickimage"
+            hidden
+          />
           <q-tabs
             v-model="tab"
             class="bg-teal rounded-full text-yellow shadow-2"
           >
             <q-route-tab name="Chats" icon="question_answer" to="/dashboard" />
             <q-separator vertical inset class="bg-yellow-2" />
-            <q-route-tab name="Capture" icon="camera" to="/capture" />
+            <q-route-tab @click="clickImage" name="Capture" icon="camera" />
             <q-separator vertical inset class="bg-yellow-2" />
             <q-route-tab name="Map" icon="public" to="/map" />
           </q-tabs>
@@ -215,7 +224,7 @@
   </q-dialog>
 </template>
 
-<script setup lan="ts">
+<script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { ref, onMounted, watch } from 'vue';
 
@@ -236,9 +245,11 @@ import {
 
 //store
 import { useUserStore } from '../stores/userStore';
+import {useChatStore} from '../stores/chatStore';
 import { $toast } from 'src/utils/notification';
 
 const userStore = useUserStore();
+const chatStore = useChatStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -247,7 +258,7 @@ const leftDrawerOpen = ref(false);
 const addFriendModal = ref(false);
 const users = ref(true);
 const search = ref('');
-const tab = ref('');
+const tab = ref();
 
 const link = ref('');
 
@@ -263,7 +274,7 @@ function logOut() {
 }
 
 watch(route, (updatedRoute) => {
-  if (updatedRoute.name in ['Chats', 'Map', 'Capture']) {
+  if (updatedRoute?.name as any in ['Chats', 'Map', 'Capture']) {
     tab.value = updatedRoute.name;
   } else {
     tab.value = updatedRoute.name;
@@ -277,7 +288,30 @@ watch(search, (updatedSearch) => {
   handleSearch(updatedSearch);
 });
 
-async function handleSearch(search) {
+//img
+const imageSrc = ref<any>('');
+const clickimage = ref<HTMLDivElement | null>();
+const file = ref();
+
+function clickImage(e:any) {
+  if (e.target) {
+    clickimage.value?.click();
+  }
+}
+
+const createImage = async (e:any) => {
+  file.value = e.target.files[0];
+  if (file.value) {
+    imageSrc.value = URL.createObjectURL(e.target.files[0]);
+    chatStore.setCurrentCamPic(imageSrc.value);
+    chatStore.setCurrentCamPicURL(file.value);
+    router.replace('/preview')
+  } else {
+    imageSrc.value = '';
+  }
+};
+
+async function handleSearch(search:any) {
   const q = query(collection(db, 'users'), where('displayName', '==', search));
 
   try {

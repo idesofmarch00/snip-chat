@@ -23,6 +23,8 @@ const sortedChats = ref();
 const router = useRouter();
 
 onMounted(async () => {
+  loading.value = true;
+
   const user = await getCurrentUser();
   if (user) {
     try {
@@ -39,6 +41,7 @@ onMounted(async () => {
   }
 });
 
+const loading = ref<boolean>(false);
 const today = new Date();
 
 function saveFriend(friend: any) {
@@ -52,13 +55,14 @@ function Sort() {
       new Date(b[1]?.date?.toDate().toISOString()).getTime() -
       new Date(a[1]?.date?.toDate().toISOString()).getTime()
   );
+  loading.value = false;
 }
 </script>
 
 <template>
   <q-page class="items-center justify-evenly">
     <div
-      v-if="userStore.userChats"
+      v-if="userStore.userChats && !loading"
       class="my-2 flex flex-col items-center space-y-3"
     >
       <q-item
@@ -102,11 +106,12 @@ function Sort() {
       </q-item>
     </div>
     <div
-      v-else
+      v-if="!userStore.userChats && !loading"
       class="flex flex-col space-y-4 items-center justify-center my-10 font-bold"
     >
       <p class="text-lg">You have no recent chats.</p>
       <p>Add a friend to start chatting.</p>
     </div>
+    <q-spinner v-if="loading" color="green" size="3em" :thickness="2" class="left-[45%] top-[45%] absolute"/>
   </q-page>
 </template>
