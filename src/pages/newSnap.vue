@@ -99,7 +99,7 @@ onMounted(()=>{
         name="close"
         size="md"
         @click="goBack"
-        class="absolute top-3 left-3 text-white text-md container-center justify-center"
+        class="absolute top-3 left-3 text-gray-400 text-md container-center justify-center"
       />
       <img
         v-show="userStore?.currentChatFriend[1]?.lastMessage?.snap"
@@ -111,7 +111,7 @@ onMounted(()=>{
         name="download"
         @click="downloadImage"
         size="md"
-        class="absolute bottom-3 left-4 text-md bg-transparent container-center justify-center text-white"
+        class="absolute bottom-3 left-4 text-md bg-transparent container-center justify-center text-gray-400"
       />
       <svg class="">
         <circle ref="countdownCircle" r="19" cx="20" cy="20"></circle>

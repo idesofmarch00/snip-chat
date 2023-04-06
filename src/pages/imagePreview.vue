@@ -10,8 +10,8 @@ import {
   query,
   getDocs,
   orderBy,
-    updateDoc,
-serverTimestamp,
+  updateDoc,
+  serverTimestamp,
 } from 'firebase/firestore';
 import { db, getCurrentUser } from '../boot/firebase';
 import { useUserStore } from '../stores/userStore';
@@ -119,52 +119,56 @@ function Sort() {
   loading.value = false;
 }
 
-let selectedArray:any = []
-function addToSend(friend:any){
-  if (selectedArray.includes(friend[0])){
-selectedArray.splice(selectedArray.indexOf(friend[0]),1)
+let selectedArray: any = [];
+function addToSend(friend: any) {
+  if (selectedArray.includes(friend[0])) {
+    selectedArray.splice(selectedArray.indexOf(friend[0]), 1);
+  } else {
+    selectedArray.push(friend[0]);
   }
-  else{
-    selectedArray.push(friend[0])
-  }
-};
+}
 
-function sendNewSnap(){
-  try{
-    selectedArray.forEach((chatId:any)=>{
-    const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
+function sendNewSnap() {
+  try {
+    selectedArray.forEach((chatId: any) => {
+      const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
 
-    const uploadTask = uploadBytesResumable(storageRef, chatStore.currentCamPicURL);
+      const uploadTask = uploadBytesResumable(
+        storageRef,
+        chatStore.currentCamPicURL
+      );
 
-    uploadTask.on(
-      (error:any) => {
-        //TODO:Handle Error
-      },
-      async () => {
-        await getDownloadURL(uploadTask.snapshot.ref).then(
-          async (downloadURL) => {
+      uploadTask.on(
+        (error: any) => {
+          //TODO:Handle Error
+        },
+        async () => {
+          await getDownloadURL(uploadTask.snapshot.ref).then(
+            async (downloadURL) => {
+              await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+                [chatId + '.lastMessage']: {
+                  snap: downloadURL,
+                },
+                [chatId + '.date']: serverTimestamp(),
+              });
 
-            await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-              [chatId + '.lastMessage']: {
-                snap:downloadURL
-              },
-              [chatId + '.date']: serverTimestamp(),
-            });
-
-            await updateDoc(doc(db, 'userChats', chatId.replace(userStore.user.uid, '')), {
-              [chatId + '.lastMessage']: {
-                snap:downloadURL
-              },
-              [chatId + '.date']: serverTimestamp(),
-            });
-          }
-        );
-      }
-    );
-  });
-  router.replace('/dashboard')
-  }catch(err){
-    console.log('error sending snap')
+              await updateDoc(
+                doc(db, 'userChats', chatId.replace(userStore.user.uid, '')),
+                {
+                  [chatId + '.lastMessage']: {
+                    snap: downloadURL,
+                  },
+                  [chatId + '.date']: serverTimestamp(),
+                }
+              );
+            }
+          );
+        }
+      );
+    });
+    router.replace('/dashboard');
+  } catch (err) {
+    console.log('error sending snap');
   }
 }
 </script>
@@ -187,7 +191,7 @@ function sendNewSnap(){
         name="close"
         size="md"
         @click="goBack"
-        class="absolute top-3 left-3 text-white text-md container-center justify-center"
+        class="absolute top-3 left-3 text-gray-400 text-md container-center justify-center"
       />
       <img
         v-show="chatStore?.currentCamPicURL"
@@ -196,15 +200,16 @@ function sendNewSnap(){
         class="rounded-lg h-full w-full"
       />
       <q-btn
-        icon="arrow_forward"
+        label="Send"
         @click="sendSnap"
-        class="absolute w-10 h-10 bottom-3 right-3 shadow-md text-white text-md border rounded-full container-center justify-center bg-blue-600"
-      />
+        class="absolute bottom-3 right-3 shadow-md text-white text-md border container-center justify-center bg-blue-600"
+        ><q-icon name="send" color="white" class="ml-2" size="sm"
+      /></q-btn>
       <q-icon
         name="download"
         @click="downloadImage"
         size="md"
-        class="absolute bottom-3 left-4 text-md bg-transparent container-center justify-center text-white"
+        class="absolute bottom-3 left-4 text-md bg-transparent container-center justify-center text-gray-400"
       />
     </div>
   </form>
@@ -235,7 +240,7 @@ function sendNewSnap(){
           class="my-2 flex flex-col items-center space-y-3 w-11/12 overflow-auto"
         >
           <q-item
-          @click.prevent="addToSend(chat)"
+            @click.prevent="addToSend(chat)"
             clickable
             v-ripple
             v-for="chat in sortedChats"
@@ -269,7 +274,13 @@ function sendNewSnap(){
                 }}</q-item-label>
               </div>
             </q-item-section>
-            <q-item-section side ><q-btn round :color="`${selectedArray.includes(chat[0])?'blue':'white'}`" class="text-white border" icon="done"/></q-item-section>
+            <q-item-section side
+              ><q-btn
+                round
+                :color="`${selectedArray.includes(chat[0]) ? 'blue' : 'white'}`"
+                class="text-white border"
+                icon="done"
+            /></q-item-section>
           </q-item>
         </div>
         <div
@@ -288,7 +299,12 @@ function sendNewSnap(){
           class="left-[45%] top-[45%] absolute"
         />
       </div>
-      <q-btn label="Send New" class="absolute bottom-2 right-4 rounded-[1rem] bg-yellow font-bold text-sm text-black" @click.prevent="sendNewSnap"><q-icon name="send" class="ml-2" /></q-btn>
+      <q-btn
+        label="Send New"
+        class="absolute bottom-2 right-4 rounded-[1rem] bg-yellow font-bold text-sm text-black"
+        @click.prevent="sendNewSnap"
+        ><q-icon name="send" class="ml-2"
+      /></q-btn>
     </q-card>
   </q-dialog>
 </template>
