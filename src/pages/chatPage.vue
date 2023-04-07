@@ -13,7 +13,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-banner
+    <!-- <q-banner
       :class="`${
         userStore?.currentChatFriend[1]?.friendInfo?.online
           ? 'bg-green-4 text-white font-bold text-lg'
@@ -29,7 +29,7 @@
             : 'offline'
         }`
       }}.
-    </q-banner>
+    </q-banner> -->
 
     <!-- <div class="bg-red-50 max-h-[calc(100vh-20rem)] mt-12"></div> -->
     <q-page-container class="bg-red-50">

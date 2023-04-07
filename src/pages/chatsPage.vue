@@ -95,18 +95,18 @@ function Sort() {
       >
         <q-item-section side>
           <q-avatar rounded size="48px">
-            <img :src="chat[1]?.friendInfo.photoURL" />
-            <div
+            <img :src="chat[1]?.friendInfo?.photoURL" />
+            <!-- <div
               class="rounded-full h-3 w-3 absolute -top-1 -right-1 shadow border z-10"
               :class="`${
-                chat[1]?.friendInfo.online ? 'bg-green-600' : 'bg-red-600'
+                chat[1]?.friendInfo?.online ? 'bg-green-600' : 'bg-red-600'
               }`"
-            />
+            /> -->
           </q-avatar>
         </q-item-section>
         <q-item-section>
           <q-item-label class="text-black text-lg">{{
-            chat[1]?.friendInfo.displayName
+            chat[1]?.friendInfo?.displayName
           }}</q-item-label>
 
           <div

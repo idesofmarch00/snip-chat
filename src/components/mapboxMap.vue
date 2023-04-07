@@ -132,15 +132,17 @@ onMounted(async () => {
       <div class="flex items-center gap-x-4">
       </div>
 
-      <button  class="text-blue-500 font-bold text-xs">
-        <a href="https://www.google.com/maps/dir/?api=1&dir_action=navigate&travelmode=driving&destination=${defaultCoords.value?.lat},${defaultCoords.value?.lng}&origin=${marker?.location?.lat},${marker?.location?.lng}" target="
-          _blank">
-            Navigate
-            </a>
-      </button>
+     
     </div>
   </div>
 `);
+
+ // <button  class="text-blue-500 font-bold text-xs">
+      //   <a href="https://www.google.com/maps/dir/?api=1&dir_action=navigate&travelmode=driving&destination=${defaultCoords.value?.lat},${defaultCoords.value?.lng}&origin=${marker?.location?.lat},${marker?.location?.lng}" target="
+      //     _blank">
+      //       Navigate
+      //       </a>
+      // </button>
 
     markers.value = new mapboxgl.Marker(el)
       .setLngLat([Number(marker?.location.lng), Number(marker?.location.lat)])

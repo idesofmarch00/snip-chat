@@ -97,7 +97,7 @@ function submitHandler() {
               email: email.value,
               photoURL: downloadURL,
               location:coords.value,
-              online:true,
+              // online:true,
             });
 
             //create empty user chats on firestore

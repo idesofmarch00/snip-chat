@@ -280,8 +280,10 @@ async function logOut() {
 
 async function getOffline(){
         // const chatsRef = doc(db, 'chats', chatId as string);
+        const usersRef = doc(db, 'userChats', userStore.user.uid);
+
         const userChatsRef = doc(db, 'userChats', userStore.user.uid);
-        const friendChatsRef = doc(db, 'userChats', chatId.replace(userStore.user.uid, ''))
+        // const friendChatsRef = doc(db, 'userChats', chatId.replace(userStore.user.uid, ''))
               // await updateDoc(chatsRef, {
               //   messages: arrayUnion({
               //     id: uuid(),
@@ -295,26 +297,30 @@ async function getOffline(){
               //   }),
               // });
 
-               await updateDoc(userChatsRef, {
-                [chatId + '.lastMessage']: {
-                  msg: 'You viewed a snap',
-                  snap: '',
-                  snapMessage:'',
-                },
-                [chatId + '.date']: serverTimestamp(),
-              });
+              // await updateDoc(usersRef, {
+              //   online: false,
+              // });
 
-              await updateDoc(
-                friendChatsRef,
-                {
-                  [chatId + '.lastMessage']: {
-                    msg: 'Snap viewed',
-                    snap: '',
-                    snapMessage:''
-                  },
-                  [chatId + '.date']: serverTimestamp(),
-                }
-              );
+              //  await updateDoc(userChatsRef, {
+              //   [chatId + '.lastMessage']: {
+              //     msg: 'You viewed a snap',
+              //     snap: '',
+              //     snapMessage:'',
+              //   },
+              //   [chatId + '.date']: serverTimestamp(),
+              // });
+
+              // await updateDoc(
+              //   friendChatsRef,
+              //   {
+              //     [chatId + '.lastMessage']: {
+              //       msg: 'Snap viewed',
+              //       snap: '',
+              //       snapMessage:''
+              //     },
+              //     [chatId + '.date']: serverTimestamp(),
+              //   }
+              // );
 };
 
 watch(route, (updatedRoute) => {
@@ -388,7 +394,7 @@ const handleSelect = async () => {
           uid: friend.value.uid,
           displayName: friend.value.displayName,
           photoURL: friend.value.photoURL,
-          online: true,
+          // online: true,
         },
         [combinedId + '.date']: serverTimestamp(),
       });
@@ -397,7 +403,7 @@ const handleSelect = async () => {
           uid: userStore?.user?.uid,
           displayName: userStore?.user?.displayName,
           photoURL: userStore?.user?.photoURL,
-          online: '',
+          // online: '',
         },
         [combinedId + '.date']: serverTimestamp(),
       });
