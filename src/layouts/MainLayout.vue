@@ -241,12 +241,16 @@ import {
   updateDoc,
   serverTimestamp,
   getDoc,
+  arrayUnion,
+Timestamp,
 } from 'firebase/firestore';
+import { v4 as uuid } from 'uuid';
+import { $toast } from 'src/utils/notification';
+
 
 //store
 import { useUserStore } from '../stores/userStore';
 import {useChatStore} from '../stores/chatStore';
-import { $toast } from 'src/utils/notification';
 
 const userStore = useUserStore();
 const chatStore = useChatStore();
@@ -275,7 +279,42 @@ async function logOut() {
 }
 
 async function getOffline(){
-  return alert('offline')
+        // const chatsRef = doc(db, 'chats', chatId as string);
+        const userChatsRef = doc(db, 'userChats', userStore.user.uid);
+        const friendChatsRef = doc(db, 'userChats', chatId.replace(userStore.user.uid, ''))
+              // await updateDoc(chatsRef, {
+              //   messages: arrayUnion({
+              //     id: uuid(),
+              //     text: '',
+              //     senderId: '',
+              //     date: Timestamp.now(),
+              //     snap: '',
+              //     file: '',
+              //     img: '',
+              //     snapMessage: `You have viewed this snap`,
+              //   }),
+              // });
+
+               await updateDoc(userChatsRef, {
+                [chatId + '.lastMessage']: {
+                  msg: 'You viewed a snap',
+                  snap: '',
+                  snapMessage:'',
+                },
+                [chatId + '.date']: serverTimestamp(),
+              });
+
+              await updateDoc(
+                friendChatsRef,
+                {
+                  [chatId + '.lastMessage']: {
+                    msg: 'Snap viewed',
+                    snap: '',
+                    snapMessage:''
+                  },
+                  [chatId + '.date']: serverTimestamp(),
+                }
+              );
 };
 
 watch(route, (updatedRoute) => {

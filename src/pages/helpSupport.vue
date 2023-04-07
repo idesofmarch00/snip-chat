@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <div class="q-pa-md q-gutter-md">
-    <p>    Welcome to the support and help page for our Quasar-based Progressive Web
+    <!-- <p>    Welcome to the support and help page for our Quasar-based Progressive Web
     App (PWA) with chatting, media sharing, location sharing, login, and
     registration features. If you're having trouble using any of these features
     or experiencing technical difficulties, you've come to the right place.
@@ -30,7 +30,7 @@
     solutions, please contact our support team for further assistance. You can
     reach us through the contact information provided in the app or on our
     website. Thank you for choosing our PWA, and we hope you enjoy using it! -
-    by Sahil Ahmed</p>
+    by Sahil Ahmed</p> -->
       <q-list bordered>
         <q-item>
           <q-item-section>

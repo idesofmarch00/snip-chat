@@ -33,8 +33,8 @@
 
     <!-- <div class="bg-red-50 max-h-[calc(100vh-20rem)] mt-12"></div> -->
     <q-page-container class="bg-red-50">
-      <q-page ref="pageChat">
-        <div class="px-4 column col justify-end">
+      <q-page >
+        <div class="px-4 column col justify-end" ref="pageChat">
           <q-chat-message
             :label="date.formatDate(Date.now(), 'ddd , Do MMM')"
           />
@@ -114,13 +114,12 @@
         </div>
         <!-- place QPageScroller at end of page -->
         <q-page-scroller
-          ref="scroller"
           reverse
           position="top"
           :scroll-offset="2000"
           :offset="[0, 18]"
         >
-          <q-btn fab icon="keyboard_arrow_down" color="accent" />
+          <q-btn fab icon="keyboard_arrow_down" color="accent" ref="scroller" />
         </q-page-scroller>
       </q-page>
     </q-page-container>
@@ -309,6 +308,7 @@ import {
 } from 'firebase/firestore';
 import { date } from 'quasar';
 import * as timeago from 'timeago.js';
+import { scroll } from 'quasar';
 
 import { useRouter } from 'vue-router';
 
@@ -327,7 +327,8 @@ const { currentChat } = storeToRefs(userStore);
 const route = useRoute();
 
 const chatMessageRef = ref();
-const pageChat = ref();
+
+const { getScrollTarget } = scroll;
 
 watch(currentChat, () => {
   // scrollToBottom()
@@ -388,229 +389,250 @@ const chatId: any = route.params.combinedUserId;
 const friendId: any = chatId.replace(userStore.user.uid, '');
 //send msg
 const handleSend = async () => {
-  if (file.value && !newMessage.value && !docx.value) {
-    const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
+  try {
+    if (file.value && !newMessage.value && !docx.value) {
+      const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
 
-    const uploadTask = uploadBytesResumable(storageRef, file.value);
+      const uploadTask = uploadBytesResumable(storageRef, file.value);
 
-    uploadTask.on(
-      (error) => {
-        //TODO:Handle Error
-      },
-      async () => {
-        const docRef = doc(db, 'chats', chatId as string);
-        await getDownloadURL(uploadTask.snapshot.ref).then(
-          async (downloadURL) => {
-            await updateDoc(docRef, {
-              messages: arrayUnion({
-                id: uuid(),
-                text: newMessage.value,
-                senderId: userStore.user.uid,
-                date: Timestamp.now(),
-                img: downloadURL,
-                file: '',
-              }),
-            });
+      uploadTask.on(
+        (error) => {
+          //TODO:Handle Error
+        },
+        async () => {
+          const docRef = doc(db, 'chats', chatId as string);
+          await getDownloadURL(uploadTask.snapshot.ref).then(
+            async (downloadURL) => {
+              await updateDoc(docRef, {
+                messages: arrayUnion({
+                  id: uuid(),
+                  text: newMessage.value,
+                  senderId: userStore.user.uid,
+                  date: Timestamp.now(),
+                  img: downloadURL,
+                  file: '',
+                }),
+              });
 
-            await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-              [chatId + '.lastMessage']: {
-                text: newMessage.value,
-                img: downloadURL,
-                file: '',
-              },
-              [chatId + '.date']: serverTimestamp(),
-            });
+              await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+                [chatId + '.lastMessage']: {
+                  text: newMessage.value,
+                  img: downloadURL,
+                  file: '',
+                },
+                [chatId + '.date']: serverTimestamp(),
+              });
 
-            await updateDoc(doc(db, 'userChats', friendId), {
-              [chatId + '.lastMessage']: {
-                text: newMessage.value,
-                img: downloadURL,
-                file: '',
-              },
-              [chatId + '.date']: serverTimestamp(),
-            });
-          }
-        );
-        docx.value = null;
-        newMessage.value = '';
-        file.value = null;
-      }
-    );
-  } else if (!file.value && newMessage.value && !docx.value) {
-    await updateDoc(doc(db, 'chats', chatId as string), {
-      messages: arrayUnion({
-        id: uuid(),
-        text: newMessage.value,
-        senderId: userStore.user.uid,
-        date: Timestamp.now(),
-        img: '',
-        file: '',
-      }),
-    });
+              await updateDoc(doc(db, 'userChats', friendId), {
+                [chatId + '.lastMessage']: {
+                  text: newMessage.value,
+                  img: downloadURL,
+                  file: '',
+                },
+                [chatId + '.date']: serverTimestamp(),
+              });
+            }
+          );
+          docx.value = null;
+          newMessage.value = '';
+          file.value = null;
+        }
+      );
+    } else if (!file.value && newMessage.value && !docx.value) {
+      await updateDoc(doc(db, 'chats', chatId as string), {
+        messages: arrayUnion({
+          id: uuid(),
+          text: newMessage.value,
+          senderId: userStore.user.uid,
+          date: Timestamp.now(),
+          img: '',
+          file: '',
+        }),
+      });
 
-    await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-      [chatId + '.lastMessage']: {
-        text: newMessage.value,
-        img: '',
-        file: '',
-      },
-      [chatId + '.date']: serverTimestamp(),
-    });
+      await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+        [chatId + '.lastMessage']: {
+          text: newMessage.value,
+          img: '',
+          file: '',
+        },
+        [chatId + '.date']: serverTimestamp(),
+      });
 
-    await updateDoc(doc(db, 'userChats', friendId), {
-      [chatId + '.lastMessage']: {
-        text: newMessage.value,
-        img: '',
-        file: '',
-      },
-      [chatId + '.date']: serverTimestamp(),
-    });
-    docx.value = null;
-    newMessage.value = '';
-    file.value = null;
-  } else if (file.value && newMessage.value && !docx.value) {
-    const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
+      await updateDoc(doc(db, 'userChats', friendId), {
+        [chatId + '.lastMessage']: {
+          text: newMessage.value,
+          img: '',
+          file: '',
+        },
+        [chatId + '.date']: serverTimestamp(),
+      });
+      docx.value = null;
+      newMessage.value = '';
+      file.value = null;
+    } else if (file.value && newMessage.value && !docx.value) {
+      const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
 
-    const uploadTask = uploadBytesResumable(storageRef, file.value);
+      const uploadTask = uploadBytesResumable(storageRef, file.value);
 
-    uploadTask.on(
-      (error) => {
-        //TODO:Handle Error
-      },
-      async () => {
-        const docRef = doc(db, 'chats', chatId as string);
-        await getDownloadURL(uploadTask.snapshot.ref).then(
-          async (downloadURL) => {
-            await updateDoc(docRef, {
-              messages: arrayUnion({
-                id: uuid(),
-                text: newMessage.value,
-                senderId: userStore.user.uid,
-                date: Timestamp.now(),
-                img: downloadURL,
-                file: '',
-              }),
-            });
+      uploadTask.on(
+        (error) => {
+          //TODO:Handle Error
+        },
+        async () => {
+          const docRef = doc(db, 'chats', chatId as string);
+          await getDownloadURL(uploadTask.snapshot.ref).then(
+            async (downloadURL) => {
+              await updateDoc(docRef, {
+                messages: arrayUnion({
+                  id: uuid(),
+                  text: newMessage.value,
+                  senderId: userStore.user.uid,
+                  date: Timestamp.now(),
+                  img: downloadURL,
+                  file: '',
+                }),
+              });
 
-            await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-              [chatId + '.lastMessage']: {
-                text: newMessage.value,
-                img: downloadURL,
-                file: '',
-              },
-              [chatId + '.date']: serverTimestamp(),
-            });
+              await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+                [chatId + '.lastMessage']: {
+                  text: newMessage.value,
+                  img: downloadURL,
+                  file: '',
+                },
+                [chatId + '.date']: serverTimestamp(),
+              });
 
-            await updateDoc(doc(db, 'userChats', friendId), {
-              [chatId + '.lastMessage']: {
-                text: newMessage.value,
-                img: downloadURL,
-                file: '',
-              },
-              [chatId + '.date']: serverTimestamp(),
-            });
-          }
-        );
-        docx.value = null;
-        newMessage.value = '';
-        file.value = null;
-      }
-    );
-  } else if (file.value && newMessage.value && docx.value) {
-    const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
+              await updateDoc(doc(db, 'userChats', friendId), {
+                [chatId + '.lastMessage']: {
+                  text: newMessage.value,
+                  img: downloadURL,
+                  file: '',
+                },
+                [chatId + '.date']: serverTimestamp(),
+              });
+            }
+          );
+          docx.value = null;
+          newMessage.value = '';
+          file.value = null;
+        }
+      );
+    } else if (file.value && newMessage.value && docx.value) {
+      const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
 
-    const uploadTask = uploadBytesResumable(storageRef, file.value);
+      const uploadTask = uploadBytesResumable(storageRef, file.value);
 
-    uploadTask.on(
-      (error) => {
-        //TODO:Handle Error
-      },
-      async () => {
-        const docRef = doc(db, 'chats', chatId as string);
-        await getDownloadURL(uploadTask.snapshot.ref).then(
-          async (downloadURL) => {
-            await updateDoc(docRef, {
-              messages: arrayUnion({
-                id: uuid(),
-                text: newMessage.value,
-                senderId: userStore.user.uid,
-                date: Timestamp.now(),
-                img: downloadURL,
-                file: '',
-              }),
-            });
+      uploadTask.on(
+        (error) => {
+          //TODO:Handle Error
+        },
+        async () => {
+          const docRef = doc(db, 'chats', chatId as string);
+          await getDownloadURL(uploadTask.snapshot.ref).then(
+            async (downloadURL) => {
+              await updateDoc(docRef, {
+                messages: arrayUnion({
+                  id: uuid(),
+                  text: newMessage.value,
+                  senderId: userStore.user.uid,
+                  date: Timestamp.now(),
+                  img: downloadURL,
+                  file: '',
+                }),
+              });
 
-            await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-              [chatId + '.lastMessage']: {
-                text: newMessage.value,
-                img: downloadURL,
-                file: '',
-              },
-              [chatId + '.date']: serverTimestamp(),
-            });
+              await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+                [chatId + '.lastMessage']: {
+                  text: newMessage.value,
+                  img: downloadURL,
+                  file: '',
+                },
+                [chatId + '.date']: serverTimestamp(),
+              });
 
-            await updateDoc(doc(db, 'userChats', friendId), {
-              [chatId + '.lastMessage']: {
-                text: newMessage.value,
-                img: downloadURL,
-                file: '',
-              },
-              [chatId + '.date']: serverTimestamp(),
-            });
-          }
-        );
-        docx.value = null;
-        newMessage.value = '';
-        file.value = null;
-      }
-    );
+              await updateDoc(doc(db, 'userChats', friendId), {
+                [chatId + '.lastMessage']: {
+                  text: newMessage.value,
+                  img: downloadURL,
+                  file: '',
+                },
+                [chatId + '.date']: serverTimestamp(),
+              });
+            }
+          );
+          docx.value = null;
+          newMessage.value = '';
+          file.value = null;
+        }
+      );
 
-    const uploadTask2 = uploadBytesResumable(storageRef, docx.value);
+      const uploadTask2 = uploadBytesResumable(storageRef, docx.value);
 
-    uploadTask2.on(
-      (error) => {
-        //TODO:Handle Error
-      },
-      async () => {
-        const docRef = doc(db, 'chats', chatId as string);
-        await getDownloadURL(uploadTask.snapshot.ref).then(
-          async (docxDownloadURL: string) => {
-            await updateDoc(docRef, {
-              messages: arrayUnion({
-                id: uuid(),
-                text: newMessage.value,
-                senderId: userStore.user.uid,
-                date: Timestamp.now(),
-                img: '',
-                file: docxDownloadURL,
-              }),
-            });
-            await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-              [chatId + '.lastMessage']: {
-                text: newMessage.value,
-                img: '',
-                file: docxDownloadURL,
-              },
-              [chatId + '.date']: serverTimestamp(),
-            });
+      uploadTask2.on(
+        (error) => {
+          //TODO:Handle Error
+        },
+        async () => {
+          const docRef = doc(db, 'chats', chatId as string);
+          await getDownloadURL(uploadTask.snapshot.ref).then(
+            async (docxDownloadURL: string) => {
+              await updateDoc(docRef, {
+                messages: arrayUnion({
+                  id: uuid(),
+                  text: newMessage.value,
+                  senderId: userStore.user.uid,
+                  date: Timestamp.now(),
+                  img: '',
+                  file: docxDownloadURL,
+                }),
+              });
+              await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+                [chatId + '.lastMessage']: {
+                  text: newMessage.value,
+                  img: '',
+                  file: docxDownloadURL,
+                },
+                [chatId + '.date']: serverTimestamp(),
+              });
 
-            await updateDoc(doc(db, 'userChats', friendId), {
-              [chatId + '.lastMessage']: {
-                text: newMessage.value,
-                img: '',
-                file: docxDownloadURL,
-              },
-              [chatId + '.date']: serverTimestamp(),
-            });
-          }
-        );
-        docx.value = null;
-        newMessage.value = '';
-        file.value = null;
-      }
-    );
+              await updateDoc(doc(db, 'userChats', friendId), {
+                [chatId + '.lastMessage']: {
+                  text: newMessage.value,
+                  img: '',
+                  file: docxDownloadURL,
+                },
+                [chatId + '.date']: serverTimestamp(),
+              });
+            }
+          );
+          docx.value = null;
+          newMessage.value = '';
+          file.value = null;
+        }
+      );
+    }
+  } catch (err: any) {
+    const errString: string = err.toString();
+    if (errString.includes('No document to update')) {
+      alert('User has deleted his account');
+    }
   }
+
+  scrollToBottom();
 };
+
+const scroller = ref<HTMLDivElement | undefined | null>();
+const pageChat = ref();
+
+function scrollToBottom() {
+  // Get parent DomNode that handles page scrolling
+  // Usually this is element with classname ".layout-view" or "window"
+  // console.log(getScrollTarget(DomElement)) // returns a DOM Element (or window Object)
+	  		setTimeout(() => {
+		  		window.scrollTo(0, pageChat?.value?.scrollHeight)
+	  		}, 20);
+}
 
 async function goToSnap(msg: any) {
   if (msg.snapMessage || userStore.user.uid == msg.senderId) {

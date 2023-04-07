@@ -96,8 +96,9 @@ const toggleDeleteAccount = () => {
 
 const deleteAccount = async () => {
   await deleteDoc(doc(db, 'users', userStore.user.uid));
-
+  await deleteDoc(doc(db, 'userChats', userStore.user.uid));
   const user:any = auth.currentUser;
+
   deleteUser(user)
     .then(() => {
         router.replace('/login');

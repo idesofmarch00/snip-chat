@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <div class="q-pa-md q-gutter-md">
-      <p>
+      <!-- <p>
     Welcome to our real-time chatting progressive web app, built with the latest
     Quasar framework! Our app offers an unparalleled chatting experience with
     features that make communication easier and more engaging than ever before.
@@ -17,7 +17,7 @@
     experience possible, so we're always improving and updating our app to meet
     their needs. Thank you for choosing our real-time chatting progressive web
     app. We look forward to helping you stay connected with the people that
-    matter most. - by Sahil Ahmed </p>
+    matter most. - by Sahil Ahmed </p> -->
       <q-card>
         <q-card-section>
           <div class="text-h6">Our Company</div>
