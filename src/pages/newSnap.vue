@@ -34,6 +34,7 @@ const router = useRouter();
 
 const downloadRef = ref();
 async function goBack() {
+  router.replace('/dashboard');
   chatStore.setCurrentCamPic(null);
   chatStore.setCurrentCamPicURL(null);
   const chatId=userStore?.currentChatFriend[0]
@@ -76,9 +77,6 @@ async function goBack() {
   await updateDoc(docRef, {
     messages: arrayRemove(chatStore?.currentSnapToDelete),
   });
-
-
-  router.replace('/dashboard');
 }
 
 function downloadImage() {
@@ -112,7 +110,7 @@ function downloadImage() {
   downloadRef.value.click();
 }
 
-const countdown = ref();
+const countdown = ref(10);
 const interval = ref<any>();
 
 const countdownCircle = ref();
@@ -125,12 +123,12 @@ watch(countdown, (updatedCountdown) => {
     countdownCircle.value.style.stroke = 'red';
   } else if (updatedCountdown == 0) {
     clearInterval(interval.value);
-    router.replace('/dashboard');
+    countdownCircle.value.style.stroke = 'transparent';
+    goBack()
   }
 });
 
 onMounted(() => {
-  countdown.value = 10;
   interval.value = setInterval(function () {
     countdown.value = countdown.value - 1;
   }, 1000);

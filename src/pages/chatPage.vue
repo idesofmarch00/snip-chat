@@ -82,17 +82,21 @@
                     message.senderId == userStore.user.uid
                   "
                   ><q-icon name="crop_square" size="xl" color="red" />
-                  <span>{{message.snapMessage}}</span></q-chip
+                  <span>{{ message.snapMessage }}</span></q-chip
                 >
                 <q-chip
-
                   class="bg-transparent rounded-lg flex items-center space-x-4 w-full"
                   v-if="
                     message.snapMessage &&
                     message.senderId != userStore.user.uid
                   "
                   ><q-icon name="crop_square" size="xl" color="red" />
-                  <span>Snap viewed by {{userStore.currentChatFriend[1].friendInfo.displayName}}</span></q-chip
+                  <span
+                    >Snap viewed by
+                    {{
+                      userStore.currentChatFriend[1].friendInfo.displayName
+                    }}</span
+                  ></q-chip
                 >
               </div>
             </q-chat-message>
@@ -139,7 +143,6 @@
                 placeholder="upload"
                 class="text-base"
                 accept="image/*"
-                capture="environment"
                 ref="clickimage"
                 hidden
               />
@@ -610,7 +613,7 @@ const handleSend = async () => {
 };
 
 async function goToSnap(msg: any) {
-  if (msg.snapMessage || userStore.user.uid==msg.senderId) {
+  if (msg.snapMessage || userStore.user.uid == msg.senderId) {
     return;
   } else {
     chatStore?.setCurrentCamPicURL(msg.snap);

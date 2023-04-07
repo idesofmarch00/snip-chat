@@ -118,6 +118,7 @@
             class="text-base"
             accept="image/*"
             ref="clickimage"
+            capture="environment"
             hidden
           />
           <q-tabs
