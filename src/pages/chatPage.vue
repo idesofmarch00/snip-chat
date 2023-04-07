@@ -593,7 +593,7 @@ const handleSend = async () => {
 async function goToSnap(msg: any) {
   console.log(msg.id);
   chatStore?.setCurrentCamPicURL(msg.snap);
-  chatStore?.setCurrentSnapToDelete(msg.id);
+  chatStore?.setCurrentSnapToDelete(msg);
   router.replace('/newSnap');
 }
 

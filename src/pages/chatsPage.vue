@@ -13,7 +13,6 @@ import {
 import { db, getCurrentUser } from '../boot/firebase';
 import { useUserStore } from '../stores/userStore';
 import _ from 'lodash';
-import { date as qDate } from 'quasar';
 import { useRouter } from 'vue-router';
 
 import * as timeago from 'timeago.js';

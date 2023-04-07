@@ -9,6 +9,20 @@ import {
   ref as fireStorageRef,
   uploadBytesResumable,
 } from 'firebase/storage';
+import {
+  doc,
+  onSnapshot,
+  collection,
+  query,
+  getDocs,
+  orderBy,
+  updateDoc,
+  serverTimestamp,
+  arrayRemove,
+  arrayUnion,
+Timestamp,
+} from 'firebase/firestore';
+import { db, getCurrentUser } from '../boot/firebase';
 import { storage } from '../boot/firebase';
 import { v4 as uuid } from 'uuid';
 
@@ -19,14 +33,30 @@ const userStore = useUserStore();
 const router = useRouter();
 
 const downloadRef = ref();
-function goBack() {
+async function goBack() {
   chatStore.setCurrentCamPic(null);
   chatStore.setCurrentCamPicURL(null);
-  console.log(chatStore?.currentSnapToDelete);
-  // const docRef = doc(db, 'chats', chatId as string);
-  // await updateDoc(docRef, {
-  //   labels: arrayRemove({ id: chatStore?.currentSnapToDelete?.id }),
-  // });
+  const docRef = doc(db, 'chats', userStore?.currentChatFriend[0]);
+
+
+              await updateDoc(docRef, {
+                messages: arrayUnion({
+                  id: uuid(),
+                  text: '',
+                  senderId: userStore.user.uid,
+                  date: Timestamp.now(),
+                  snap: '',
+                  file: '',
+                  img: '',
+                  snapMessage: `You received a snap from ${userStore.user.displayName}`,
+                }),
+              });
+
+  await updateDoc(docRef, {
+    messages: arrayRemove(chatStore?.currentSnapToDelete),
+  });
+
+
   router.replace('/dashboard');
 }
 
