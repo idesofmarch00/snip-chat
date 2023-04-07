@@ -152,7 +152,7 @@ function sendNewSnap() {
                   snap: downloadURL,
                   file: '',
                   img: '',
-                  snapMessage: `You received a snap from ${userStore.user.displayName}`,
+                  snapMessage: '',
                 }),
               });
 
@@ -186,7 +186,7 @@ function sendNewSnap() {
                 doc(db, 'userChats', chatId.replace(userStore.user.uid, '')),
                 {
                   [chatId + '.lastMessage']: {
-                    msg: 'You viewed a snap',
+                    msg: 'You received a snap',
                     snap: downloadURL,
                     snapMessage:''
                   },

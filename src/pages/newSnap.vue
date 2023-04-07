@@ -36,21 +36,42 @@ const downloadRef = ref();
 async function goBack() {
   chatStore.setCurrentCamPic(null);
   chatStore.setCurrentCamPicURL(null);
-  const docRef = doc(db, 'chats', userStore?.currentChatFriend[0]);
-
+  const chatId=userStore?.currentChatFriend[0]
+  const docRef = doc(db, 'chats', chatId);
 
               await updateDoc(docRef, {
                 messages: arrayUnion({
                   id: uuid(),
                   text: '',
-                  senderId: userStore.user.uid,
+                  senderId: '',
                   date: Timestamp.now(),
                   snap: '',
                   file: '',
                   img: '',
-                  snapMessage: `You received a snap from ${userStore.user.displayName}`,
+                  snapMessage: `You have viewed this snap`,
                 }),
               });
+
+               await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+                [chatId + '.lastMessage']: {
+                  msg: 'You viewed a snap',
+                  snap: '',
+                  snapMessage:'',
+                },
+                [chatId + '.date']: serverTimestamp(),
+              });
+
+              await updateDoc(
+                doc(db, 'userChats', chatId.replace(userStore.user.uid, '')),
+                {
+                  [chatId + '.lastMessage']: {
+                    msg: 'Snap viewed',
+                    snap: '',
+                    snapMessage:''
+                  },
+                  [chatId + '.date']: serverTimestamp(),
+                }
+              );
 
   await updateDoc(docRef, {
     messages: arrayRemove(chatStore?.currentSnapToDelete),

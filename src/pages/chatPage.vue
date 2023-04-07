@@ -75,6 +75,25 @@
                   ><img src="../assets/red.svg" class="h-8 w-8" />
                   <span>You have received a new snap</span></q-chip
                 >
+                <q-chip
+                  class="bg-transparent rounded-lg flex items-center space-x-4 w-full"
+                  v-if="
+                    message.snapMessage &&
+                    message.senderId == userStore.user.uid
+                  "
+                  ><q-icon name="crop_square" size="xl" color="red" />
+                  <span>{{message.snapMessage}}</span></q-chip
+                >
+                <q-chip
+
+                  class="bg-transparent rounded-lg flex items-center space-x-4 w-full"
+                  v-if="
+                    message.snapMessage &&
+                    message.senderId != userStore.user.uid
+                  "
+                  ><q-icon name="crop_square" size="xl" color="red" />
+                  <span>Snap viewed by {{userStore.currentChatFriend[1].friendInfo.displayName}}</span></q-chip
+                >
               </div>
             </q-chat-message>
             <span
@@ -591,10 +610,13 @@ const handleSend = async () => {
 };
 
 async function goToSnap(msg: any) {
-  console.log(msg.id);
-  chatStore?.setCurrentCamPicURL(msg.snap);
-  chatStore?.setCurrentSnapToDelete(msg);
-  router.replace('/newSnap');
+  if (msg.snapMessage || userStore.user.uid==msg.senderId) {
+    return;
+  } else {
+    chatStore?.setCurrentCamPicURL(msg.snap);
+    chatStore?.setCurrentSnapToDelete(msg);
+    router.replace('/newSnap');
+  }
 }
 
 onMounted(() => {

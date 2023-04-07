@@ -145,10 +145,10 @@ function Sort() {
         <q-item-section side v-if="chat[1]?.lastMessage?.snapMessage"
           ><img src="../assets/red.svg"
         /></q-item-section>
-        <!-- <q-item-section side v-if="chat[1]?.lastMessage?.msg.includes('You received')"
+        <q-item-section side v-if="chat[1]?.lastMessage?.msg?.includes('viewed')"
           ><q-icon name="crop_square" size="xl" color="red"
-        /></q-item-section> -->
-        <q-item-section side v-if="chat[1]?.lastMessage?.msg"
+        /></q-item-section>
+        <q-item-section side v-if="!chat[1]?.lastMessage?.msg?.includes('viewed')"
           ><img src="../assets/red.svg"
         /></q-item-section>
       </q-item>
