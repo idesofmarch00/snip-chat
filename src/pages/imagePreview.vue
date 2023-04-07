@@ -1,24 +1,20 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted,watch } from 'vue';
 import { useChatStore } from '../stores/chatStore';
 import { useRouter } from 'vue-router';
 
 import {
   doc,
   onSnapshot,
-  collection,
-  query,
-  getDocs,
-  orderBy,
   updateDoc,
   serverTimestamp,
+  arrayUnion,
+  Timestamp,
 } from 'firebase/firestore';
 import { db, getCurrentUser } from '../boot/firebase';
 import { useUserStore } from '../stores/userStore';
 import _ from 'lodash';
-import { date as qDate } from 'quasar';
 
-import * as timeago from 'timeago.js';
 import {
   getDownloadURL,
   ref as fireStorageRef,
@@ -138,6 +134,8 @@ function sendNewSnap() {
         chatStore.currentCamPicURL
       );
 
+      const docRef = doc(db, 'chats', chatId as string);
+
       uploadTask.on(
         (error: any) => {
           //TODO:Handle Error
@@ -145,9 +143,41 @@ function sendNewSnap() {
         async () => {
           await getDownloadURL(uploadTask.snapshot.ref).then(
             async (downloadURL) => {
+              await updateDoc(docRef, {
+                messages: arrayUnion({
+                  id: uuid(),
+                  text: '',
+                  senderId: userStore.user.uid,
+                  date: Timestamp.now(),
+                  snap: downloadURL,
+                  file: '',
+                  img: '',
+                  snapMessage: `You received a snap from ${userStore.user.displayName}`,
+                }),
+              });
+
+              // await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+              //   [chatId + '.lastMessage']: {
+              //     snap: downloadURL,
+              //   },
+              //   [chatId + '.date']: serverTimestamp(),
+              // });
+
+              // await updateDoc(
+              //   doc(db, 'userChats', chatId.replace(userStore.user.uid, '')),
+              //   {
+              //     [chatId + '.lastMessage']: {
+              //       snap: downloadURL,
+              //     },
+              //     [chatId + '.date']: serverTimestamp(),
+              //   }
+              // );
+
               await updateDoc(doc(db, 'userChats', userStore.user.uid), {
                 [chatId + '.lastMessage']: {
+                  msg: 'You sent a snap',
                   snap: downloadURL,
+                  snapMessage:'',
                 },
                 [chatId + '.date']: serverTimestamp(),
               });
@@ -156,7 +186,9 @@ function sendNewSnap() {
                 doc(db, 'userChats', chatId.replace(userStore.user.uid, '')),
                 {
                   [chatId + '.lastMessage']: {
+                    msg: 'You viewed a snap',
                     snap: downloadURL,
+                    snapMessage:''
                   },
                   [chatId + '.date']: serverTimestamp(),
                 }
@@ -166,7 +198,9 @@ function sendNewSnap() {
         }
       );
     });
-    router.replace('/dashboard');
+    setTimeout(() => {
+      router.replace('/dashboard');
+    }, 1000);
   } catch (err) {
     console.log('error sending snap');
   }

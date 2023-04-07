@@ -22,6 +22,11 @@ const downloadRef = ref();
 function goBack() {
   chatStore.setCurrentCamPic(null);
   chatStore.setCurrentCamPicURL(null);
+  console.log(chatStore?.currentSnapToDelete);
+  // const docRef = doc(db, 'chats', chatId as string);
+  // await updateDoc(docRef, {
+  //   labels: arrayRemove({ id: chatStore?.currentSnapToDelete?.id }),
+  // });
   router.replace('/dashboard');
 }
 
@@ -57,7 +62,7 @@ function downloadImage() {
 }
 
 const countdown = ref();
-const interval = ref<any>()
+const interval = ref<any>();
 
 const countdownCircle = ref();
 watch(countdown, (updatedCountdown) => {
@@ -73,12 +78,12 @@ watch(countdown, (updatedCountdown) => {
   }
 });
 
-onMounted(()=>{
-  countdown.value=10
+onMounted(() => {
+  countdown.value = 10;
   interval.value = setInterval(function () {
-  countdown.value = countdown.value - 1;
-}, 1000);
-})
+    countdown.value = countdown.value - 1;
+  }, 1000);
+});
 </script>
 
 <template>
@@ -102,8 +107,8 @@ onMounted(()=>{
         class="absolute top-3 left-3 text-gray-400 text-md container-center justify-center"
       />
       <img
-        v-show="userStore?.currentChatFriend[1]?.lastMessage?.snap"
-        :src="userStore?.currentChatFriend[1]?.lastMessage?.snap"
+        v-show="chatStore.currentCamPicURL"
+        :src="chatStore.currentCamPicURL"
         alt="totalizer"
         class="rounded-lg h-full w-full"
       />
@@ -130,7 +135,7 @@ onMounted(()=>{
 svg {
   position: absolute;
   bottom: 0px;
-  right:65%;
+  right: 65%;
   width: 55%;
   height: 55%;
   transform: rotateY(-180deg) rotateZ(-90deg);

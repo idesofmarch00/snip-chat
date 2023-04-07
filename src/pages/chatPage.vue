@@ -40,6 +40,7 @@
           />
           <div v-for="(message, key) in currentChat" :key="key" class="mb-4">
             <q-chat-message
+              @click.prevent="goToSnap(message)"
               ref="chatMessageeRef"
               :name="
                 message.senderId == userStore.user.uid
@@ -61,10 +62,23 @@
               <div class="flex flex-col space-y-2">
                 <img :src="message.img" />
                 {{ message.text }}
+                <q-chip
+                  class="bg-transparent rounded-lg flex items-center space-x-4 w-full"
+                  v-if="message.snap && message.senderId == userStore.user.uid"
+                  ><img src="../assets/red.svg" class="h-8 w-8" />
+                  <span>You have sent a new snap</span></q-chip
+                >
+
+                <q-chip
+                  class="bg-transparent rounded-lg flex items-center space-x-4 w-full"
+                  v-if="message.snap && message.senderId != userStore.user.uid"
+                  ><img src="../assets/red.svg" class="h-8 w-8" />
+                  <span>You have received a new snap</span></q-chip
+                >
               </div>
             </q-chat-message>
             <span
-              v-if="message.date"
+              v-if="message.date && !message.snap"
               class="text-gray-800 font-bold text-[0.5rem]"
               :class="`${
                 message.senderId == userStore.user.uid
@@ -263,24 +277,28 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import {
-  collection,
-  getDocs,
-  setDoc,
   doc,
   onSnapshot,
   updateDoc,
+  arrayRemove,
   arrayUnion,
   Timestamp,
   serverTimestamp,
-  getDoc,
 } from 'firebase/firestore';
 import { date } from 'quasar';
 import * as timeago from 'timeago.js';
 
+import { useRouter } from 'vue-router';
+
 import { useUserStore } from 'src/stores/userStore';
+import { useChatStore } from 'src/stores/chatStore';
+
 import { storeToRefs } from 'pinia';
 
+const router = useRouter();
+
 const userStore = useUserStore();
+const chatStore = useChatStore();
 const { currentChat } = storeToRefs(userStore);
 
 //lifecycle hooks
@@ -572,8 +590,15 @@ const handleSend = async () => {
   }
 };
 
+async function goToSnap(msg: any) {
+  console.log(msg.id);
+  chatStore?.setCurrentCamPicURL(msg.snap);
+  chatStore?.setCurrentSnapToDelete(msg.id);
+  router.replace('/newSnap');
+}
+
 onMounted(() => {
-  const msg = onSnapshot(doc(db, 'chats', chatId), (doc) => {
+  onSnapshot(doc(db, 'chats', chatId), (doc) => {
     userStore.setCurrentChat(doc.data()?.messages);
   });
 });
