@@ -170,7 +170,7 @@ onMounted(() => {
         class="absolute bottom-3 left-4 text-md bg-transparent container-center justify-center text-gray-400"
       />
       <svg class="">
-        <circle ref="countdownCircle" r="19" cx="20" cy="20"></circle>
+        <circle ref="countdownCircle" r="15" cx="20" cy="20"></circle>
       </svg>
     </div>
   </form>
@@ -185,10 +185,10 @@ onMounted(() => {
 <style scoped>
 svg {
   position: absolute;
-  bottom: 0px;
-  right: 65%;
-  width: 55%;
-  height: 55%;
+  bottom: 86%;
+  right: 14%;
+  width: 30%;
+  height: 30%;
   transform: rotateY(-180deg) rotateZ(-90deg);
 }
 

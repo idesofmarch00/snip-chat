@@ -123,6 +123,12 @@ function Sort() {
             }}</q-item-label>
           </div>
           <div
+            class="flex space-x-2 items-end mt-1 font-mono"
+          >
+           
+            <q-item-label caption v-if="!chat[1]?.lastMessage">(Send your first message!)</q-item-label>
+          </div>
+          <div
             v-if="chat[1]?.lastMessage?.snap"
             class="text-xs text-gray-600 mt-1"
           >
@@ -137,7 +143,7 @@ function Sort() {
         </q-item-section>
         <q-item-section
           side
-          v-if="!chat[1]?.lastMessage?.snap && !chat[1]?.lastMessage?.msg"
+          v-if="!chat[1]?.lastMessage?.snap && !chat[1]?.lastMessage?.msg && chat[1]?.lastMessage "
           >{{
             timeago.format(chat[1]?.date?.toDate().toISOString())
           }}</q-item-section
@@ -148,9 +154,14 @@ function Sort() {
         <q-item-section side v-if="chat[1]?.lastMessage?.msg?.includes('viewed')"
           ><q-icon name="crop_square" size="xl" color="red"
         /></q-item-section>
-        <q-item-section side v-if="!chat[1]?.lastMessage?.msg?.includes('viewed')"
+        <q-item-section side v-if="!chat[1]?.lastMessage?.msg?.includes('viewed') && chat[1]?.lastMessage?.msg"
           ><img src="../assets/red.svg"
         /></q-item-section>
+         <q-item-section
+          side
+          v-if="!chat[1]?.lastMessage"
+          ><q-icon name="send" color="blue" size="lg"/></q-item-section
+        >
       </q-item>
     </div>
     <div

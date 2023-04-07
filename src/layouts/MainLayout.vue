@@ -117,7 +117,6 @@
             type="file"
             class="text-base"
             accept="image/*"
-            capture="environment"
             ref="clickimage"
             hidden
           />
@@ -266,12 +265,17 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 
-function logOut() {
+async function logOut() {
   link.value = 'logout';
   signOut(auth);
   localStorage.setItem('user', false.toString());
+  await getOffline();
   router.replace('/login');
 }
+
+async function getOffline(){
+  return alert('offline')
+};
 
 watch(route, (updatedRoute) => {
   if (updatedRoute?.name as any in ['Chats', 'Map', 'Capture']) {
@@ -353,7 +357,7 @@ const handleSelect = async () => {
           uid: userStore?.user?.uid,
           displayName: userStore?.user?.displayName,
           photoURL: userStore?.user?.photoURL,
-          online: true,
+          online: '',
         },
         [combinedId + '.date']: serverTimestamp(),
       });
