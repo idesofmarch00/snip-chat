@@ -1,18 +1,17 @@
 <script setup lang="ts">
 //dependencies
-import { ref,onBeforeMount } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 import { useRouter } from 'vue-router';
 
 //imports firebase
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth, storage, db,gProvider } from '../boot/firebase';
+import { auth, storage, db, gProvider } from '../boot/firebase';
 import {
   ref as refStorage,
   uploadBytesResumable,
   getDownloadURL,
 } from 'firebase/storage';
 import { doc, setDoc } from 'firebase/firestore';
-
 
 //other imports
 import { $toast } from '../utils/notification';
@@ -51,7 +50,7 @@ function submitHandler() {
         email.value,
         password.value
       );
-       console.log('user',res)
+      console.log('user', res);
       //create unique pic name
       const storageRef = refStorage(storage, `${userName.value + date}`);
 
@@ -75,8 +74,7 @@ function submitHandler() {
           // Handle unsuccessful uploads
           console.log('error uploading coz:', error);
           $toast('Error Uploading Image', 'error', 'top');
-    loading.value = false;
-
+          loading.value = false;
         },
         () => {
           // Handle successful uploads on complete
@@ -90,43 +88,38 @@ function submitHandler() {
 
             coords.value = await getLocation();
 
-         try {
-             //create user on firestore
-            await setDoc(doc(db, 'users', res.user.uid), {
-              uid: res.user.uid,
-              userName: userName.value,
-              firstName:firstName.value,
-              lastName:lastName.value,
-              email: email.value,
-              photoURL: downloadURL,
-              location:coords.value,
-              // online:true,
-            });
+            try {
+              //create user on firestore
+              await setDoc(doc(db, 'users', res.user.uid), {
+                uid: res.user.uid,
+                userName: userName.value,
+                firstName: firstName.value,
+                lastName: lastName.value,
+                email: email.value,
+                photoURL: downloadURL,
+                location: coords.value,
+                // online:true,
+              });
 
-            //create empty user chats on firestore
-            await setDoc(doc(db, 'userChats', res.user.uid), {});
-            router.replace('/');
-         } catch (e) {
-          throw new Error("error creating user on firestore",{cause:e});
-    loading.value = false;
-
-
-         }
+              //create empty user chats on firestore
+              await setDoc(doc(db, 'userChats', res.user.uid), {});
+              router.replace('/');
+            } catch (e) {
+              throw new Error('error creating user on firestore', { cause: e });
+              loading.value = false;
+            }
           });
         }
       );
     } catch (error) {
       console.log(error);
       $toast('Error Registering User', 'error', 'top');
-    loading.value = false;
+      loading.value = false;
 
       // ..
     }
     $toast('User Registerd', 'success', 'top');
   }, 2000);
-
-
-
 }
 
 //img upload
@@ -150,23 +143,22 @@ const createImage = async (e: any) => {
 };
 
 onBeforeMount(() => {
-  if (localStorage.getItem('user')==='true'){
-    router.replace('/dashboard')
+  if (localStorage.getItem('user') === 'true') {
+    router.replace('/dashboard');
   }
 });
 
-function signUpWithGoogle(){
+function signUpWithGoogle() {
   return;
 }
 </script>
 
 <template>
   <div class="p-4 flex flex-col items-center space-y-6">
-
-      <!-- <div class="text-h4">
-        <img src="../assets/favicon.png" class="h-40 w-40" />
+    <!-- <div class="text-h4">
+        <img src="../assets/handshake.png" class="h-40 w-40" />
       </div> -->
-      <div class="text-h6 -mb-2">Register Now</div>
+    <div class="text-h6 -mb-2">Register Now</div>
     <form class="flex flex-col items-center space-y-4 w-10/12">
       <div class="flex space-x-4 items-center">
         <q-input
@@ -194,13 +186,7 @@ function signUpWithGoogle(){
         class="w-full"
       >
       </q-input>
-      <q-input
-        outlined
-        standout
-        v-model="email"
-        label="Email"
-        class="w-full"
-      >
+      <q-input outlined standout v-model="email" label="Email" class="w-full">
       </q-input>
 
       <q-input
@@ -280,7 +266,7 @@ function signUpWithGoogle(){
         label="Sign Up"
       />
 
-       <p class="text-gray-700">
+      <p class="text-gray-700">
         Already have an account ?
         <router-link
           to="/login"
@@ -289,23 +275,22 @@ function signUpWithGoogle(){
           Login
         </router-link>
       </p>
-      <div
-        class="flex items-center justify-center flex-col w-full h-full"
-      >
+      <div class="flex items-center justify-center flex-col w-full h-full">
         <p class="text-gray-600 mb-4">or</p>
         <div class="flex flex-col items-center space-y-1">
-
+          <div
+            class="rounded flex items-center h-12 w-52 google-blue text-gray-100 hover:text-white shadow font-bold text-sm"
+            @click.prevent="signUpWithGoogle"
+          >
             <div
-              class="rounded flex items-center h-12 w-52 google-blue text-gray-100 hover:text-white shadow font-bold text-sm "
-              @click.prevent="signUpWithGoogle"
+              class="bg-white h-12 w-12 mr-2 flex items-center justify-center"
             >
-              <div class="bg-white h-12 w-12 mr-2 flex items-center justify-center">
-              <img src="../assets/google.png" class="h-8 w-8"/>
-              </div>
-              <div class="pl-3 ">Sign up with Google</div>
+              <img src="../assets/google.png" class="h-8 w-8" />
             </div>
+            <div class="pl-3">Sign up with Google</div>
+          </div>
 
-            <!-- <div
+          <!-- <div
               class="bg-gray-900 text-gray-100 hover:text-white shadow font-bold text-sm py-3 px-4 rounded flex justify-start items-center cursor-pointer w-64 mt-2"
             >
               <svg
@@ -338,11 +323,8 @@ function signUpWithGoogle(){
               ></span>
               <span class="pl-3">Sign up with Facebook</span>
             </div>-->
-          </div>
+        </div>
       </div>
-
-
-
     </form>
   </div>
 </template>
@@ -350,4 +332,5 @@ function signUpWithGoogle(){
 <style scoped>
 .google-blue {
   background: #4285f4;
-}</style>
+}
+</style>

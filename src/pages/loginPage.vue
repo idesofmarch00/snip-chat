@@ -38,7 +38,6 @@ function simulateProgress() {
       loading.value = false;
     }
     $toast('Sign In Successful', 'success', 'top');
-
   }, 2000);
 }
 
@@ -53,7 +52,7 @@ onBeforeMount(() => {
   <div class="p-4 flex flex-col items-center space-y-8">
     <div class="flex flex-col items-center space-y-4">
       <div class="text-h4">
-        <img src="../assets/favicon.png" class="h-40 w-40" />
+        <img src="../assets/handshake.png" class="h-40 w-40" />
       </div>
       <div class="text-h6">Welcome Back !</div>
     </div>
@@ -88,20 +87,21 @@ onBeforeMount(() => {
       <div
         class="flex items-center justify-center flex-col space-y-2 border-b-2 p-4 w-full h-full my-4"
       >
-        <p class=" text-gray-600 mb-4 text-lg">or</p>
+        <p class="text-gray-600 mb-4 text-lg">or</p>
         <div class="flex flex-col items-center space-y-1">
-
+          <div
+            class="rounded flex items-center h-12 w-52 google-blue text-gray-100 hover:text-white shadow font-bold text-sm"
+            @click.prevent="simulateProgress"
+          >
             <div
-              class="rounded flex items-center h-12 w-52 google-blue text-gray-100 hover:text-white shadow font-bold text-sm "
-              @click.prevent="simulateProgress"
+              class="bg-white h-12 w-12 mr-2 flex items-center justify-center"
             >
-              <div class="bg-white h-12 w-12 mr-2 flex items-center justify-center">
-              <img src="../assets/google.png" class="h-8 w-8"/>
-              </div> 
-              <div class="pl-3 ">Sign in with Google</div>
+              <img src="../assets/google.png" class="h-8 w-8" />
             </div>
+            <div class="pl-3">Sign in with Google</div>
+          </div>
 
-            <!-- <div
+          <!-- <div
               class="bg-gray-900 text-gray-100 hover:text-white shadow font-bold text-sm py-3 px-4 rounded flex justify-start items-center cursor-pointer w-64 mt-2"
             >
               <svg
@@ -134,7 +134,7 @@ onBeforeMount(() => {
               ></span>
               <span class="pl-3">Sign up with Facebook</span>
             </div>-->
-          </div> 
+        </div>
       </div>
 
       <p class="text-sm">

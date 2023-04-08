@@ -9,9 +9,10 @@ import { useUserStore } from '../stores/userStore';
 //imports
 
 const userStore = useUserStore();
-const userFromLocalStorage = localStorage.getItem('user')
+const userFromLocalStorage = localStorage.getItem('user');
 
-onMounted(()=>{  if (userStore.user || userFromLocalStorage==='true') {
+onMounted(() => {
+  if (userStore.user || userFromLocalStorage === 'true') {
     router.push('/dashboard');
   } else {
     router.push('/login');
@@ -24,13 +25,9 @@ const router = useRouter();
 <template>
   <div class="flex flex-col space-y-4 items-center justify-center min-h-screen">
     <h1 class="text-center font-bold text-5xl">Snip Chat</h1>
-    <img src="../assets/favicon.png"/>
+    <img src="../assets/handshake.png" />
     <div>
-    <q-spinner
-        color="blue"
-        size="5em"
-        :thickness="2"
-      />
+      <q-spinner color="blue" size="5em" :thickness="2" />
     </div>
   </div>
 </template>

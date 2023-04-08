@@ -63,7 +63,7 @@
           <q-item-section>Settings</q-item-section>
         </q-item>
 
-        <q-item
+        <!-- <q-item
           clickable
           v-ripple
           :active="link === 'help'"
@@ -76,9 +76,9 @@
           </q-item-section>
 
           <q-item-section>Help</q-item-section>
-        </q-item>
+        </q-item> -->
 
-        <q-item
+        <!-- <q-item
           clickable
           v-ripple
           :active="link === 'about'"
@@ -91,7 +91,7 @@
           </q-item-section>
 
           <q-item-section>About</q-item-section>
-        </q-item>
+        </q-item> -->
       </q-list>
 
       <q-item
