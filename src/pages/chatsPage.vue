@@ -91,7 +91,7 @@ function Sort() {
         v-ripple
         v-for="chat in sortedChats"
         :key="chat[0]"
-        class="bg-gray-50 w-full"
+        class="bg-violet-100 w-full"
       >
         <q-item-section side>
           <q-avatar rounded size="48px">
@@ -105,7 +105,7 @@ function Sort() {
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <q-item-label class="text-black text-lg">{{
+          <q-item-label class="text-violet-900 text-lg">{{
             chat[1]?.friendInfo?.userName
           }}</q-item-label>
 
@@ -122,11 +122,10 @@ function Sort() {
               chat[1]?.lastMessage?.text
             }}</q-item-label>
           </div>
-          <div
-            class="flex space-x-2 items-end mt-1 font-mono"
-          >
-           
-            <q-item-label caption v-if="!chat[1]?.lastMessage">(Send your first message!)</q-item-label>
+          <div class="flex space-x-2 items-end mt-1 font-mono">
+            <q-item-label caption v-if="!chat[1]?.lastMessage"
+              >(Send your first message!)</q-item-label
+            >
           </div>
           <div
             v-if="chat[1]?.lastMessage?.snap"
@@ -143,7 +142,11 @@ function Sort() {
         </q-item-section>
         <q-item-section
           side
-          v-if="!chat[1]?.lastMessage?.snap && !chat[1]?.lastMessage?.msg && chat[1]?.lastMessage "
+          v-if="
+            !chat[1]?.lastMessage?.snap &&
+            !chat[1]?.lastMessage?.msg &&
+            chat[1]?.lastMessage
+          "
           >{{
             timeago.format(chat[1]?.date?.toDate().toISOString())
           }}</q-item-section
@@ -151,17 +154,22 @@ function Sort() {
         <q-item-section side v-if="chat[1]?.lastMessage?.snapMessage"
           ><img src="../assets/red.svg"
         /></q-item-section>
-        <q-item-section side v-if="chat[1]?.lastMessage?.msg?.includes('viewed')"
+        <q-item-section
+          side
+          v-if="chat[1]?.lastMessage?.msg?.includes('viewed')"
           ><q-icon name="crop_square" size="xl" color="red"
         /></q-item-section>
-        <q-item-section side v-if="!chat[1]?.lastMessage?.msg?.includes('viewed') && chat[1]?.lastMessage?.msg"
+        <q-item-section
+          side
+          v-if="
+            !chat[1]?.lastMessage?.msg?.includes('viewed') &&
+            chat[1]?.lastMessage?.msg
+          "
           ><img src="../assets/red.svg"
         /></q-item-section>
-         <q-item-section
-          side
-          v-if="!chat[1]?.lastMessage"
-          ><q-icon name="send" color="blue" size="lg"/></q-item-section
-        >
+        <q-item-section side v-if="!chat[1]?.lastMessage"
+          ><q-icon name="send" color="blue" size="lg"
+        /></q-item-section>
       </q-item>
     </div>
     <div

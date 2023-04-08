@@ -3,7 +3,9 @@
     class="w-full flex flex-col h-[calc(100vh)] space-y-1 items-center justify-center"
     @submit.prevent=""
   >
-    <div class="h-full w-full bg-white rounded-lg relative flex flex-col items-center">
+    <div
+      class="h-full w-full bg-white rounded-lg relative flex flex-col items-center"
+    >
       <!-- <Spinner
             :size="'spinner-lg'"
             :color="'green-spin'"
@@ -23,11 +25,11 @@
         class="rounded-lg h-full w-full"
       />
       <q-icon
-      size="lg"
+        size="lg"
         name="camera"
         round
         @click="clickImage"
-        class="rounded-lg text-xs text-black p-1 z-100 absolute bottom-2"
+        class="rounded-lg text-xs text-violet-900 p-1 z-100 absolute bottom-2"
       />
     </div>
     <div class="flex flex-col w-full items-center">
@@ -71,7 +73,7 @@ const createImage = async (e: any) => {
     imageSrc.value = URL.createObjectURL(e.target.files[0]);
     chatStore.setCurrentCamPic(imageSrc.value);
     chatStore.setCurrentCamPicURL(file.value);
-    router.replace('/preview')
+    router.replace('/preview');
   } else {
     imageSrc.value = '';
   }

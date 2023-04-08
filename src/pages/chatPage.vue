@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header class="bg-primary text-white">
+    <q-header class="bg-violet-800 text-white">
       <q-toolbar>
         <q-toolbar-title class="flex justify-center items-center">
           <router-link to="/dashboard" class="absolute left-6"
@@ -32,10 +32,11 @@
     </q-banner> -->
 
     <!-- <div class="bg-red-50 max-h-[calc(100vh-20rem)] mt-12"></div> -->
-    <q-page-container class="bg-red-50">
-      <q-page >
+    <q-page-container class="bg-teal-50 font-bold">
+      <q-page>
         <div class="px-4 column col justify-end" ref="pageChat">
           <q-chat-message
+            class="text-lg font-bold mt-2"
             :label="date.formatDate(Date.now(), 'ddd , Do MMM')"
           />
           <div v-for="(message, key) in currentChat" :key="key" class="mb-4">
@@ -50,8 +51,8 @@
               :sent="message.senderId == userStore.user.uid ? true : false"
               :bg-color="
                 message.senderId == userStore.user.uid
-                  ? 'light-blue-2'
-                  : 'light-green-2'
+                  ? 'light-blue-3'
+                  : 'light-green-3'
               "
               :avatar="
                 message.senderId == userStore.user.uid
@@ -248,7 +249,7 @@
   >
     <q-card class="pt-2 text-white relative" style="width: 200px">
       <div
-        class="w-full flex flex-col space-y-1 items-center justify-center text-black"
+        class="w-full flex flex-col space-y-1 items-center justify-center text-violet-900 text-xl"
       >
         <q-icon name="task" size="lg" />
         <p class="font-lg">{{ docx.name }}</p>
@@ -629,9 +630,9 @@ function scrollToBottom() {
   // Get parent DomNode that handles page scrolling
   // Usually this is element with classname ".layout-view" or "window"
   // console.log(getScrollTarget(DomElement)) // returns a DOM Element (or window Object)
-	  		setTimeout(() => {
-		  		window.scrollTo(0, pageChat?.value?.scrollHeight)
-	  		}, 20);
+  setTimeout(() => {
+    window.scrollTo(0, pageChat?.value?.scrollHeight);
+  }, 20);
 }
 
 async function goToSnap(msg: any) {

@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh LpR fFf">
     <q-header elevated class="bg-primary text-white" height-hint="98">
-      <q-toolbar class="bg-gray-800 p-2">
+      <q-toolbar class="bg-violet-800 p-2">
         <!-- <q-btn dense flat round icon="menu" /> -->
         <q-avatar @click="toggleLeftDrawer">
           <img :src="userStore?.user?.photoURL" />
@@ -11,13 +11,14 @@
         <q-btn
           icon="person_add"
           round
-          class="bg-black"
+          class="bg-teal-200 text-violet-900"
           @click.prevent="addFriendModal = true"
         />
       </q-toolbar>
     </q-header>
 
     <q-drawer
+      class="bg-violet-900"
       dark
       :width="200"
       v-model="leftDrawerOpen"
@@ -25,7 +26,11 @@
       overlay
       elevated
     >
-      <q-list bordered padding class="rounded-borders text-primary">
+      <q-list
+        bordered
+        padding
+        class="rounded-borders text-teal-200 font-bold text-lg"
+      >
         <q-item
           clickable
           v-ripple
@@ -90,7 +95,7 @@
       </q-list>
 
       <q-item
-        class="fixed-bottom mb-2"
+        class="fixed-bottom mb-2 text-lg text-white font-bold"
         clickable
         v-ripple
         :active="link === 'logout'"
@@ -109,7 +114,7 @@
       <router-view />
     </q-page-container>
 
-    <q-footer reveal elevated class="bg-gray-800 p-2 text-white">
+    <q-footer reveal elevated class="bg-violet-900 p-2 text-white">
       <q-toolbar>
         <q-toolbar-title>
           <input
@@ -121,16 +126,26 @@
             capture="environment"
             hidden
           />
-          <q-tabs
-            v-model="tab"
-            class="bg-teal rounded-full text-yellow shadow-2"
-          >
-            <q-route-tab name="Chats" icon="question_answer" to="/dashboard" />
-            <q-separator vertical inset class="bg-yellow-2" />
-            <q-route-tab @click="clickImage" name="Capture" icon="camera" />
-            <q-separator vertical inset class="bg-yellow-2" />
-            <q-route-tab name="Map" icon="public" to="/map" />
-          </q-tabs>
+          <div class="flex items-center justify-evenly h-12 rounded-full">
+            <router-link to="/dashboard" @click.prevent="tab = 'Chats'"
+              ><q-icon
+                :class="`${tab == 'Chats' ? 'text-teal-200' : 'text-teal-100'}`"
+                size="md"
+                name="question_answer"
+            /></router-link>
+            <q-icon
+              :class="`${tab == 'Capture' ? 'text-teal-200' : 'text-teal-100'}`"
+              size="md"
+              @click="clickImage"
+              name="camera"
+            />
+            <router-link to="/map" @click.prevent="tab = 'Map'"
+              ><q-icon
+                :class="`${tab == 'Map' ? 'text-teal-200' : 'text-teal-100'}`"
+                size="md"
+                name="public"
+            /></router-link>
+          </div>
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>
@@ -179,14 +194,14 @@
         <!-- card -->
         <div
           v-if="!userSearch && search === ''"
-          class="text-black font-bold text-lg text-center mt-2"
+          class="text-violet-900 font-bold text-lg text-center mt-2"
         >
           Find users
         </div>
 
         <div
           v-if="!userSearch && search !== ''"
-          class="text-black font-bold text-lg text-center mt-2"
+          class="text-violet-900 font-bold text-lg text-center mt-2"
         >
           No User Found
         </div>
@@ -204,7 +219,7 @@
             </q-item-section>
 
             <q-item-section>
-              <q-item-label class="text-black font-bold text-lg">{{
+              <q-item-label class="text-violet-900 font-bold text-lg">{{
                 friend.userName
               }}</q-item-label>
               <q-item-label caption lines="1">{{ friend.email }}</q-item-label>
@@ -242,15 +257,14 @@ import {
   serverTimestamp,
   getDoc,
   arrayUnion,
-Timestamp,
+  Timestamp,
 } from 'firebase/firestore';
 import { v4 as uuid } from 'uuid';
 import { $toast } from 'src/utils/notification';
 
-
 //store
 import { useUserStore } from '../stores/userStore';
-import {useChatStore} from '../stores/chatStore';
+import { useChatStore } from '../stores/chatStore';
 
 const userStore = useUserStore();
 const chatStore = useChatStore();
@@ -262,9 +276,13 @@ const leftDrawerOpen = ref(false);
 const addFriendModal = ref(false);
 const users = ref(true);
 const search = ref('');
-const tab = ref();
+const tab = ref<string>('Chats');
 
 const link = ref('');
+
+onMounted(() => {
+  console.log(route.name);
+});
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -278,58 +296,50 @@ async function logOut() {
   router.replace('/login');
 }
 
-async function getOffline(){
-        // const chatsRef = doc(db, 'chats', chatId as string);
-        const usersRef = doc(db, 'userChats', userStore.user.uid);
+async function getOffline() {
+  // const chatsRef = doc(db, 'chats', chatId as string);
+  const usersRef = doc(db, 'userChats', userStore.user.uid);
 
-        const userChatsRef = doc(db, 'userChats', userStore.user.uid);
-        // const friendChatsRef = doc(db, 'userChats', chatId.replace(userStore.user.uid, ''))
-              // await updateDoc(chatsRef, {
-              //   messages: arrayUnion({
-              //     id: uuid(),
-              //     text: '',
-              //     senderId: '',
-              //     date: Timestamp.now(),
-              //     snap: '',
-              //     file: '',
-              //     img: '',
-              //     snapMessage: `You have viewed this snap`,
-              //   }),
-              // });
+  const userChatsRef = doc(db, 'userChats', userStore.user.uid);
+  // const friendChatsRef = doc(db, 'userChats', chatId.replace(userStore.user.uid, ''))
+  // await updateDoc(chatsRef, {
+  //   messages: arrayUnion({
+  //     id: uuid(),
+  //     text: '',
+  //     senderId: '',
+  //     date: Timestamp.now(),
+  //     snap: '',
+  //     file: '',
+  //     img: '',
+  //     snapMessage: `You have viewed this snap`,
+  //   }),
+  // });
 
-              // await updateDoc(usersRef, {
-              //   online: false,
-              // });
+  // await updateDoc(usersRef, {
+  //   online: false,
+  // });
 
-              //  await updateDoc(userChatsRef, {
-              //   [chatId + '.lastMessage']: {
-              //     msg: 'You viewed a snap',
-              //     snap: '',
-              //     snapMessage:'',
-              //   },
-              //   [chatId + '.date']: serverTimestamp(),
-              // });
+  //  await updateDoc(userChatsRef, {
+  //   [chatId + '.lastMessage']: {
+  //     msg: 'You viewed a snap',
+  //     snap: '',
+  //     snapMessage:'',
+  //   },
+  //   [chatId + '.date']: serverTimestamp(),
+  // });
 
-              // await updateDoc(
-              //   friendChatsRef,
-              //   {
-              //     [chatId + '.lastMessage']: {
-              //       msg: 'Snap viewed',
-              //       snap: '',
-              //       snapMessage:''
-              //     },
-              //     [chatId + '.date']: serverTimestamp(),
-              //   }
-              // );
-};
-
-watch(route, (updatedRoute) => {
-  if (updatedRoute?.name as any in ['Chats', 'Map', 'Capture']) {
-    tab.value = updatedRoute.name;
-  } else {
-    tab.value = updatedRoute.name;
-  }
-});
+  // await updateDoc(
+  //   friendChatsRef,
+  //   {
+  //     [chatId + '.lastMessage']: {
+  //       msg: 'Snap viewed',
+  //       snap: '',
+  //       snapMessage:''
+  //     },
+  //     [chatId + '.date']: serverTimestamp(),
+  //   }
+  // );
+}
 
 const friend = ref();
 const userSearch = ref(false);
@@ -343,25 +353,26 @@ const imageSrc = ref<any>('');
 const clickimage = ref<HTMLDivElement | null>();
 const file = ref();
 
-function clickImage(e:any) {
+function clickImage(e: any) {
+  tab.value = 'Capture';
   if (e.target) {
     clickimage.value?.click();
   }
 }
 
-const createImage = async (e:any) => {
+const createImage = async (e: any) => {
   file.value = e.target.files[0];
   if (file.value) {
     imageSrc.value = URL.createObjectURL(e.target.files[0]);
     chatStore.setCurrentCamPic(imageSrc.value);
     chatStore.setCurrentCamPicURL(file.value);
-    router.replace('/preview')
+    router.replace('/preview');
   } else {
     imageSrc.value = '';
   }
 };
 
-async function handleSearch(search:any) {
+async function handleSearch(search: any) {
   const q = query(collection(db, 'users'), where('userName', '==', search));
 
   try {

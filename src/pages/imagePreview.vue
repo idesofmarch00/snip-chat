@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted,watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useChatStore } from '../stores/chatStore';
 import { useRouter } from 'vue-router';
 
@@ -177,7 +177,7 @@ function sendNewSnap() {
                 [chatId + '.lastMessage']: {
                   msg: 'You sent a snap',
                   snap: downloadURL,
-                  snapMessage:'',
+                  snapMessage: '',
                 },
                 [chatId + '.date']: serverTimestamp(),
               });
@@ -188,7 +188,7 @@ function sendNewSnap() {
                   [chatId + '.lastMessage']: {
                     msg: 'You received a snap',
                     snap: downloadURL,
-                    snapMessage:''
+                    snapMessage: '',
                   },
                   [chatId + '.date']: serverTimestamp(),
                 }
@@ -293,7 +293,7 @@ function sendNewSnap() {
               </q-avatar>
             </q-item-section>
             <q-item-section>
-              <q-item-label class="text-black text-lg">{{
+              <q-item-label class="text-violet-900 text-lg">{{
                 chat[1]?.friendInfo.displayName
               }}</q-item-label>
 
@@ -335,7 +335,7 @@ function sendNewSnap() {
       </div>
       <q-btn
         label="Send New"
-        class="absolute bottom-2 right-4 rounded-[1rem] bg-yellow font-bold text-sm text-black"
+        class="absolute bottom-2 right-4 rounded-[1rem] bg-yellow font-bold text-sm text-violet-900"
         @click.prevent="sendNewSnap"
         ><q-icon name="send" class="ml-2"
       /></q-btn>

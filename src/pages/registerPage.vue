@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 
 //imports firebase
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth, storage, db } from '../boot/firebase';
+import { auth, storage, db,gProvider } from '../boot/firebase';
 import {
   ref as refStorage,
   uploadBytesResumable,
@@ -110,7 +110,7 @@ function submitHandler() {
           throw new Error("error creating user on firestore",{cause:e});
     loading.value = false;
 
-          
+
          }
           });
         }
@@ -124,7 +124,7 @@ function submitHandler() {
     }
     $toast('User Registerd', 'success', 'top');
   }, 2000);
-    
+
 
 
 }
@@ -162,7 +162,7 @@ function signUpWithGoogle(){
 
 <template>
   <div class="p-4 flex flex-col items-center space-y-6">
-     
+
       <!-- <div class="text-h4">
         <img src="../assets/favicon.png" class="h-40 w-40" />
       </div> -->
@@ -301,7 +301,7 @@ function signUpWithGoogle(){
             >
               <div class="bg-white h-12 w-12 mr-2 flex items-center justify-center">
               <img src="../assets/google.png" class="h-8 w-8"/>
-              </div> 
+              </div>
               <div class="pl-3 ">Sign up with Google</div>
             </div>
 
@@ -338,11 +338,11 @@ function signUpWithGoogle(){
               ></span>
               <span class="pl-3">Sign up with Facebook</span>
             </div>-->
-          </div> 
+          </div>
       </div>
 
 
-     
+
     </form>
   </div>
 </template>
