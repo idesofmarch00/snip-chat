@@ -65,28 +65,35 @@ const routes: RouteRecordRaw[] = [
         path: '/map',
         component: () => import('src/pages/mapPage.vue'),
       },
+    ],
+  },
 
+  {
+    name: 'User',
+    path: '/user',
+    component: () => import('layouts/UserLayout.vue'),
+    children: [
       {
         name: 'Profile',
         path: '/profile',
-        component: () => import('src/pages/profilePage.vue'),
+        component: () => import('pages/profilePage.vue'),
       },
       {
         name: 'Settings',
         path: '/settings',
-        component: () => import('src/pages/settingsPage.vue'),
+        component: () => import('pages/settingsPage.vue'),
       },
 
       {
         name: 'About Us',
         path: '/aboutUs',
-        component: () => import('src/pages/aboutUs.vue'),
+        component: () => import('pages/aboutUs.vue'),
       },
 
       {
         name: 'Help',
         path: '/helpSupport',
-        component: () => import('src/pages/helpSupport.vue'),
+        component: () => import('pages/helpSupport.vue'),
       },
     ],
   },

@@ -86,24 +86,21 @@
                   <span>{{ message.snapMessage }}</span></q-chip
                 >
                 <q-chip
-                  class="bg-transparent rounded-lg flex items-center space-x-4 w-full"
+                  class="bg-transparent mr-6 rounded-lg flex items-center space-x-4 w-full"
                   v-if="
                     message.snapMessage &&
                     message.senderId != userStore.user.uid
                   "
-                  ><q-icon name="crop_square" size="xl" color="red" />
+                  ><q-icon name="crop_square" size="lg" color="red" />
                   <span
-                    >Snap viewed by
-                    {{
-                      userStore.currentChatFriend[1].friendInfo.userName
-                    }}</span
+                    >Snap viewed </span
                   ></q-chip
                 >
               </div>
             </q-chat-message>
             <span
               v-if="message.date && !message.snap"
-              class="text-gray-800 font-bold text-[0.5rem]"
+              class="text-gray-800 font-bold text-xs"
               :class="`${
                 message.senderId == userStore.user.uid
                   ? 'absolute right-[3.8rem]'
@@ -392,7 +389,7 @@ const friendId: any = chatId.replace(userStore.user.uid, '');
 const handleSend = async () => {
   try {
     if (file.value && !newMessage.value && !docx.value) {
-      const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
+      const storageRef = fireStorageRef(storage, `${uuid()}`);
 
       const uploadTask = uploadBytesResumable(storageRef, file.value);
 
@@ -472,7 +469,7 @@ const handleSend = async () => {
       newMessage.value = '';
       file.value = null;
     } else if (file.value && newMessage.value && !docx.value) {
-      const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
+      const storageRef = fireStorageRef(storage, `${uuid()}`);
 
       const uploadTask = uploadBytesResumable(storageRef, file.value);
 
@@ -520,7 +517,7 @@ const handleSend = async () => {
         }
       );
     } else if (file.value && newMessage.value && docx.value) {
-      const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
+      const storageRef = fireStorageRef(storage, `${uuid()}`);
 
       const uploadTask = uploadBytesResumable(storageRef, file.value);
 

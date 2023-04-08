@@ -127,7 +127,7 @@ function addToSend(friend: any) {
 function sendNewSnap() {
   try {
     selectedArray.forEach((chatId: any) => {
-      const storageRef = fireStorageRef(storage, `${uuid()}.jpg`);
+      const storageRef = fireStorageRef(storage, `${uuid()}`);
 
       const uploadTask = uploadBytesResumable(
         storageRef,

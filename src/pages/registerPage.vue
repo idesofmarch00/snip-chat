@@ -53,7 +53,7 @@ function submitHandler() {
       );
        console.log('user',res)
       //create unique pic name
-      const storageRef = refStorage(storage, `${userName.value + date}.jpg`);
+      const storageRef = refStorage(storage, `${userName.value + date}`);
 
       const uploadTask = uploadBytesResumable(storageRef, file.value);
 

@@ -31,7 +31,6 @@ onMounted(async () => {
     try {
       await onSnapshot(doc(db, 'userChats', userStore.user.uid), (doc) => {
         allChats = doc.data();
-        userStore.setUserChats(doc.data());
         Sort();
       });
     } catch (err) {
@@ -75,6 +74,7 @@ function Sort() {
       new Date(b[1]?.date?.toDate().toISOString()).getTime() -
       new Date(a[1]?.date?.toDate().toISOString()).getTime()
   );
+  userStore.setUserChats(sortedChats.value);
   loading.value = false;
 }
 </script>
@@ -82,7 +82,7 @@ function Sort() {
 <template>
   <q-page class="items-center justify-evenly">
     <div
-      v-if="userStore.userChats && !loading"
+      v-if="userStore.userChats?.length && !loading"
       class="my-2 flex flex-col items-center space-y-3"
     >
       <q-item
@@ -173,7 +173,7 @@ function Sort() {
       </q-item>
     </div>
     <div
-      v-if="!userStore.userChats && !loading"
+      v-if="!userStore.userChats?.length && !loading"
       class="flex flex-col space-y-4 items-center justify-center my-10 font-bold"
     >
       <p class="text-lg">You have no recent chats.</p>
