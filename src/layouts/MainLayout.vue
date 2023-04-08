@@ -129,19 +129,19 @@
           <div class="flex items-center justify-evenly h-12 rounded-full">
             <router-link to="/dashboard" @click.prevent="tab = 'Chats'"
               ><q-icon
-                :class="`${tab == 'Chats' ? 'text-teal-200' : 'text-teal-100'}`"
+                :class="`${tab == 'Chats' ? 'text-teal-300' : 'text-teal-100'}`"
                 size="md"
                 name="question_answer"
             /></router-link>
             <q-icon
-              :class="`${tab == 'Capture' ? 'text-teal-200' : 'text-teal-100'}`"
+              :class="`${tab == 'Capture' ? 'text-teal-300' : 'text-teal-100'}`"
               size="md"
               @click="clickImage"
               name="camera"
             />
             <router-link to="/map" @click.prevent="tab = 'Map'"
               ><q-icon
-                :class="`${tab == 'Map' ? 'text-teal-200' : 'text-teal-100'}`"
+                :class="`${tab == 'Map' ? 'text-teal-300' : 'text-teal-100'}`"
                 size="md"
                 name="public"
             /></router-link>
@@ -279,10 +279,6 @@ const search = ref('');
 const tab = ref<string>('Chats');
 
 const link = ref('');
-
-onMounted(() => {
-  console.log(route.name);
-});
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;

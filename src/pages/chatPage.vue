@@ -122,7 +122,7 @@
       </q-page>
     </q-page-container>
 
-    <q-footer class="bg-grey-8 text-white">
+    <q-footer class="bg-violet-900 h-16 text-white">
       <q-toolbar>
         <q-toolbar-title>
           <q-form @submit="handleSend" class="full-width">
