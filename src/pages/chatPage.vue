@@ -7,7 +7,7 @@
             ><q-icon name="arrow_back" round class=""
           /></router-link>
           <span class="text-xl">{{
-            userStore.currentChatFriend[1].friendInfo.displayName
+            userStore.currentChatFriend[1].friendInfo.userName
           }}</span>
         </q-toolbar-title>
       </q-toolbar>
@@ -45,7 +45,7 @@
               :name="
                 message.senderId == userStore.user.uid
                   ? 'Me'
-                  : userStore.currentChatFriend[1].friendInfo.displayName
+                  : userStore.currentChatFriend[1].friendInfo.userName
               "
               :sent="message.senderId == userStore.user.uid ? true : false"
               :bg-color="
@@ -94,7 +94,7 @@
                   <span
                     >Snap viewed by
                     {{
-                      userStore.currentChatFriend[1].friendInfo.displayName
+                      userStore.currentChatFriend[1].friendInfo.userName
                     }}</span
                   ></q-chip
                 >

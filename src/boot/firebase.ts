@@ -8,18 +8,18 @@ const router = useRouter();
 import { initializeApp } from 'firebase/app';
 
 // Add the Firebase products that you want to use
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { getFirestore } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyBWd6tP_aigEC23fLeCMuIazGVyB8Xw4IE',
-  authDomain: 'chat-app-596a7.firebaseapp.com',
-  projectId: 'chat-app-596a7',
-  storageBucket: 'chat-app-596a7.appspot.com',
-  messagingSenderId: '573414508296',
-  appId: '1:573414508296:web:7471b0632b0de7a9a34ebd',
+  apiKey: process.env.VITE_FIREBASE_API_KEY,
+  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCK,
+  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_KEY,
+  appId: process.env.VITE_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
@@ -27,6 +27,7 @@ export const firebaseApp = initializeApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
 export const storage = getStorage();
 export const db = getFirestore();
+const gProvider = new GoogleAuthProvider();
 
 onAuthStateChanged(auth, async (user) => {
   const userStore = useUserStore();

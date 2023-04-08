@@ -205,7 +205,7 @@
 
             <q-item-section>
               <q-item-label class="text-black font-bold text-lg">{{
-                friend.displayName
+                friend.userName
               }}</q-item-label>
               <q-item-label caption lines="1">{{ friend.email }}</q-item-label>
             </q-item-section>
@@ -362,7 +362,7 @@ const createImage = async (e:any) => {
 };
 
 async function handleSearch(search:any) {
-  const q = query(collection(db, 'users'), where('displayName', '==', search));
+  const q = query(collection(db, 'users'), where('userName', '==', search));
 
   try {
     const querySnapshot = await getDocs(q);
@@ -392,7 +392,7 @@ const handleSelect = async () => {
       await updateDoc(doc(db, 'userChats', userStore.user.uid), {
         [combinedId + '.friendInfo']: {
           uid: friend.value.uid,
-          displayName: friend.value.displayName,
+          userName: friend.value.userName,
           photoURL: friend.value.photoURL,
           // online: true,
         },
@@ -401,7 +401,7 @@ const handleSelect = async () => {
       await updateDoc(doc(db, 'userChats', friend.value.uid), {
         [combinedId + '.friendInfo']: {
           uid: userStore?.user?.uid,
-          displayName: userStore?.user?.displayName,
+          userName: userStore?.user?.displayName,
           photoURL: userStore?.user?.photoURL,
           // online: '',
         },

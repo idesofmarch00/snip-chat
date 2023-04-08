@@ -11,6 +11,7 @@
 const { configure } = require('quasar/wrappers');
 
 module.exports = configure(function (/* ctx */) {
+  require('dotenv').config();
   return {
     eslint: {
       // fix: true,
@@ -27,7 +28,7 @@ module.exports = configure(function (/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['axios','firebase'],
+    boot: ['axios', 'firebase'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ['app.css', 'tailwind.css'],
@@ -62,7 +63,20 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      // env: {
+      //   env: require('dotenv').config().parsed,
+      // },
+      env: {
+        // You have to manually define all the variables you want to pass in
+        VITE_MAPBOX_ACCESS_TOKEN: process.env.VITE_MAPBOX_ACCESS_TOKEN,
+        VITE_FIREBASE_API_KEY: process.env.VITE_FIREBASE_API_KEY,
+        VITE_FIREBASE_AUTH_DOMAIN: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+        VITE_FIREBASE_PROJECT_ID: process.env.VITE_FIREBASE_PROJECT_ID,
+        VITE_FIREBASE_STORAGE_BUCKER: process.env.VITE_FIREBASE_STORAGE_BUCKER,
+        VITE_FIREBASE_MESSAGING_KEY: process.env.VITE_FIREBASE_MESSAGING_KEY,
+        VITE_FIREBASE_APP_ID: process.env.VITE_FIREBASE_APP_ID,
+        // ...
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,

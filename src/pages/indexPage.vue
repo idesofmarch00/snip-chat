@@ -22,12 +22,13 @@ const router = useRouter();
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center min-h-screen">
-    <h1 class="mb-8 text-center">Welcome To my Chat App</h1>
+  <div class="flex flex-col space-y-4 items-center justify-center min-h-screen">
+    <h1 class="text-center font-bold text-5xl">Snip Chat</h1>
+    <img src="../assets/favicon.png"/>
     <div>
     <q-spinner
-        color="primary"
-        size="3em"
+        color="blue"
+        size="5em"
         :thickness="2"
       />
     </div>

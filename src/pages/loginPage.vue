@@ -37,6 +37,8 @@ function simulateProgress() {
       $toast('Error Login', 'error', 'top');
       loading.value = false;
     }
+    $toast('Sign In Successful', 'success', 'top');
+
   }, 2000);
 }
 

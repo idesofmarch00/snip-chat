@@ -50,8 +50,7 @@ async function fetchAllUsers() {
 onMounted(async () => {
   await fetchAllUsers();
 
-  mapboxgl.accessToken =
-    'pk.eyJ1IjoidXNhaWYxMzExIiwiYSI6ImNsZDdoc3J6NDBlenkzcXBiOTEzZml1cDcifQ.vj73_blmjljI0sUEHAwOcw';
+  mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
   navigator.permissions
     .query({ name: 'geolocation' })
@@ -116,44 +115,43 @@ onMounted(async () => {
     el.style.objectFit = 'contain';
     el.style.width = '80px';
     el.style.height = '80px';
-    el.style.borderRadius = "40px";
+    el.style.borderRadius = '40px';
     const popup = new mapboxgl.Popup({ offset: 25 })
       .setHTML(` <div class="btn-slot text-zinc-600 max w-40 flex flex-col space-y-2">
     <div class="w-full flex items-center justify-between">
       <p class="font-bold text-lg w-8/12 truncate">
-        ${marker.displayName}
+        ${marker.userName}
       </p>
     </div>
     <div class="text-[0.65rem] font-medium flex flex-col space-y-1">
       <p class="m-0 leading-3">${marker.email}</p>
-      <p class="m-0 leading-3">Online : <span class="text-green font-bold">${marker.online}</span></p>
+      <p class="m-0 leading-3"><span class="text-green font-bold">Add as Friend</span></p>
     </div>
     <div class="w-full mt-3 flex items-center justify-between">
       <div class="flex items-center gap-x-4">
       </div>
 
-     
+
     </div>
   </div>
 `);
 
- // <button  class="text-blue-500 font-bold text-xs">
-      //   <a href="https://www.google.com/maps/dir/?api=1&dir_action=navigate&travelmode=driving&destination=${defaultCoords.value?.lat},${defaultCoords.value?.lng}&origin=${marker?.location?.lat},${marker?.location?.lng}" target="
-      //     _blank">
-      //       Navigate
-      //       </a>
-      // </button>
+    // <button  class="text-blue-500 font-bold text-xs">
+    //   <a href="https://www.google.com/maps/dir/?api=1&dir_action=navigate&travelmode=driving&destination=${defaultCoords.value?.lat},${defaultCoords.value?.lng}&origin=${marker?.location?.lat},${marker?.location?.lng}" target="
+    //     _blank">
+    //       Navigate
+    //       </a>
+    // </button>
 
     markers.value = new mapboxgl.Marker(el)
       .setLngLat([Number(marker?.location.lng), Number(marker?.location.lat)])
       .setPopup(popup)
       .addTo(mapStore.map);
 
-  //     function reply_click(clicked_id)
-  // {
-  //     alert(clicked_id);
-  // }
-
+    //     function reply_click(clicked_id)
+    // {
+    //     alert(clicked_id);
+    // }
   });
 });
 
@@ -230,8 +228,6 @@ onMounted(async () => {
 //     console.log(err);
 //   }
 // };
-
-
 </script>
 
 <template>

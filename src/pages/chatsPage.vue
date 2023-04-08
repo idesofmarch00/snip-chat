@@ -106,7 +106,7 @@ function Sort() {
         </q-item-section>
         <q-item-section>
           <q-item-label class="text-black text-lg">{{
-            chat[1]?.friendInfo?.displayName
+            chat[1]?.friendInfo?.userName
           }}</q-item-label>
 
           <div
