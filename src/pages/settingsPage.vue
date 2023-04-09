@@ -1,7 +1,7 @@
 <template>
   <q-page
-    class="q-pa-md"
-    :class="`${$q.dark.isActive ? 'bg-gray-800 text-xl font-bold' : 'bg-white'}`"
+    class="q-pa-md text-xl font-bold"
+    :class="`${$q.dark.isActive ? 'bg-gray-800' : 'bg-white'}`"
   >
     <div class="q-pa-md q-gutter-md">
       <q-list bordered>
@@ -42,7 +42,7 @@
       <p
         @click.prevent="toggleDeleteAccount"
         class="underline font-bold text-sm"
-    :class="`${$q.dark.isActive ? 'text-red-500 ' : 'text-red-700'}`"
+        :class="`${$q.dark.isActive ? 'text-red-500 ' : 'text-red-700'}`"
       >
         Delete Account
       </p>
