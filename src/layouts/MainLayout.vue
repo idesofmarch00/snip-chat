@@ -157,7 +157,9 @@
     transition-show="scale"
     transition-hide="scale"
   >
-    <q-card class="bg-teal text-white" style="width: 300px">
+    <q-card class="bg-teal text-white" style="width: 300px"
+     
+    >
       <q-card-section>
         <div class="text-h6">Add Friend</div>
       </q-card-section>
@@ -194,7 +196,12 @@
         <!-- card -->
         <div
           v-if="!userSearch && search === ''"
-          class="text-violet-900 font-bold text-lg text-center mt-2"
+          class=" font-bold text-lg text-center mt-2"
+          :class="`${
+          $q.dark.isActive
+            ? 'text-teal-900'
+            : 'text-violet-900'
+        }`"
         >
           Find users
         </div>
@@ -218,8 +225,8 @@
               </q-avatar>
             </q-item-section>
 
-            <q-item-section>
-              <q-item-label class="text-violet-900 font-bold text-lg">{{
+            <q-item-section class="flex flex-col items-start mr-20">
+              <q-item-label class="text-violet-900 font-bold text-lg ">{{
                 friend.userName
               }}</q-item-label>
               <q-item-label caption lines="1">{{ friend.email }}</q-item-label>
