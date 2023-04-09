@@ -192,6 +192,7 @@
       <!-- list of users -->
       <q-card
         class="w-full max-h-[calc(100vh-5rem)] flex flex-col space-y-0 overflow-auto bg-white"
+        
       >
         <!-- card -->
         <div
@@ -217,23 +218,27 @@
           @click.prevent="handleSelect"
         >
           <q-item
-            class="flex items-center justify-between ml-2 my-2 w-11/12 rounded-lg p-2 border"
+            class="flex items-center justify-between ml-2 my-2 w-[95%] rounded-lg p-2 border"
+    :class="`${$q.dark.isActive ? 'bg-gray-600 text-teal-50' : 'bg-teal-100 text-violet-900'}`"
+
           >
-            <q-item-section class="w-1/2">
+            <q-item-section class="w-1/4">
               <q-avatar>
                 <img :src="friend?.photoURL" />
               </q-avatar>
             </q-item-section>
 
-            <q-item-section class="flex flex-col items-start mr-20">
-              <q-item-label class="text-violet-900 font-bold text-lg ">{{
+            <q-item-section class="flex flex-col items-start"
+            
+            >
+              <q-item-label class=" font-bold text-lg ">{{
                 friend.userName
               }}</q-item-label>
               <q-item-label caption lines="1">{{ friend.email }}</q-item-label>
             </q-item-section>
 
             <q-item-section side>
-              <q-icon name="chat_bubble" color="grey" />
+              <q-icon name="chat_bubble" :color="$q.dark.isActive?'white':'teal'" />
             </q-item-section>
           </q-item>
         </button>
