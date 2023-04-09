@@ -84,36 +84,7 @@ const sortedChats = ref();
 
 const router = useRouter();
 
-onMounted(async () => {
-  loading.value = true;
-
-  const user = await getCurrentUser();
-  if (user) {
-    try {
-      await onSnapshot(doc(db, 'userChats', userStore.user.uid), (doc: any) => {
-        allChats = doc.data();
-        userStore.setUserChats(doc.data());
-        Sort();
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  } else {
-    router.replace('/login');
-  }
-});
-
-const loading = ref<boolean>(false);
 const today = new Date();
-
-function Sort() {
-  sortedChats.value = Object.entries(allChats)?.sort(
-    (a: any, b: any) =>
-      new Date(b[1]?.date?.toDate().toISOString()).getTime() -
-      new Date(a[1]?.date?.toDate().toISOString()).getTime()
-  );
-  loading.value = false;
-}
 
 let selectedArray: any = [];
 function addToSend(friend: any) {
@@ -260,7 +231,10 @@ function sendNewSnap() {
     transition-show="slide-up"
     transition-hide="slide-down"
   >
-    <q-card class="bg-primary text-white">
+    <q-card class=" text-teal-50"
+    :class="`${$q.dark.isActive ? 'bg-gray-700 ' : 'bg-violet-800'}`"
+    
+    >
       <q-bar>
         <q-space />
         <q-btn dense flat icon="close" v-close-popup>
@@ -270,34 +244,49 @@ function sendNewSnap() {
 
       <div class="flex flex-col items-center justify-evenly">
         <div
-          v-if="userStore.userChats && !loading"
+          v-if="userStore.userChats.length"
           class="my-2 flex flex-col items-center space-y-3 w-11/12 overflow-auto"
         >
           <q-item
             @click.prevent="addToSend(chat)"
             clickable
             v-ripple
-            v-for="chat in sortedChats"
+            v-for="chat in userStore.userChats"
             :key="chat[0]"
-            class="bg-gray-50 w-full"
+            class="w-full"
+             :class="`${
+          $q.dark.isActive
+            ? 'bg-gray-600 border-[0.5px] border-teal-700'
+            : 'bg-violet-100'
+        }`"
           >
             <q-item-section side>
               <q-avatar rounded size="48px">
                 <img :src="chat[1]?.friendInfo.photoURL" />
-                <div
+                <!-- <div
                   class="rounded-full h-3 w-3 absolute -top-1 -right-1 shadow border z-10"
                   :class="`${
                     chat[1]?.friendInfo.online ? 'bg-green-600' : 'bg-red-600'
                   }`"
-                />
+                /> -->
               </q-avatar>
             </q-item-section>
             <q-item-section>
-              <q-item-label class="text-violet-900 text-lg">{{
-                chat[1]?.friendInfo.displayName
-              }}</q-item-label>
+              <q-item-label
+                class="text-lg"
+                :class="`${
+                  $q.dark.isActive ? 'text-teal-50' : 'text-violet-900'
+                }`"
+                >{{ chat[1]?.friendInfo?.userName }}</q-item-label
+              >
 
-              <div class="flex space-x-2 items-end mt-1">
+              <div
+                class="flex space-x-2 items-end mt-1"
+                v-if="!chat[1]?.lastMessage?.snap && !chat[1]?.lastMessage?.msg"
+                :class="`${
+                  $q.dark.isActive ? 'text-teal-100' : 'text-gray-300'
+                }`"
+              >
                 <img
                   :src="chat[1]?.lastMessage?.img"
                   v-if="chat[1]?.lastMessage?.img"
@@ -307,31 +296,46 @@ function sendNewSnap() {
                   chat[1]?.lastMessage?.text
                 }}</q-item-label>
               </div>
+              <div
+                class="flex space-x-2 items-end mt-1 font-mono"
+                :class="`${
+                  $q.dark.isActive ? 'text-teal-100' : 'text-gray-600'
+                }`"
+              >
+                <q-item-label caption v-if="!chat[1]?.lastMessage"
+                  >(Send your first message!)</q-item-label
+                >
+              </div>
+              <div
+                v-if="chat[1]?.lastMessage?.msg"
+                class="py-[0.15rem] px-1 rounded-lg h-5 w-fit text-[0.6rem] mt-1"
+                :class="`${
+                  $q.dark.isActive
+                    ? 'text-teal-700 border border-teal-300 bg-teal-100'
+                    : 'text-gray-700 border border-gray-400 bg-slate-50  '
+                }`"
+              >
+                {{ chat[1]?.lastMessage?.msg }}
+              </div>
             </q-item-section>
+
             <q-item-section side
               ><q-btn
                 round
                 :color="`${selectedArray.includes(chat[0]) ? 'blue' : 'white'}`"
                 class="text-white border"
                 icon="done"
+                size="sm"
             /></q-item-section>
           </q-item>
         </div>
         <div
-          v-if="!userStore.userChats && !loading"
+          v-if="!userStore.userChats.length"
           class="flex flex-col space-y-4 items-center justify-center my-10 font-bold"
         >
           <p class="text-lg">You have no recent chats.</p>
           <p>Add a friend to start chatting.</p>
         </div>
-
-        <q-spinner
-          v-if="loading"
-          color="green"
-          size="3em"
-          :thickness="2"
-          class="left-[45%] top-[45%] absolute"
-        />
       </div>
       <q-btn
         label="Send New"

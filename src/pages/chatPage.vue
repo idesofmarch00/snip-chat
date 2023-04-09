@@ -32,38 +32,46 @@
     </q-banner> -->
 
     <!-- <div class="bg-red-50 max-h-[calc(100vh-20rem)] mt-12"></div> -->
-    <q-page-container class="bg-teal-50 font-bold">
-      <q-page>
+    <q-page-container
+      class="font-bold"
+      :class="`${$q.dark.isActive ? 'bg-gray-800 ' : 'bg-teal-50'}`"
+    >
+      <q-page :class="`${$q.dark.isActive ? 'text-teal-50' : ''}`">
         <div class="px-4 column col justify-end" ref="pageChat">
           <q-chat-message
             class="text-lg font-bold mt-2"
             :label="date.formatDate(Date.now(), 'ddd , Do MMM')"
           />
-          <div v-for="(message, key) in currentChat" :key="key" class="mb-4">
-            <q-chat-message
-              @click.prevent="goToSnap(message)"
-              ref="chatMessageeRef"
-              :name="
+          <div v-for="(message, key) in currentChat" :key="key" class="mb-6">
+            <!-- :name="
                 message.senderId == userStore.user.uid
                   ? 'Me'
                   : userStore.currentChatFriend[1].friendInfo.userName
-              "
+              " -->
+            <q-chat-message
+              @click.prevent="goToSnap(message)"
+              ref="chatMessageeRef"
               :sent="message.senderId == userStore.user.uid ? true : false"
               :bg-color="
                 message.senderId == userStore.user.uid
                   ? 'light-blue-3'
                   : 'light-green-3'
               "
+              :class="`${$q.dark.isActive ? 'text-teal-50' : ''}`"
               :avatar="
                 message.senderId == userStore.user.uid
                   ? userStore.user.photoURL
                   : userStore.currentChatFriend[1].friendInfo.photoURL
               "
             >
-              <div class="flex flex-col space-y-2">
+              <div
+                class="flex flex-col space-y-2"
+                :class="`${$q.dark.isActive ? '!text-teal-900' : ''}`"
+              >
                 <img :src="message.img" />
                 {{ message.text }}
                 <q-chip
+                  :class="`${$q.dark.isActive ? '!text-teal-900' : ''}`"
                   class="bg-transparent rounded-lg flex items-center space-x-4 w-full"
                   v-if="message.snap && message.senderId == userStore.user.uid"
                   ><img src="../assets/red.svg" class="h-8 w-8" />
@@ -71,12 +79,14 @@
                 >
 
                 <q-chip
+                  :class="`${$q.dark.isActive ? '!text-teal-900' : ''}`"
                   class="bg-transparent rounded-lg flex items-center space-x-4 w-full"
                   v-if="message.snap && message.senderId != userStore.user.uid"
                   ><img src="../assets/red.svg" class="h-8 w-8" />
                   <span>You have received a new snap</span></q-chip
                 >
                 <q-chip
+                  :class="`${$q.dark.isActive ? '!text-teal-900' : ''}`"
                   class="bg-transparent rounded-lg flex items-center space-x-4 w-full"
                   v-if="
                     message.snapMessage &&
@@ -86,26 +96,26 @@
                   <span>{{ message.snapMessage }}</span></q-chip
                 >
                 <q-chip
+                  :class="`${$q.dark.isActive ? '!text-teal-900' : ''}`"
                   class="bg-transparent mr-6 rounded-lg flex items-center space-x-4 w-full"
                   v-if="
                     message.snapMessage &&
                     message.senderId != userStore.user.uid
                   "
                   ><q-icon name="crop_square" size="lg" color="red" />
-                  <span
-                    >Snap viewed </span
-                  ></q-chip
+                  <span>Snap viewed </span></q-chip
                 >
               </div>
             </q-chat-message>
             <span
               v-if="message.date && !message.snap"
-              class="text-gray-800 font-bold text-xs"
+              class="font-medium text-[0.6rem]"
               :class="`${
                 message.senderId == userStore.user.uid
                   ? 'absolute right-[3.8rem]'
                   : 'absolute left-[3.8rem]'
-              }`"
+              }
+              ${$q.dark.isActive ? 'text-teal-100' : 'text-gray-800'}`"
               >{{ timeago.format(message?.date?.toDate().toISOString()) }}</span
             >
           </div>
@@ -122,13 +132,18 @@
       </q-page>
     </q-page-container>
 
-    <q-footer class="bg-violet-900 h-16 text-white">
+    <q-footer
+      class="bg-violet-900 h-16"
+      :class="`${$q.dark.isActive ? 'text-teal-50' : 'text-white'}`"
+    >
       <q-toolbar>
         <q-toolbar-title>
           <q-form @submit="handleSend" class="full-width">
             <q-input
               v-model="newMessage"
-              bg-color="white"
+              :bg-color="$q.dark.isActive?'gray-700  ':'teal-50'"
+              class="text-lg font-semibold"
+              :class="$q.dark.isActive?'text-white ':'text-black'"
               outlined
               rounded
               placeholder="Message"
@@ -323,10 +338,6 @@ const { currentChat } = storeToRefs(userStore);
 
 //lifecycle hooks
 const route = useRoute();
-
-const chatMessageRef = ref();
-
-const { getScrollTarget } = scroll;
 
 watch(currentChat, () => {
   // scrollToBottom()
@@ -646,6 +657,9 @@ onMounted(() => {
   onSnapshot(doc(db, 'chats', chatId), (doc) => {
     userStore.setCurrentChat(doc.data()?.messages);
   });
+
+  scrollToBottom()
+
 });
 </script>
 

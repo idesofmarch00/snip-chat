@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 
 //imports firebase
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth, storage, db, gProvider } from '../boot/firebase';
+import { auth, storage, db } from '../boot/firebase';
 import {
   ref as refStorage,
   uploadBytesResumable,
@@ -266,7 +266,7 @@ function signUpWithGoogle() {
         label="Sign Up"
       />
 
-      <p class="text-gray-700">
+      <p :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-gray-700'}`">
         Already have an account ?
         <router-link
           to="/login"
@@ -276,7 +276,10 @@ function signUpWithGoogle() {
         </router-link>
       </p>
       <div class="flex items-center justify-center flex-col w-full h-full">
-        <p class="text-gray-600 mb-4">or</p>
+        <p class="mb-4"
+    :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-gray-600'}`"
+        
+        >or</p>
         <div class="flex flex-col items-center space-y-1">
           <div
             class="rounded flex items-center h-12 w-52 google-blue text-gray-100 hover:text-white shadow font-bold text-sm"

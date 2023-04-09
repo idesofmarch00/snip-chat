@@ -17,6 +17,9 @@ import { useRouter } from 'vue-router';
 
 import * as timeago from 'timeago.js';
 
+import { useQuasar } from 'quasar';
+const $q = useQuasar();
+
 const userStore = useUserStore();
 let allChats: any = [];
 const sortedChats = ref();
@@ -80,7 +83,10 @@ function Sort() {
 </script>
 
 <template>
-  <q-page class="items-center justify-evenly">
+  <q-page
+    class="items-center justify-evenly"
+    :class="`${$q.dark.isActive ? 'bg-gray-700 ' : 'bg-white'}`"
+  >
     <div
       v-if="userStore.userChats?.length && !loading"
       class="my-2 flex flex-col items-center space-y-3"
@@ -91,7 +97,12 @@ function Sort() {
         v-ripple
         v-for="chat in sortedChats"
         :key="chat[0]"
-        class="bg-violet-100 w-full"
+        class="w-full"
+        :class="`${
+          $q.dark.isActive
+            ? 'bg-gray-600 border-[0.5px] border-teal-700'
+            : 'bg-violet-100'
+        }`"
       >
         <q-item-section side>
           <q-avatar rounded size="48px">
@@ -105,37 +116,51 @@ function Sort() {
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <q-item-label class="text-violet-900 text-lg">{{
-            chat[1]?.friendInfo?.userName
-          }}</q-item-label>
+          <q-item-label
+            class="text-lg"
+            :class="`${$q.dark.isActive ? 'text-teal-50' : 'text-violet-900'}`"
+            >{{ chat[1]?.friendInfo?.userName }}</q-item-label
+          >
 
           <div
             class="flex space-x-2 items-end mt-1"
             v-if="!chat[1]?.lastMessage?.snap && !chat[1]?.lastMessage?.msg"
+        :class="`${$q.dark.isActive?'text-teal-100':'text-gray-300'}`"
           >
             <img
               :src="chat[1]?.lastMessage?.img"
               v-if="chat[1]?.lastMessage?.img"
               class="h-4 w-4"
             />
-            <q-item-label caption v-if="chat[1]?.lastMessage?.text">{{
-              chat[1]?.lastMessage?.text
-            }}</q-item-label>
+            <q-item-label
+              caption
+              v-if="chat[1]?.lastMessage?.text"
+              >{{ chat[1]?.lastMessage?.text }}</q-item-label
+            >
           </div>
-          <div class="flex space-x-2 items-end mt-1 font-mono">
+          <div
+            class="flex space-x-2 items-end mt-1 font-mono"
+            :class="`${$q.dark.isActive ? 'text-teal-100' : 'text-gray-600'}`"
+          >
             <q-item-label caption v-if="!chat[1]?.lastMessage"
               >(Send your first message!)</q-item-label
             >
           </div>
           <div
             v-if="chat[1]?.lastMessage?.snap"
-            class="text-xs text-gray-600 mt-1"
+            class="text-xs mt-1"
+            :class="`${$q.dark.isActive ? 'text-teal-100' : 'text-gray-600'}`"
           >
             {{ timeago.format(chat[1]?.date?.toDate().toISOString()) }}
           </div>
           <div
             v-if="chat[1]?.lastMessage?.msg"
-            class="py-[0.15rem] px-1 border border-gray-400 rounded-lg h-5 w-24 bg-slate-50 text-[0.6rem] text-gray-700 mt-1"
+            class="py-[0.15rem] px-1 rounded-lg h-5 w-fit text-[0.6rem] mt-1"
+            :class="`${
+              $q.dark.isActive
+                ? 'text-teal-700 border border-teal-300 bg-teal-100'
+                : 'text-gray-700 border border-gray-400 bg-slate-50  '
+            }`"
           >
             {{ chat[1]?.lastMessage?.msg }}
           </div>
@@ -147,6 +172,7 @@ function Sort() {
             !chat[1]?.lastMessage?.msg &&
             chat[1]?.lastMessage
           "
+          :class="`${$q.dark.isActive ? 'text-teal-100' : 'text-gray-600'}`"
           >{{
             timeago.format(chat[1]?.date?.toDate().toISOString())
           }}</q-item-section
@@ -175,6 +201,7 @@ function Sort() {
     <div
       v-if="!userStore.userChats?.length && !loading"
       class="flex flex-col space-y-4 items-center justify-center my-10 font-bold"
+      :class="`${$q.dark.isActive ? 'text-teal-50' : 'text-black'}`"
     >
       <p class="text-lg">You have no recent chats.</p>
       <p>Add a friend to start chatting.</p>

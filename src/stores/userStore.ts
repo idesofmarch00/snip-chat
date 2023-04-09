@@ -11,6 +11,7 @@ export const useUserStore = defineStore('userStore', () => {
   const userChats = ref();
   const currentChat = ref();
   const currentChatFriend = ref();
+  const darkMode = ref(false);
 
   function setUser(firebaseUser: any) {
     user.value = firebaseUser;
@@ -40,6 +41,10 @@ export const useUserStore = defineStore('userStore', () => {
     currentChatFriend.value=friend;
   }
 
+  function setDarkMode(mode:any){
+    darkMode.value=mode;
+  }
+
   return {
     user,
     userClaim,
@@ -53,8 +58,10 @@ export const useUserStore = defineStore('userStore', () => {
     setAllUsers,
     allUsers,
     setCurrentChat,
-currentChat,
-setCurrentChatFriend,
-currentChatFriend,
+    currentChat,
+    setCurrentChatFriend,
+    currentChatFriend,
+    setDarkMode,
+    darkMode,
   };
 });

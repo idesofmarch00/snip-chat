@@ -23,8 +23,12 @@ const router = useRouter();
 </script>
 
 <template>
-  <div class="flex flex-col space-y-4 items-center justify-center min-h-screen">
-    <h1 class="text-center font-bold text-5xl">Snip Chat</h1>
+  <div
+    class="flex flex-col space-y-4 items-center justify-center min-h-screen"
+  >
+    <h1 class="text-center font-bold text-5xl"
+    :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-teal-900'}`"
+    >Snip Chat</h1>
     <img src="../assets/handshake.png" />
     <div>
       <q-spinner color="blue" size="5em" :thickness="2" />

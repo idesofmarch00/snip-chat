@@ -69,64 +69,62 @@ const emit = defineEmits(['pushURL', 'url.value']);
 </script>
 
 <template>
-  <div>
-    <div
-      v-if="!loading"
-      class="h-[calc(100vh-80px)] flex flex-col items-center px-4 space-y-8 relative py-1 md:border md:h-11/12 pt-4"
-    >
-      <q-avatar size="100px" font-size="52px"><img :src="img" /></q-avatar>
-      <q-input
-        outlined
-        v-model="first_name"
-        :placeholder="first_name"
-        label="First Name"
-        disable
-        readonly
-        stack-label
-        :dense="dense"
-        class="w-full self-start"
-      /><q-input
-        outlined
-        v-model="last_name"
-        :placeholder="last_name"
-        label="Last Name"
-        disable
-        readonly
-        stack-label
-        :dense="dense"
-        class="w-full self-start"
-      /><q-input
-        outlined
-        v-model="email"
-        :placeholder="email"
-        label="Email"
-        disable
-        readonly
-        stack-label
-        :dense="dense"
-        class="w-full self-start"
-      />
+  <div
+    v-if="!loading"
+    class="h-[calc(100vh-50px)] flex flex-col items-center px-4 space-y-8 relative py-1 md:border md:h-11/12 pt-4"
+    :class="`${
+      $q.dark.isActive ? 'bg-gray-800' : 'bg-white'
+    }`"
+  >
+    <q-avatar size="100px" font-size="52px"><img :src="img" /></q-avatar>
+    <q-input
+      outlined
+      v-model="first_name"
+      :placeholder="first_name"
+      label="First Name"
+      disable
+      readonly
+      stack-label
+      :dense="dense"
+      class="w-full self-start text-lg"
+    /><q-input
+      outlined
+      v-model="last_name"
+      :placeholder="last_name"
+      label="Last Name"
+      disable
+      readonly
+      stack-label
+      :dense="dense"
+      class="w-full self-start text-lg"
+    /><q-input
+      outlined
+      v-model="email"
+      :placeholder="email"
+      label="Email"
+      disable
+      readonly
+      stack-label
+      :dense="dense"
+      class="w-full self-start text-lg"
+    />
 
-      <div class="mt-4 self-start">
-        <button
-          v-if="disabled"
-          @click="disabled = false"
-          class="w-28 rounded-lg bg-teal-500 font-bold p-2 text-white"
-        >
-          Edit profile
+    <div class="mt-4 self-start">
+      <button
+        v-if="disabled"
+        @click="disabled = false"
+        class="w-28 rounded-lg bg-teal-500 font-bold p-2 text-white"
+      >
+        Edit profile
+      </button>
+      <div v-else class="flex items-center gap-x-3">
+        <button @click="updateProfile" class="w-28 btn btn-blue font-bold">
+          Update
         </button>
-        <div v-else class="flex items-center gap-x-3">
-          <button @click="updateProfile" class="w-28 btn btn-blue font-bold">
-            Update
-          </button>
-          <button @click="disabled = true" class="w-28 btn btn-red font-bold">
-            Cancel
-          </button>
-        </div>
+        <button @click="disabled = true" class="w-28 btn btn-red font-bold">
+          Cancel
+        </button>
       </div>
-    </div>
-    <div v-else class="h-[calc(100vh-150px)] container-center justify-center">
-      <Spinner :color="'green-spin'" :size="'spinner-lg'" />
     </div>
   </div>
 </template>
