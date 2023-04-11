@@ -50,6 +50,12 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
+    name: 'Offline',
+    path: '/offline',
+    component: () => import('pages/offlinePage.vue'),
+  },
+
+  {
     name: 'Dashboard',
     path: '/dashboard',
     component: () => import('layouts/MainLayout.vue'),

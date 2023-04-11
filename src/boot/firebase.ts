@@ -29,6 +29,18 @@ export const storage = getStorage();
 export const db = getFirestore();
 const gProvider = new GoogleAuthProvider();
 
+// enable offline data
+// db.enablePersistence()
+//   .catch(function(err:any) {
+//     if (err.code == 'failed-precondition') {
+//       // probably multible tabs open at once
+//       console.log('persistance failed');
+//     } else if (err.code == 'unimplemented') {
+//       // lack of browser support for the feature
+//       console.log('persistance not available');
+//     }
+//   });
+
 onAuthStateChanged(auth, async (user) => {
   const userStore = useUserStore();
   userStore.setUser(user);
