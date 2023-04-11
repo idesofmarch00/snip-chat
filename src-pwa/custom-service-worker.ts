@@ -15,19 +15,14 @@ import {
   // PrecacheController,
   // getCachedURLs,
 } from 'workbox-precaching';
-import {
-  registerRoute,
-  NavigationRoute,
-  setCatchHandler,
-} from 'workbox-routing';
-import { offlineFallback, warmStrategyCache } from 'workbox-recipes';
+import { registerRoute, NavigationRoute } from 'workbox-routing';
+
 import { ExpirationPlugin } from 'workbox-expiration';
 import {
   NetworkFirst,
   // CacheFirst,
   StaleWhileRevalidate,
   NetworkOnly,
-  CacheFirst,
 } from 'workbox-strategies';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
@@ -83,36 +78,19 @@ registerRoute(
 
 registerRoute(
   /^(https?:\/\/)?firestore\.googleapis\.com$/,
-  new NetworkFirst({
+  new StaleWhileRevalidate({
     cacheName: 'firebase-api',
     plugins: [
       new ExpirationPlugin({
         maxEntries: 20,
       }),
-      // new PrecacheFallbackPlugin({
-      //   fallbackURL: '/offline.html',
-      // }),
     ],
   })
 );
 
-// This can be any strategy, CacheFirst used as an example.
-// const strategy = new CacheFirst();
-// const urls = ['/offline.html'];
-
-// warmStrategyCache({ urls, strategy });
-
-// setCatchHandler((event: any) => {
-//   // Fallback to the offline page for navigation requests.
-//   if (event.request.mode === 'navigate') {
-//     return caches.match('/offline.html');
-//   }
-//   return Response.error();
-// });
-
 registerRoute(
   ({ request }) => request.mode === 'navigate',
-  new NetworkFirst({
+  new NetworkOnly({
     plugins: [
       new PrecacheFallbackPlugin({
         fallbackURL: '/offline.html',
@@ -120,8 +98,6 @@ registerRoute(
     ],
   })
 );
-
-// offlineFallback();
 
 // registerRoute(
 //   /https:\/\/rickandmortyapi\.com\/api\/character\/avatar\/(.+)\.(?:jpeg|jpg)/,
