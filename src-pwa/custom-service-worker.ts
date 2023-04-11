@@ -12,25 +12,32 @@ import {
   PrecacheFallbackPlugin,
   cleanupOutdatedCaches,
   createHandlerBoundToURL,
+  matchPrecache,
   // PrecacheController,
   // getCachedURLs,
 } from 'workbox-precaching';
-import { registerRoute, NavigationRoute } from 'workbox-routing';
-
+import {
+  registerRoute,
+  NavigationRoute,
+  setCatchHandler,
+} from 'workbox-routing';
+import { warmStrategyCache } from 'workbox-recipes';
 import { ExpirationPlugin } from 'workbox-expiration';
 import {
   NetworkFirst,
-  // CacheFirst,
+  CacheFirst,
   StaleWhileRevalidate,
   NetworkOnly,
 } from 'workbox-strategies';
-import { CacheableResponsePlugin } from 'workbox-cacheable-response';
+import {
+  CacheableResponsePlugin,
+} from 'workbox-cacheable-response';
 
 self.skipWaiting();
 clientsClaim();
 
 // Use with precache injection
-precacheAndRoute(self.__WB_MANIFEST);
+precacheAndRoute(self.__WB_MANIFEST,);
 
 // Get a list of all the URLs currently cached
 // new PrecacheController.getCachedURLs().then((urls:any) => {
@@ -88,16 +95,53 @@ registerRoute(
   })
 );
 
-registerRoute(
-  ({ request }) => request.mode === 'navigate',
-  new NetworkOnly({
-    plugins: [
-      new PrecacheFallbackPlugin({
-        fallbackURL: '/offline.html',
-      }),
-    ],
-  })
-);
+
+// Fallback assets to cache
+const FALLBACK_HTML_URL = '/offline.html';
+const FALLBACK_STRATEGY = new CacheFirst();
+// Warm the runtime cache with a list of asset URLs
+warmStrategyCache({
+  urls: [FALLBACK_HTML_URL],
+  strategy: FALLBACK_STRATEGY,
+});
+
+
+// This "catch" handler is triggered when any of the other routes fail to
+// generate a response.
+setCatchHandler(async ({request}) => {
+  // Fallback assets are precached when the service worker is installed, and are
+  // served in the event of an error below. Use `event`, `request`, and `url` to
+  // figure out how to respond, or use request.destination to match requests for
+  // specific resource types.
+  switch (request.destination) {
+    case 'document':
+      // FALLBACK_HTML_URL must be defined as a precached URL for this to work:
+      return matchPrecache(FALLBACK_HTML_URL);
+
+    default:
+      // If we don't have a fallback, return an error response.
+      return Response.error();
+  }
+});
+
+// Fallback to offline.html
+// setCatchHandler(({ event }) => {
+//   if (event?.request.destination === 'document') {
+//     return caches.match('/offline.html');
+//   }
+//   return Response.error();
+// });
+
+// registerRoute(
+//   ({ request }) => request.mode === 'navigate',
+//   new NetworkOnly({
+//     plugins: [
+//       new PrecacheFallbackPlugin({
+//         fallbackURL: '/offline.html',
+//       }),
+//     ],
+//   })
+// );
 
 // registerRoute(
 //   /https:\/\/rickandmortyapi\.com\/api\/character\/avatar\/(.+)\.(?:jpeg|jpg)/,
