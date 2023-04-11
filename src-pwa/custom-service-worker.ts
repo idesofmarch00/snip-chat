@@ -89,9 +89,9 @@ registerRoute(
       new ExpirationPlugin({
         maxEntries: 20,
       }),
-      new PrecacheFallbackPlugin({
-        fallbackURL: '/offline.html',
-      }),
+      // new PrecacheFallbackPlugin({
+      //   fallbackURL: '/offline.html',
+      // }),
     ],
   })
 );
@@ -110,16 +110,16 @@ registerRoute(
 //   return Response.error();
 // });
 
-// registerRoute(
-//   ({ request }) => request.mode === 'navigate',
-//   new NetworkFirst({
-//     plugins: [
-//       new PrecacheFallbackPlugin({
-//         fallbackURL: '/offline.html',
-//       }),
-//     ],
-//   })
-// );
+registerRoute(
+  ({ request }) => request.mode === 'navigate',
+  new NetworkFirst({
+    plugins: [
+      new PrecacheFallbackPlugin({
+        fallbackURL: '/offline.html',
+      }),
+    ],
+  })
+);
 
 // offlineFallback();
 
