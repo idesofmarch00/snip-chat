@@ -136,12 +136,12 @@ registerRoute(
 // });
 
 // Fallback to offline.html
-// setCatchHandler(({ request }) => {
-//   if (request.destination === 'document') {
-//     return caches.match('/offline.html');
-//   }
-//   return Response.error();
-// });
+setCatchHandler(({ request }) => {
+ if (request.mode === 'navigate'){
+    return caches.match('/offline.html');
+  }
+  return Response.error();
+});
 
 
 
