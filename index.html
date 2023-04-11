@@ -76,7 +76,7 @@
     />
     <link rel="icon" type="image/ico" href="favicon.ico" />
 
-    <link rel="manifest" href="./manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
   </head>
   <body>
     <!-- quasar:entry-point -->
@@ -88,7 +88,7 @@
     // Is service worker available?
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
-        .register('/dist/pwa/sw.js', { scope: '/dist/pwa/' })
+        .register('/sw.js', { scope: '/' })
         .then(() => {
           console.log('Custom Service worker registered!');
         })
