@@ -141,9 +141,9 @@
           <q-form @submit="handleSend" class="full-width">
             <q-input
               v-model="newMessage"
-              :bg-color="$q.dark.isActive?'gray-700  ':'teal-50'"
+              :bg-color="$q.dark.isActive ? 'gray-700  ' : 'teal-50'"
               class="text-lg font-semibold"
-              :class="$q.dark.isActive?'text-white ':'text-black'"
+              :class="$q.dark.isActive ? 'text-white ' : 'text-black'"
               outlined
               rounded
               placeholder="Message"
@@ -623,6 +623,9 @@ const handleSend = async () => {
     }
   } catch (err: any) {
     const errString: string = err.toString();
+    docx.value = null;
+    newMessage.value = '';
+    file.value = null;
     if (errString.includes('No document to update')) {
       alert('User has deleted his account');
     }
@@ -658,8 +661,7 @@ onMounted(() => {
     userStore.setCurrentChat(doc.data()?.messages);
   });
 
-  scrollToBottom()
-
+  scrollToBottom();
 });
 </script>
 
