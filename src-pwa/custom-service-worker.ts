@@ -138,6 +138,7 @@ registerRoute(
 // Fallback to offline.html
 setCatchHandler(({ request }) => {
  if (request.mode === 'navigate'){
+  console.log('req',request)
     return caches.match('/offline.html');
   }
   return Response.error();
