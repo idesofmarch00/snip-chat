@@ -83,7 +83,7 @@ registerRoute(
 
 registerRoute(
   /^(https?:\/\/)?firestore\.googleapis\.com$/,
-  new StaleWhileRevalidate({
+  new NetworkFirst({
     cacheName: 'firebase-api',
     plugins: [
       new ExpirationPlugin({
