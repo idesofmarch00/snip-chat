@@ -69,7 +69,7 @@ if (process.env.MODE !== 'ssr' || process.env.PROD) {
 // Use cache first strategy for assets
 registerRoute(
   /\.(?:png|gif|jpg|jpeg|svg|css|js)$/,
-  new StaleWhileRevalidate({
+  new CacheFirst({
     cacheName: 'assets',
     plugins: [
       new CacheableResponsePlugin({
@@ -95,16 +95,16 @@ registerRoute(
   })
 );
 
-registerRoute(
-  ({ request }) => request.mode === 'navigate',
-  new NetworkOnly({
-    plugins: [
-      new PrecacheFallbackPlugin({
-        fallbackURL: '/offline.html',
-      }),
-    ],
-  })
-);
+// registerRoute(
+//   ({ request }) => request.mode === 'navigate',
+//   new NetworkOnly({
+//     plugins: [
+//       new PrecacheFallbackPlugin({
+//         fallbackURL: '/offline.html',
+//       }),
+//     ],
+//   })
+// );
 
 
 // Fallback assets to cache
