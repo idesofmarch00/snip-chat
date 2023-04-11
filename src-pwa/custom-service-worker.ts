@@ -99,24 +99,24 @@ const urls = ['/offline.html'];
 
 warmStrategyCache({ urls, strategy });
 
-// setCatchHandler((event: any) => {
-//   // Fallback to the offline page for navigation requests.
-//   if (event.request.mode === 'navigate') {
-//     return caches.match('/offline.html');
-//   }
-//   return Response.error();
-// });
+setCatchHandler((event: any) => {
+  // Fallback to the offline page for navigation requests.
+  if (event.request.mode === 'navigate') {
+    return caches.match('/offline.html');
+  }
+  return Response.error();
+});
 
-registerRoute(
-  ({ request }) => request.mode === 'navigate',
-  new NetworkFirst({
-    plugins: [
-      new PrecacheFallbackPlugin({
-        fallbackURL: '/offline.html',
-      }),
-    ],
-  })
-);
+// registerRoute(
+//   ({ request }) => request.mode === 'navigate',
+//   new NetworkFirst({
+//     plugins: [
+//       new PrecacheFallbackPlugin({
+//         fallbackURL: '/offline.html',
+//       }),
+//     ],
+//   })
+// );
 
 // offlineFallback();
 
