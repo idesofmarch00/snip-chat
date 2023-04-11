@@ -1,6 +1,6 @@
-# Quasar App (quasar-project)
+# Quasar App (Snip Chat)
 
-A Quasar Project
+Snip Chat
 
 ## Install the dependencies
 ```bash

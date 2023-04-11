@@ -1,8 +1,8 @@
 {
-  "id": "quasar-project",
+  "id": "Snip Chat",
   "name": "Snip Chat",
-  "short_name": "quasar-project",
-  "description": "A Quasar Project",
+  "short_name": "Snip Chat",
+  "description": "A Chat app build using quasar,firebase and mapbox",
   "display": "standalone",
   "start_url": "/dist/pwa/",
   "orientation": "portrait",
