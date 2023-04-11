@@ -16,7 +16,7 @@ import {
   // getCachedURLs,
 } from 'workbox-precaching';
 import { registerRoute, NavigationRoute } from 'workbox-routing';
-
+import { offlineFallback } from 'workbox-recipes';
 import { ExpirationPlugin } from 'workbox-expiration';
 import {
   NetworkFirst,
@@ -88,16 +88,18 @@ registerRoute(
   })
 );
 
-registerRoute(
-  ({ request }) => request.mode === 'navigate',
-  new NetworkOnly({
-    plugins: [
-      new PrecacheFallbackPlugin({
-        fallbackURL: '/offline.html',
-      }),
-    ],
-  })
-);
+// registerRoute(
+//   ({ request }) => request.mode === 'navigate',
+//   new NetworkOnly({
+//     plugins: [
+//       new PrecacheFallbackPlugin({
+//         fallbackURL: '/offline.html',
+//       }),
+//     ],
+//   })
+// );
+
+offlineFallback();
 
 // registerRoute(
 //   /https:\/\/rickandmortyapi\.com\/api\/character\/avatar\/(.+)\.(?:jpeg|jpg)/,
