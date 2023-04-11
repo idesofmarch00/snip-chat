@@ -15,14 +15,19 @@ import {
   // PrecacheController,
   // getCachedURLs,
 } from 'workbox-precaching';
-import { registerRoute, NavigationRoute } from 'workbox-routing';
-import { offlineFallback } from 'workbox-recipes';
+import {
+  registerRoute,
+  NavigationRoute,
+  setCatchHandler,
+} from 'workbox-routing';
+import { offlineFallback, warmStrategyCache } from 'workbox-recipes';
 import { ExpirationPlugin } from 'workbox-expiration';
 import {
   NetworkFirst,
   // CacheFirst,
   StaleWhileRevalidate,
   NetworkOnly,
+  CacheFirst,
 } from 'workbox-strategies';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
@@ -88,18 +93,32 @@ registerRoute(
   })
 );
 
-// registerRoute(
-//   ({ request }) => request.mode === 'navigate',
-//   new NetworkOnly({
-//     plugins: [
-//       new PrecacheFallbackPlugin({
-//         fallbackURL: '/offline.html',
-//       }),
-//     ],
-//   })
-// );
+// This can be any strategy, CacheFirst used as an example.
+const strategy = new CacheFirst();
+const urls = ['/offline.html'];
 
-offlineFallback();
+warmStrategyCache({ urls, strategy });
+
+// setCatchHandler((event: any) => {
+//   // Fallback to the offline page for navigation requests.
+//   if (event.request.mode === 'navigate') {
+//     return caches.match('/offline.html');
+//   }
+//   return Response.error();
+// });
+
+registerRoute(
+  ({ request }) => request.mode === 'navigate',
+  new NetworkFirst({
+    plugins: [
+      new PrecacheFallbackPlugin({
+        fallbackURL: '/offline.html',
+      }),
+    ],
+  })
+);
+
+// offlineFallback();
 
 // registerRoute(
 //   /https:\/\/rickandmortyapi\.com\/api\/character\/avatar\/(.+)\.(?:jpeg|jpg)/,
