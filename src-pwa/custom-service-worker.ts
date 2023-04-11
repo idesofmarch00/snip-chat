@@ -89,23 +89,26 @@ registerRoute(
       new ExpirationPlugin({
         maxEntries: 20,
       }),
+      new PrecacheFallbackPlugin({
+        fallbackURL: '/offline.html',
+      }),
     ],
   })
 );
 
 // This can be any strategy, CacheFirst used as an example.
-const strategy = new CacheFirst();
-const urls = ['/offline.html'];
+// const strategy = new CacheFirst();
+// const urls = ['/offline.html'];
 
-warmStrategyCache({ urls, strategy });
+// warmStrategyCache({ urls, strategy });
 
-setCatchHandler((event: any) => {
-  // Fallback to the offline page for navigation requests.
-  if (event.request.mode === 'navigate') {
-    return caches.match('/offline.html');
-  }
-  return Response.error();
-});
+// setCatchHandler((event: any) => {
+//   // Fallback to the offline page for navigation requests.
+//   if (event.request.mode === 'navigate') {
+//     return caches.match('/offline.html');
+//   }
+//   return Response.error();
+// });
 
 // registerRoute(
 //   ({ request }) => request.mode === 'navigate',
