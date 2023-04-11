@@ -59,7 +59,6 @@ if (process.env.MODE !== 'ssr' || process.env.PROD) {
 // self.__precacheManifest = [].concat(self.__precacheManifest || []);
 // precacheAndRoute(self.__precacheManifest, {});
 
-
 // Use cache first strategy for assets
 registerRoute(
   /\.(?:png|gif|jpg|jpeg|svg|css|js)$/,
@@ -77,7 +76,6 @@ registerRoute(
   })
 );
 
-
 registerRoute(
   /^(https?:\/\/)?firestore\.googleapis\.com$/,
   new NetworkFirst({
@@ -90,13 +88,12 @@ registerRoute(
   })
 );
 
-
 registerRoute(
   ({ request }) => request.mode === 'navigate',
   new NetworkOnly({
     plugins: [
       new PrecacheFallbackPlugin({
-        fallbackURL: '/offlinePage.vue',
+        fallbackURL: 'assets/offlinePage.51142563.js',
       }),
     ],
   })

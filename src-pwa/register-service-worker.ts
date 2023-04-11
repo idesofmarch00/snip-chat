@@ -12,11 +12,11 @@ register(process.env.SERVICE_WORKER_FILE, {
   registrationOptions: { scope: './' },
 
   ready(/* registration */) {
-    console.log('a.Service worker is active.');
+    console.log('b.Service worker is active.');
   },
 
   registered(/* registration */) {
-    console.log('b.Service worker has been registered.');
+    console.log('a.Service worker has been registered.');
   },
 
   cached(/* registration */) {
