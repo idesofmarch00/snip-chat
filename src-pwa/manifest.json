@@ -1,4 +1,10 @@
 {
+  "id": "quasar-project",
+  "name": "Snip Chat",
+  "short_name": "Snip Chat",
+  "description": "A Chat app build using quasar,firebase and mapbox",
+  "display": "standalone",
+  "start_url": "/",
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#5B21B6",

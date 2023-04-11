@@ -93,7 +93,7 @@ registerRoute(
   new NetworkOnly({
     plugins: [
       new PrecacheFallbackPlugin({
-        fallbackURL: 'assets/offlinePage.51142563.js',
+        fallbackURL: '/offline',
       }),
     ],
   })
