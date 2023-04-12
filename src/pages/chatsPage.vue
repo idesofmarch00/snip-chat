@@ -72,11 +72,13 @@ async function saveFriend(friend: any) {
 }
 
 function Sort() {
-  sortedChats.value = Object.entries(allChats)?.sort(
+  if(allChats){
+    sortedChats.value = Object.entries(allChats)?.sort(
     (a: any, b: any) =>
       new Date(b[1]?.date?.toDate().toISOString()).getTime() -
       new Date(a[1]?.date?.toDate().toISOString()).getTime()
   );
+  }
   userStore.setUserChats(sortedChats.value);
   loading.value = false;
 }

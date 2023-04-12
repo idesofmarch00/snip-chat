@@ -23,8 +23,12 @@ const password = ref('');
 const isPwd = ref(true);
 
 const loading = ref(false);
+const loadingG = ref(false);
+
 
 function googleSignIn() {
+  loadingG.value = true;
+
   gProvider.setCustomParameters({
     display: 'popup',
   });
@@ -38,6 +42,8 @@ function googleSignIn() {
       const user = result.user;
       localStorage.setItem('user', true.toString());
       router.replace('/dashboard');
+      loadingG.value = false;
+
       // IdP data available using getAdditionalUserInfo(result)
       // ...
     })
@@ -69,11 +75,11 @@ function simulateProgress() {
       loading.value = false;
       localStorage.setItem('user', true.toString());
       router.replace('/dashboard');
+      $toast('Sign In Successful', 'success', 'top');
     } catch (err) {
       $toast('Error Login', 'error', 'top');
       loading.value = false;
     }
-    $toast('Sign In Successful', 'success', 'top');
   }, 2000);
 }
 
@@ -139,7 +145,14 @@ onBeforeMount(() => {
             >
               <img src="../assets/google.png" class="h-8 w-8" />
             </div>
-            <div class="pl-3">Sign in with Google</div>
+            <div v-if="!loadingG" class="pl-3">Sign in with Google</div>
+            <q-spinner
+              v-if="loadingG"
+              color="white"
+              size="2em"
+              :thickness="2"
+              class="ml-14"
+            />
           </div>
 
           <!-- <div

@@ -157,7 +157,9 @@ onBeforeMount(() => {
   }
 });
 
+const loadingG = ref(false);
 function signUpWithGoogle() {
+  loadingG.value = true;
   gProvider.setCustomParameters({
     display: 'popup',
   });
@@ -233,7 +235,7 @@ function signUpWithGoogle() {
               //create empty user chats on firestore
               await setDoc(doc(db, 'userChats', user.uid), {});
               $toast('User Registerd', 'success', 'top');
-
+              loadingG.value = true;
               router.replace('/');
             } catch (e) {
               throw new Error('error creating user on firestore', { cause: e });
@@ -395,7 +397,14 @@ function signUpWithGoogle() {
             >
               <img src="../assets/google.png" class="h-8 w-8" />
             </div>
-            <div class="pl-3">Sign up with Google</div>
+            <div v-if="!loadingG" class="pl-3">Sign Up with Google</div>
+            <q-spinner
+              v-if="loadingG"
+              color="white"
+              size="2em"
+              :thickness="2"
+              class="ml-14"
+            />
           </div>
 
           <!-- <div
