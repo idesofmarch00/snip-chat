@@ -25,7 +25,6 @@ const isPwd = ref(true);
 const loading = ref(false);
 const loadingG = ref(false);
 
-
 function googleSignIn() {
   loadingG.value = true;
 

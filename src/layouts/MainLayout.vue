@@ -110,7 +110,10 @@
       </q-item>
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container 
+    :class="`${$q.dark.isActive ? 'bg-gray-700 ' : 'bg-white'}`"
+    
+    >
       <router-view />
     </q-page-container>
 
