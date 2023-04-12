@@ -30,15 +30,13 @@ import {
   StaleWhileRevalidate,
   NetworkOnly,
 } from 'workbox-strategies';
-import {
-  CacheableResponsePlugin,
-} from 'workbox-cacheable-response';
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
 self.skipWaiting();
 clientsClaim();
 
 // Use with precache injection
-precacheAndRoute(self.__WB_MANIFEST,);
+precacheAndRoute(self.__WB_MANIFEST);
 
 // Get a list of all the URLs currently cached
 // new PrecacheController.getCachedURLs().then((urls:any) => {
@@ -91,17 +89,6 @@ registerRoute(
       new ExpirationPlugin({
         maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
       }),
-    ],
-  })
-);
-
-
-// const offline :any= getCacheKeyForURL('/offline.html');
-// console.log('offline is ',offline)
-registerRoute(
-  ({ request }) => request.mode === 'navigate',
-  new NetworkOnly({
-    plugins: [
       new PrecacheFallbackPlugin({
         fallbackURL: '/offline',
       }),
@@ -109,7 +96,15 @@ registerRoute(
   })
 );
 
-
-
-
-
+// const offline :any= getCacheKeyForURL('/offline.html');
+// console.log('offline is ',offline)
+// registerRoute(
+//   ({ request }) => request.mode === 'navigate',
+//   new NetworkOnly({
+//     plugins: [
+//       new PrecacheFallbackPlugin({
+//         fallbackURL: '/offline',
+//       }),
+//     ],
+//   })
+// );
