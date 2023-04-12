@@ -90,15 +90,15 @@ registerRoute(
     cacheName: 'firebase-api',
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 20,
+        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
       }),
     ],
   })
 );
 
 
-const offline :any= getCacheKeyForURL('/offline.html');
-console.log('offline is ',offline)
+// const offline :any= getCacheKeyForURL('/offline.html');
+// console.log('offline is ',offline)
 registerRoute(
   ({ request }) => request.mode === 'navigate',
   new NetworkOnly({
@@ -140,13 +140,13 @@ registerRoute(
 // });
 
 // Fallback to offline.html
-setCatchHandler(({ request }) => {
- if (request.mode === 'navigate'){
-  console.log('req set catch:',request)
-    return matchPrecache(offline)
-  }
-  return Response.error();
-});
+// setCatchHandler(({ request }) => {
+//  if (request.mode === 'navigate'){
+//   console.log('req set catch:',request)
+//     return matchPrecache(offline)
+//   }
+//   return Response.error();
+// });
 
 
 
