@@ -69,3 +69,42 @@ self.addEventListener('fetch', (evt:any) => {
     );
   }
 });
+
+
+// Fallback assets to cache
+// const FALLBACK_HTML_URL = '/offline.html';
+// const FALLBACK_STRATEGY = new CacheFirst();
+// // Warm the runtime cache with a list of asset URLs
+// warmStrategyCache({
+//   urls: [FALLBACK_HTML_URL],
+//   strategy: FALLBACK_STRATEGY,
+// });
+
+
+// This "catch" handler is triggered when any of the other routes fail to
+// generate a response.
+// setCatchHandler(async ({request}) => {
+//   // Fallback assets are precached when the service worker is installed, and are
+//   // served in the event of an error below. Use `event`, `request`, and `url` to
+//   // figure out how to respond, or use request.destination to match requests for
+//   // specific resource types.
+//   switch (request.destination) {
+//     case 'document':
+//       // FALLBACK_HTML_URL must be defined as a precached URL for this to work:
+//       return matchPrecache(FALLBACK_HTML_URL);
+
+//     default:
+//       // If we don't have a fallback, return an error response.
+//       return Response.error();
+//   }
+// });
+
+// Fallback to offline.html
+// setCatchHandler(({ request }) => {
+//  if (request.mode === 'navigate'){
+//   console.log('req set catch:',request)
+//     return matchPrecache(offline)
+//   }
+//   return Response.error();
+// });
+
