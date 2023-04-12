@@ -13,6 +13,7 @@ import {
   cleanupOutdatedCaches,
   createHandlerBoundToURL,
   matchPrecache,
+  getCacheKeyForURL,
   // PrecacheController,
   // getCachedURLs,
 } from 'workbox-precaching';
@@ -95,16 +96,19 @@ registerRoute(
   })
 );
 
-// registerRoute(
-//   ({ request }) => request.mode === 'navigate',
-//   new NetworkOnly({
-//     plugins: [
-//       new PrecacheFallbackPlugin({
-//         fallbackURL: '/offline.html',
-//       }),
-//     ],
-//   })
-// );
+
+const offline :any= getCacheKeyForURL('/offline.html');
+console.log('offline is ',offline)
+registerRoute(
+  ({ request }) => request.mode === 'navigate',
+  new NetworkOnly({
+    plugins: [
+      new PrecacheFallbackPlugin({
+        fallbackURL: '/offline',
+      }),
+    ],
+  })
+);
 
 
 // Fallback assets to cache
@@ -138,8 +142,8 @@ registerRoute(
 // Fallback to offline.html
 setCatchHandler(({ request }) => {
  if (request.mode === 'navigate'){
-  console.log('req',request)
-    return caches.match('/offline.html');
+  console.log('req set catch:',request)
+    return matchPrecache(offline)
   }
   return Response.error();
 });
