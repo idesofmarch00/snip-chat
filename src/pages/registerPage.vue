@@ -4,8 +4,13 @@ import { ref, onBeforeMount } from 'vue';
 import { useRouter } from 'vue-router';
 
 //imports firebase
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth, storage, db } from '../boot/firebase';
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from 'firebase/auth';
+import { auth, storage, db, gProvider } from '../boot/firebase';
 import {
   ref as refStorage,
   uploadBytesResumable,
@@ -20,10 +25,10 @@ import { getLocation } from '../utils/map';
 const router = useRouter();
 
 //vars
-const firstName = ref('');
-const lastName = ref('');
-const userName = ref('');
-const email = ref('');
+const firstName = ref<any>('');
+const lastName = ref<any>('');
+const userName = ref<any>('');
+const email = ref<any>('');
 const password = ref('');
 const isPwd = ref(true);
 
@@ -50,7 +55,6 @@ function submitHandler() {
         email.value,
         password.value
       );
-      console.log('user', res);
       //create unique pic name
       const storageRef = refStorage(storage, `${userName.value + date}`);
 
@@ -111,11 +115,16 @@ function submitHandler() {
           });
         }
       );
-    } catch (error) {
-      console.log(error);
-      $toast('Error Registering User', 'error', 'top');
-      loading.value = false;
-
+    } catch (error: any) {
+      if (error.message.includes('auth/email-already-in-use')) {
+        alert(
+          'User Already Registered with this email.Use another email to Sign Up.'
+        );
+        loading.value = false;
+      } else {
+        $toast('Error Registering User', 'error', 'top');
+        loading.value = false;
+      }
       // ..
     }
     $toast('User Registerd', 'success', 'top');
@@ -149,7 +158,101 @@ onBeforeMount(() => {
 });
 
 function signUpWithGoogle() {
-  return;
+  gProvider.setCustomParameters({
+    display: 'popup',
+  });
+
+  signInWithPopup(auth, gProvider)
+    .then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential?.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+
+      const fullName: any = user?.displayName?.split(' ');
+      file.value = user.photoURL;
+      firstName.value = fullName[0];
+      lastName.value = fullName[1];
+      email.value = user.email;
+      userName.value =
+        fullName[0] + fullName[1] + Math.floor(Math.random() * 100);
+      // IdP data available using getAdditionalUserInfo(result)
+      // ...
+      //create unique pic name
+
+      const storageRef = refStorage(storage, `${userName.value}`);
+
+      const uploadTask = uploadBytesResumable(storageRef, file.value);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          // Observe state change events such as progress, pause, and resume
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          switch (snapshot.state) {
+            case 'paused':
+              break;
+            case 'running':
+              break;
+          }
+        },
+        (error) => {
+          // Handle unsuccessful uploads
+          console.log('error uploading coz:', error);
+          $toast('Error Uploading Image', 'error', 'top');
+          loading.value = false;
+        },
+        () => {
+          // Handle successful uploads on complete
+          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            //update profile
+            await updateProfile(user, {
+              displayName: userName.value,
+              photoURL: downloadURL,
+            });
+
+            coords.value = await getLocation();
+
+            try {
+              //create user on firestore
+              await setDoc(doc(db, 'users', user.uid), {
+                uid: user.uid,
+                userName: userName.value,
+                firstName: firstName.value,
+                lastName: lastName.value,
+                email: email.value,
+                photoURL: downloadURL,
+                location: coords.value,
+                // online:true,
+              });
+
+              //create empty user chats on firestore
+              await setDoc(doc(db, 'userChats', user.uid), {});
+              $toast('User Registerd', 'success', 'top');
+
+              router.replace('/');
+            } catch (e) {
+              throw new Error('error creating user on firestore', { cause: e });
+            }
+          });
+        }
+      );
+    })
+    .catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      $toast(errorMessage, 'error', 'top');
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      // ...
+    });
 }
 </script>
 
@@ -276,10 +379,12 @@ function signUpWithGoogle() {
         </router-link>
       </p>
       <div class="flex items-center justify-center flex-col w-full h-full">
-        <p class="mb-4"
-    :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-gray-600'}`"
-        
-        >or</p>
+        <p
+          class="mb-4"
+          :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-gray-600'}`"
+        >
+          or
+        </p>
         <div class="flex flex-col items-center space-y-1">
           <div
             class="rounded flex items-center h-12 w-52 google-blue text-gray-100 hover:text-white shadow font-bold text-sm"

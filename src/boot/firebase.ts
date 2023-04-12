@@ -27,7 +27,7 @@ export const firebaseApp = initializeApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
 export const storage = getStorage();
 export const db = getFirestore();
-const gProvider = new GoogleAuthProvider();
+export const gProvider = new GoogleAuthProvider();
 
 // enable offline data
 // db.enablePersistence()
@@ -58,3 +58,5 @@ export const getCurrentUser = () => {
     );
   });
 };
+
+

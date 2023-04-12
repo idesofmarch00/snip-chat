@@ -3,8 +3,12 @@ import { ref, onBeforeMount } from 'vue';
 import { useRouter } from 'vue-router';
 
 //imports firebase
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../boot/firebase';
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from 'firebase/auth';
+import { auth, gProvider } from '../boot/firebase';
 
 import { $toast } from '../utils/notification';
 
@@ -19,6 +23,38 @@ const password = ref('');
 const isPwd = ref(true);
 
 const loading = ref(false);
+
+function googleSignIn() {
+  gProvider.setCustomParameters({
+    display: 'popup',
+  });
+
+  signInWithPopup(auth, gProvider)
+    .then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+      localStorage.setItem('user', true.toString());
+      router.replace('/dashboard');
+      // IdP data available using getAdditionalUserInfo(result)
+      // ...
+    })
+    .catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorMessage, errorCode);
+      // The email of the user's account used.
+      const email = error.customData.email;
+      console.log(email);
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      console.log(credential);
+      // ...
+    });
+}
 
 function simulateProgress() {
   // we set loading state
@@ -49,9 +85,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div
-    class="p-4 flex flex-col items-center space-y-8"
-  >
+  <div class="p-4 flex flex-col items-center space-y-8">
     <div class="flex flex-col items-center space-y-4">
       <div class="text-h4">
         <img src="../assets/handshake.png" class="h-40 w-40" />
@@ -89,14 +123,16 @@ onBeforeMount(() => {
       <div
         class="flex items-center justify-center flex-col space-y-2 border-b-2 p-4 w-full h-full my-4"
       >
-        <p class="text-gray-600 mb-4 text-lg" 
-    :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-gray-600'}`"
-        
-        >or</p>
+        <p
+          class="text-gray-600 mb-4 text-lg"
+          :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-gray-600'}`"
+        >
+          or
+        </p>
         <div class="flex flex-col items-center space-y-1">
           <div
             class="rounded flex items-center h-12 w-52 google-blue text-gray-100 hover:text-white shadow font-bold text-sm"
-            @click.prevent="simulateProgress"
+            @click.prevent="googleSignIn"
           >
             <div
               class="bg-white h-12 w-12 mr-2 flex items-center justify-center"
