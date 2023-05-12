@@ -69,7 +69,7 @@
                 :class="`${$q.dark.isActive ? '!text-teal-900' : ''}`"
               >
                 <img :src="message.img" />
-                {{ message.text }}
+                <span class="">{{ message.text }}</span>
                 <q-chip
                   :class="`${$q.dark.isActive ? '!text-teal-900' : ''}`"
                   class="bg-transparent rounded-lg flex items-center space-x-4 w-full"
@@ -141,9 +141,9 @@
           <q-form @submit="handleSend" class="full-width">
             <q-input
               v-model="newMessage"
-              :bg-color="$q.dark.isActive?'gray-700  ':'teal-50'"
+              :bg-color="$q.dark.isActive ? 'gray-700  ' : 'teal-50'"
               class="text-lg font-semibold"
-              :class="$q.dark.isActive?'text-white ':'text-black'"
+              :class="$q.dark.isActive ? 'text-white ' : 'text-black'"
               outlined
               rounded
               placeholder="Message"
@@ -658,8 +658,7 @@ onMounted(() => {
     userStore.setCurrentChat(doc.data()?.messages);
   });
 
-  scrollToBottom()
-
+  scrollToBottom();
 });
 </script>
 
