@@ -97,6 +97,9 @@ function addToSend(friend: any) {
 
 function sendNewSnap() {
   try {
+    if (selectedArray.length ===0){
+      return ;
+    }
     selectedArray.forEach((chatId: any) => {
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
@@ -233,7 +236,7 @@ function sendNewSnap() {
   >
     <q-card class=" text-teal-50"
     :class="`${$q.dark.isActive ? 'bg-gray-700 ' : 'bg-violet-800'}`"
-    
+
     >
       <q-bar>
         <q-space />
