@@ -63,7 +63,7 @@
           <q-item-section>Settings</q-item-section>
         </q-item>
 
-        <!-- <q-item
+        <q-item
           clickable
           v-ripple
           :active="link === 'help'"
@@ -76,9 +76,9 @@
           </q-item-section>
 
           <q-item-section>Help</q-item-section>
-        </q-item> -->
+        </q-item>
 
-        <!-- <q-item
+        <q-item
           clickable
           v-ripple
           :active="link === 'about'"
@@ -91,8 +91,25 @@
           </q-item-section>
 
           <q-item-section>About</q-item-section>
-        </q-item> -->
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          :active="link === 'policy'"
+          @click="link = 'policy'"
+          active-class="my-menu-link"
+          to="/privacyPolicy"
+        >
+          <q-item-section avatar>
+            <q-icon name="note" />
+          </q-item-section>
+
+          <q-item-section>Policy</q-item-section>
+        </q-item>
       </q-list>
+
+
 
       <q-item
         class="fixed-bottom mb-2 text-lg text-white font-bold"
@@ -158,7 +175,7 @@
     transition-hide="scale"
   >
     <q-card class="bg-teal text-white" style="width: 300px"
-     
+
     >
       <q-card-section>
         <div class="text-h6">Add Friend</div>
@@ -192,7 +209,7 @@
       <!-- list of users -->
       <q-card
         class="w-full max-h-[calc(100vh-5rem)] flex flex-col space-y-0 overflow-auto bg-white"
-        
+
       >
         <!-- card -->
         <div
@@ -229,7 +246,7 @@
             </q-item-section>
 
             <q-item-section class="flex flex-col items-start"
-            
+
             >
               <q-item-label class=" font-bold text-lg ">{{
                 friend.userName

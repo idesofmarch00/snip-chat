@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <div class="q-pa-md q-gutter-md">
-      <!-- <p>    Welcome to the support and help page for our Quasar-based Progressive Web
+    <!-- <p>    Welcome to the support and help page for our Quasar-based Progressive Web
     App (PWA) with chatting, media sharing, location sharing, login, and
     registration features. If you're having trouble using any of these features
     or experiencing technical difficulties, you've come to the right place.
@@ -42,29 +42,21 @@
         </q-item>
         <q-item>
           <q-item-section>
-            <q-item-label>Mail Us</q-item-label>
+            <q-item-label>Contact Us</q-item-label>
           </q-item-section>
-          <q-item-section side class="flex">
-            <a
-              href="mailto:sa.idesofmarch@gmail.com?subject
-              =Support"
-              target="_blank"
-            >
-              <q-icon name="mail_outline" size="md" />
-            </a>
+          <q-item-section side>
+            <q-icon name="mail_outline" size="md" />
           </q-item-section>
         </q-item>
-        <!-- <q-item>
+        <q-item>
           <q-item-section>
             <q-item-label>Support Center</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-icon name="info_outline" size="md" />
           </q-item-section>
-        </q-item> -->
+        </q-item>
       </q-list>
     </div>
   </q-page>
 </template>
-
-<script></script>
