@@ -21,14 +21,14 @@
             <q-toggle v-model="notificationSound" />
           </q-item-section>
         </q-item>
-        <!-- <q-item>
+        <q-item>
           <q-item-section>
             <q-item-label>Location Sharing</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-toggle v-model="locationSharing" />
           </q-item-section>
-        </q-item> -->
+        </q-item>
         <!-- <q-item>
           <q-item-section>
             <q-item-label>Language</q-item-label>
@@ -89,7 +89,7 @@ const router = useRouter();
 const darkMode = ref(userStore.darkMode);
 const notificationSound = ref(true);
 const locationSharing = ref(true);
-const selectedLanguage = ref('');
+// const selectedLanguage = ref('');
 // const languageOptions = [
 //   { label: 'English', value: 'en' },
 //   { label: 'Spanish', value: 'es' },
