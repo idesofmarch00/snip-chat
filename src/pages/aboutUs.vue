@@ -6,11 +6,9 @@
         make communication easier and more engaging than ever before. Our
         platform allows users to share media, including disappearing photos, and
         location through map in real-time as well as a user-friendly interface
-        that allows for easy login and registration. We understand the
-        importance of keeping your information secure and private, so we do not
-        share your data with any third party. We're committed to providing our
-        users with the best experience possible, so we're always improving and
-        updating our app.
+        that allows for easy login and registration. We're committed to
+        providing our users with the best experience possible, so we're always
+        improving and updating our app.
       </p>
       <q-card class="flex items-center justify-center">
         <q-card-section>
