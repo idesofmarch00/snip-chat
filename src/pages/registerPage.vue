@@ -103,6 +103,7 @@ function submitHandler() {
 
               //create empty user chats on firestore
               await setDoc(doc(db, 'userChats', res.user.uid), {});
+              $toast('User Registered', 'success', 'top');
               router.replace('/');
             } catch (e) {
               throw new Error('error creating user on firestore', { cause: e });
@@ -118,7 +119,6 @@ function submitHandler() {
 
       // ..
     }
-    $toast('User Registerd', 'success', 'top');
   }, 2000);
 }
 
@@ -276,10 +276,12 @@ function signUpWithGoogle() {
         </router-link>
       </p>
       <div class="flex items-center justify-center flex-col w-full h-full">
-        <p class="mb-4"
-    :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-gray-600'}`"
-        
-        >or</p>
+        <p
+          class="mb-4"
+          :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-gray-600'}`"
+        >
+          or
+        </p>
         <div class="flex flex-col items-center space-y-1">
           <div
             class="rounded flex items-center h-12 w-52 google-blue text-gray-100 hover:text-white shadow font-bold text-sm"

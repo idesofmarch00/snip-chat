@@ -97,8 +97,8 @@ function addToSend(friend: any) {
 
 function sendNewSnap() {
   try {
-    if (selectedArray.length ===0){
-      return ;
+    if (selectedArray.length === 0) {
+      return;
     }
     selectedArray.forEach((chatId: any) => {
       const storageRef = fireStorageRef(storage, `${uuid()}`);
@@ -234,9 +234,9 @@ function sendNewSnap() {
     transition-show="slide-up"
     transition-hide="slide-down"
   >
-    <q-card class=" text-teal-50"
-    :class="`${$q.dark.isActive ? 'bg-gray-700 ' : 'bg-violet-800'}`"
-
+    <q-card
+      class="text-teal-50"
+      :class="`${$q.dark.isActive ? 'bg-gray-700 ' : 'bg-violet-800'}`"
     >
       <q-bar>
         <q-space />
@@ -245,10 +245,10 @@ function sendNewSnap() {
         </q-btn>
       </q-bar>
 
-      <div class="flex flex-col items-center justify-evenly">
+      <div class="flex flex-col items-center justify-evenly overflow-y-auto">
         <div
           v-if="userStore.userChats.length"
-          class="my-2 flex flex-col items-center space-y-3 w-11/12 overflow-auto"
+          class="my-2 items-center space-y-3 w-11/12 max-h-[calc(100vh-6rem)]"
         >
           <q-item
             @click.prevent="addToSend(chat)"
@@ -257,11 +257,11 @@ function sendNewSnap() {
             v-for="chat in userStore.userChats"
             :key="chat[0]"
             class="w-full"
-             :class="`${
-          $q.dark.isActive
-            ? 'bg-gray-600 border-[0.5px] border-teal-700'
-            : 'bg-violet-100'
-        }`"
+            :class="`${
+              $q.dark.isActive
+                ? 'bg-gray-600 border-[0.5px] border-teal-700'
+                : 'bg-violet-100'
+            }`"
           >
             <q-item-section side>
               <q-avatar rounded size="48px">

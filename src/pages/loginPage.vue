@@ -17,28 +17,39 @@ const router = useRouter();
 const email = ref('');
 const password = ref('');
 const isPwd = ref(true);
+const error = ref(false);
 
 const loading = ref(false);
 
+const res = ref<any>();
 function simulateProgress() {
-  // we set loading state
-  loading.value = true;
+  if (!email.value || !password.value) {
+    alert('Please enter the email and password before login');
+  } else {
+    // we set loading state
+    loading.value = true;
 
-  // simulate a delay
-  setTimeout(async () => {
-    // we're done, we reset loading state
+    // simulate a delay
+    setTimeout(async () => {
+      // we're done, we reset loading state
 
-    try {
-      await signInWithEmailAndPassword(auth, email.value, password.value);
-      loading.value = false;
-      localStorage.setItem('user', true.toString());
-      router.replace('/dashboard');
-    } catch (err) {
-      $toast('Error Login', 'error', 'top');
-      loading.value = false;
-    }
-    $toast('Sign In Successful', 'success', 'top');
-  }, 2000);
+      try {
+        res.value = await signInWithEmailAndPassword(
+          auth,
+          email.value,
+          password.value
+        );
+        loading.value = false;
+        localStorage.setItem('user', true.toString());
+        $toast('Sign In Successful', 'success', 'top');
+        router.replace('/dashboard');
+      } catch (err) {
+        $toast('Error Login', 'error', 'top');
+        error.value = true;
+        loading.value = false;
+      }
+    }, 2000);
+  }
 }
 
 onBeforeMount(() => {
@@ -49,9 +60,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div
-    class="p-4 flex flex-col items-center space-y-8"
-  >
+  <div class="p-4 flex flex-col items-center space-y-8">
     <div class="flex flex-col items-center space-y-4">
       <div class="text-h4">
         <img src="../assets/handshake.png" class="h-40 w-40" />
@@ -85,14 +94,19 @@ onBeforeMount(() => {
         @click="simulateProgress"
         label="Sign In"
       />
+      <p v-if="error" class="text-red-500 text-xs animate-pulse">
+        Incorrect email or password
+      </p>
 
       <div
         class="flex items-center justify-center flex-col space-y-2 border-b-2 p-4 w-full h-full my-4"
       >
-        <p class="text-gray-600 mb-4 text-lg" 
-    :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-gray-600'}`"
-        
-        >or</p>
+        <p
+          class="text-gray-600 mb-4 text-lg"
+          :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-gray-600'}`"
+        >
+          or
+        </p>
         <div class="flex flex-col items-center space-y-1">
           <div
             class="rounded flex items-center h-12 w-52 google-blue text-gray-100 hover:text-white shadow font-bold text-sm"
