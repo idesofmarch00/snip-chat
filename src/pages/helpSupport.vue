@@ -1,36 +1,6 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md text-lg">
     <div class="q-pa-md q-gutter-md">
-      <!-- <p>    Welcome to the support and help page for our Quasar-based Progressive Web
-    App (PWA) with chatting, media sharing, location sharing, login, and
-    registration features. If you're having trouble using any of these features
-    or experiencing technical difficulties, you've come to the right place.
-    Below, you'll find a list of common issues and their solutions. Chatting
-    Feature If you're having trouble sending messages, make sure you have an
-    internet connection and that the recipient is online. If the chat feature is
-    not loading or displaying messages, try refreshing the page or logging out
-    and back in. If you're experiencing delayed message delivery, it could be
-    due to poor network connectivity. Media Sharing Feature If you're having
-    trouble uploading photos or videos, make sure they meet the size and format
-    requirements specified in the app. If the media sharing feature is not
-    loading or displaying uploaded content, try refreshing the page or logging
-    out and back in. If you're experiencing slow upload speeds, it could be due
-    to poor network connectivity. Location Sharing Feature If you're having
-    trouble sharing your location, make sure your device's location services are
-    turned on and that the app has been granted permission to access them. If
-    the location sharing feature is not loading or displaying locations, try
-    refreshing the page or logging out and back in. If you're experiencing
-    inaccurate location data, it could be due to poor GPS signal or outdated map
-    data. Login and Registration Features If you're having trouble logging in or
-    registering, make sure you're using the correct username and password. If
-    you've forgotten your password, use the "forgot password" feature to reset
-    it. If you're experiencing issues with the registration process, make sure
-    you're entering valid and complete information in all required fields. If
-    you're still experiencing technical difficulties after trying the above
-    solutions, please contact our support team for further assistance. You can
-    reach us through the contact information provided in the app or on our
-    website. Thank you for choosing our PWA, and we hope you enjoy using it! -
-    by Sahil Ahmed</p> -->
       <q-list bordered>
         <q-item>
           <q-item-section>
@@ -43,17 +13,18 @@
         <q-list bordered>
           <q-expansion-item
             group="somegroup"
-            icon="explore"
-            label="First"
+            icon="
+signal_cellular_connected_no_internet_0_bar
+"
+            label="Trouble sending messages"
             default-opened
-            header-class="text-primary"
+            header-class="text-light-blue"
           >
             <q-card>
               <q-card-section>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Quidem, eius reprehenderit eos corrupti commodi magni quaerat ex
-                numquam, dolorum officiis modi facere maiores architecto
-                suscipit iste eveniet doloribus ullam aliquid.
+                Make sure you have an internet connection.If you're experiencing
+                delayed message delivery, it could be due to poor network
+                connectivity
               </q-card-section>
             </q-card>
           </q-expansion-item>
@@ -62,16 +33,14 @@
 
           <q-expansion-item
             group="somegroup"
-            icon="perm_identity"
-            label="Second"
-            header-class="text-teal"
+            icon="file_upload_off"
+            label="Trouble downloading and uploading"
+            header-class="text-orange"
           >
             <q-card>
               <q-card-section>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Quidem, eius reprehenderit eos corrupti commodi magni quaerat ex
-                numquam, dolorum officiis modi facere maiores architecto
-                suscipit iste eveniet doloribus ullam aliquid.
+                If you're experiencing slow upload speeds, it could be due to
+                poor network connectivity
               </q-card-section>
             </q-card>
           </q-expansion-item>
@@ -80,16 +49,18 @@
 
           <q-expansion-item
             group="somegroup"
-            icon="shopping_cart"
-            label="Third"
-            header-class="text-purple"
+            icon="explore"
+            label="Trouble with Maps"
+            header-class="text-pink"
           >
             <q-card>
               <q-card-section>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Quidem, eius reprehenderit eos corrupti commodi magni quaerat ex
-                numquam, dolorum officiis modi facere maiores architecto
-                suscipit iste eveniet doloribus ullam aliquid.
+                Make sure your device's location services are turned on and that
+                the app has been granted permission to access them.I map is not
+                loading or displaying locations, try closing app after granting
+                location permissions and reopening it.If you're experiencing
+                inaccurate location data, it could be due to poor GPS signal or
+                outdated map data.
               </q-card-section>
             </q-card>
           </q-expansion-item>
@@ -98,17 +69,15 @@
 
           <q-expansion-item
             group="somegroup"
-            icon="bluetooth"
-            label="Fourth"
-            header-class="bg-teal text-white"
-            expand-icon-class="text-white"
+            icon="password"
+            label="Change password"
+            header-class="text-yellow"
+            expand-icon-class="text-yellow"
           >
-            <q-card class="bg-teal-2">
+            <q-card class="">
               <q-card-section>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Quidem, eius reprehenderit eos corrupti commodi magni quaerat ex
-                numquam, dolorum officiis modi facere maiores architecto
-                suscipit iste eveniet doloribus ullam aliquid.
+                You cannot change your password currently.Contact us on mail for
+                any further queries
               </q-card-section>
             </q-card>
           </q-expansion-item>
@@ -123,21 +92,24 @@
           </q-item-section>
         </q-item> -->
       </q-list>
-    </div>
-    <q-item class="">
-      <q-item-section>
-        <q-item-label>Mail Us </q-item-label>
-      </q-item-section>
-      <q-item-section side class="flex">
-        <a
-          href="mailto:sa.idesofmarch@gmail.com?subject
+
+      <q-list bordered>
+        <q-item class="">
+          <q-item-section>
+            <q-item-label>Mail Us </q-item-label>
+          </q-item-section>
+          <q-item-section side class="flex">
+            <a
+              href="mailto:sa.idesofmarch@gmail.com?subject
               =Support"
-          target="_blank"
-        >
-          <q-icon name="mail_outline" size="md" />
-        </a>
-      </q-item-section>
-    </q-item>
+              target="_blank"
+            >
+              <q-icon name="mail_outline" size="md" />
+            </a>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </div>
   </q-page>
 </template>
 
