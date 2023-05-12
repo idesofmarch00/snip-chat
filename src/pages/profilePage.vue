@@ -118,10 +118,10 @@ const emit = defineEmits(['pushURL', 'url.value']);
         Edit profile
       </button>
       <div v-else class="flex items-center gap-x-3">
-        <button @click="updateProfile" class="w-28 btn bg-blue font-bold">
+        <button @click="updateProfile" class="w-28 btn bg-blue h-10 rounded-md text-white font-bold">
           Update
         </button>
-        <button @click="disabled = true" class="w-28 btn bg-red font-bold">
+        <button @click="disabled = true" class="w-28 btn bg-red h-10 rounded-md text-white font-bold">
           Cancel
         </button>
       </div>
