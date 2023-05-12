@@ -22,9 +22,9 @@ signal_cellular_connected_no_internet_0_bar
           >
             <q-card>
               <q-card-section>
-                Make sure you have an internet connection.If you're experiencing
-                delayed message delivery, it could be due to poor network
-                connectivity
+                Make sure you have an internet connection. If you're
+                experiencing delayed message delivery, it could be due to poor
+                network connectivity.
               </q-card-section>
             </q-card>
           </q-expansion-item>
@@ -40,7 +40,7 @@ signal_cellular_connected_no_internet_0_bar
             <q-card>
               <q-card-section>
                 If you're experiencing slow upload speeds, it could be due to
-                poor network connectivity
+                poor network connectivity.
               </q-card-section>
             </q-card>
           </q-expansion-item>
@@ -56,11 +56,11 @@ signal_cellular_connected_no_internet_0_bar
             <q-card>
               <q-card-section>
                 Make sure your device's location services are turned on and that
-                the app has been granted permission to access them.I map is not
-                loading or displaying locations, try closing app after granting
-                location permissions and reopening it.If you're experiencing
-                inaccurate location data, it could be due to poor GPS signal or
-                outdated map data.
+                the app has been granted permission to access them. If the map
+                is not loading or displaying locations, try closing app after
+                granting location permissions and reopening it. If you're
+                experiencing inaccurate location data, it could be due to poor
+                GPS signal or outdated map data.
               </q-card-section>
             </q-card>
           </q-expansion-item>
@@ -76,8 +76,8 @@ signal_cellular_connected_no_internet_0_bar
           >
             <q-card class="">
               <q-card-section>
-                You cannot change your password currently.Contact us on mail for
-                any further queries
+                You cannot change your password currently. Contact us on mail
+                for any further queries.
               </q-card-section>
             </q-card>
           </q-expansion-item>
