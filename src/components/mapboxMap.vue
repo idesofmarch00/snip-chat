@@ -48,7 +48,11 @@ async function fetchAllUsers() {
 }
 
 onMounted(async () => {
-  await fetchAllUsers();
+  coords.value = await getLocation();
+  defaultCoords.value = coords.value;
+  if (coords.value) {
+    await fetchAllUsers();
+  }
 
   mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
