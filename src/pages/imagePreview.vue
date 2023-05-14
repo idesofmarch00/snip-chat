@@ -295,9 +295,12 @@ function sendNewSnap() {
                   v-if="chat[1]?.lastMessage?.img"
                   class="h-4 w-4"
                 />
-                <q-item-label caption v-if="chat[1]?.lastMessage?.text">{{
-                  chat[1]?.lastMessage?.text
-                }}</q-item-label>
+                <q-item-label
+                  class="w-48 truncate ..."
+                  caption
+                  v-if="chat[1]?.lastMessage?.text"
+                  >{{ chat[1]?.lastMessage?.text }}</q-item-label
+                >
               </div>
               <div
                 class="flex space-x-2 items-end mt-1 font-mono"
