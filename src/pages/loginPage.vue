@@ -148,12 +148,6 @@ onBeforeMount(() => {
         >
           or
         </p>
-        <p
-          class="text-gray-600 mb-4 text-lg"
-          :class="`${$q.dark.isActive ? 'text-teal-50 ' : 'text-gray-600'}`"
-        >
-          or
-        </p>
         <div class="flex flex-col items-center space-y-1">
           <div
             class="rounded flex items-center h-12 w-52 google-blue text-gray-100 hover:text-white shadow font-bold text-sm"
