@@ -82,8 +82,8 @@ const emit = defineEmits(['pushURL', 'url.value']);
       v-model="first_name"
       :placeholder="first_name"
       label="First Name"
-      disable
-      readonly
+      :disable="disabled"
+      :readonly="disabled"
       stack-label
       :dense="dense"
       class="w-full self-start text-lg"
@@ -92,8 +92,8 @@ const emit = defineEmits(['pushURL', 'url.value']);
       v-model="last_name"
       :placeholder="last_name"
       label="Last Name"
-      disable
-      readonly
+      :disable="disabled"
+      :readonly="disabled"
       stack-label
       :dense="dense"
       class="w-full self-start text-lg"
@@ -102,8 +102,8 @@ const emit = defineEmits(['pushURL', 'url.value']);
       v-model="email"
       :placeholder="email"
       label="Email"
-      disable
-      readonly
+      :disable="disabled"
+      :readonly="disabled"
       stack-label
       :dense="dense"
       class="w-full self-start text-lg"
