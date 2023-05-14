@@ -69,7 +69,7 @@
                 :class="`${$q.dark.isActive ? '!text-teal-900' : ''}`"
               >
                 <img :src="message.img" />
-                {{ message.text }}
+                <span class="">{{ message.text }}</span>
                 <q-chip
                   :class="`${$q.dark.isActive ? '!text-teal-900' : ''}`"
                   class="bg-transparent rounded-lg flex items-center space-x-4 w-full"

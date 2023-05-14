@@ -127,7 +127,7 @@ function Sort() {
           <div
             class="flex space-x-2 items-end mt-1"
             v-if="!chat[1]?.lastMessage?.snap && !chat[1]?.lastMessage?.msg"
-        :class="`${$q.dark.isActive?'text-teal-100':'text-gray-300'}`"
+            :class="`${$q.dark.isActive ? 'text-teal-100' : 'text-gray-300'}`"
           >
             <img
               :src="chat[1]?.lastMessage?.img"
@@ -135,6 +135,7 @@ function Sort() {
               class="h-4 w-4"
             />
             <q-item-label
+              class="w-40 truncate ..."
               caption
               v-if="chat[1]?.lastMessage?.text"
               >{{ chat[1]?.lastMessage?.text }}</q-item-label

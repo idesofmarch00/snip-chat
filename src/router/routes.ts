@@ -101,6 +101,12 @@ const routes: RouteRecordRaw[] = [
         path: '/helpSupport',
         component: () => import('pages/helpSupport.vue'),
       },
+
+      {
+        name: 'Policy',
+        path: '/privacyPolicy',
+        component: () => import('pages/privacyPolicy.vue'),
+      },
     ],
   },
 

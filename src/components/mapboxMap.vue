@@ -48,7 +48,11 @@ async function fetchAllUsers() {
 }
 
 onMounted(async () => {
-  await fetchAllUsers();
+  coords.value = await getLocation();
+  defaultCoords.value = coords.value;
+  if (coords.value) {
+    await fetchAllUsers();
+  }
 
   mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
@@ -111,11 +115,12 @@ onMounted(async () => {
   mapStore.usersMarkers.forEach((marker: any) => {
     const el = document.createElement('div');
     el.className = 'marker ';
-    el.style.backgroundImage = `url('${marker.photoURL}.png')`;
+    // el.style.backgroundImage = `url('${marker.photoURL}.png')`;
+    el.style.backgroundImage = "url('person-pin.png')";
     el.style.objectFit = 'contain';
-    el.style.width = '40px';
-    el.style.height = '40px';
-    el.style.borderRadius = '40px';
+    el.style.width = '20px';
+    el.style.height = '20px';
+    el.style.borderRadius = '10px';
     const popup = new mapboxgl.Popup({ offset: 25 })
       .setHTML(` <div class="btn-slot text-zinc-600 max w-40 flex flex-col space-y-2">
     <div class="w-full flex items-center justify-between">

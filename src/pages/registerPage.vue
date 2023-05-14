@@ -107,6 +107,7 @@ function submitHandler() {
 
               //create empty user chats on firestore
               await setDoc(doc(db, 'userChats', res.user.uid), {});
+              $toast('User Registered', 'success', 'top');
               router.replace('/');
             } catch (e) {
               throw new Error('error creating user on firestore', { cause: e });
@@ -127,7 +128,6 @@ function submitHandler() {
       }
       // ..
     }
-    $toast('User Registerd', 'success', 'top');
   }, 2000);
 }
 
