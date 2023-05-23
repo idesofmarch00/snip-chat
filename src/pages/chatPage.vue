@@ -232,6 +232,7 @@
           @click="
             () => {
               file = null;
+              compressedFile = null;
               imageSrc = '';
               imagePreviewModal = false;
             }
@@ -296,6 +297,38 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+
+  <!-- loader modal uploading images-->
+  <!-- <input
+    type="checkbox"
+    id="my-modal"
+    class="modal-toggle"
+    :checked="loaderStore.loaders.image"
+  />
+  <div class="modal">
+    <div class="modal-box bg-white container-center rounded-md">
+      <div class="text-lg flex items-center gap-x-3">
+        <p>Uploading image</p>
+        <q-spinner-hourglass color="violet" />
+      </div>
+    </div>
+  </div> -->
+
+  <!-- loader modal compressing images-->
+  <!-- <input
+    type="checkbox"
+    id="my-modal"
+    class="modal-toggle"
+    :checked="loaderStore.loaders.common"
+  />
+  <div class="modal">
+    <div class="modal-box bg-white container-center rounded-md">
+      <div class="text-lg flex items-center gap-x-3">
+        <p>Please wait</p>
+        <q-spinner-hourglass color="violet" />
+      </div>
+    </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
@@ -322,11 +355,13 @@ import {
 import { date } from 'quasar';
 import * as timeago from 'timeago.js';
 import { scroll } from 'quasar';
+import imageCompression from 'browser-image-compression';
 
 import { useRouter } from 'vue-router';
 
 import { useUserStore } from 'src/stores/userStore';
 import { useChatStore } from 'src/stores/chatStore';
+import { useLoaderStore } from 'src/stores/loaderStore';
 
 import { storeToRefs } from 'pinia';
 
@@ -334,6 +369,7 @@ const router = useRouter();
 
 const userStore = useUserStore();
 const chatStore = useChatStore();
+const loaderStore = useLoaderStore();
 const { currentChat } = storeToRefs(userStore);
 
 //lifecycle hooks
@@ -359,15 +395,41 @@ function clickImage(e: Event) {
   }
 }
 
+const compressedFile = ref<any>();
 const createImage = async (e: any) => {
+  loaderStore.toggleLoader({ type: 'common', state: true });
+
   loading.value = true;
   file.value = e.target.files[0];
-  if (file.value) {
-    imageSrc.value = URL.createObjectURL(e.target.files[0]);
+  const blob = file.value;
+
+  const options = {
+    maxSizeMB: 0.2,
+    useWebWorker: true,
+    maxIteration: 100,
+  };
+  try {
+    compressedFile.value = await imageCompression(blob, options);
+    //todo: remove after demo
+    // const compressedBlob = compressedFile.value;
+    // console.log("originalFile instanceof Blob", blob instanceof Blob); // true
+    // console.log(`originalFile size ${blob.size / 1024} KB`);
+    // console.log(
+    //   "compressedFile instanceof Blob",
+    //   compressedBlob instanceof Blob
+    // ); // true
+    // console.log(`compressedFile size ${compressedBlob.size / 1024} KB`); // smaller than maxSizeMB
+    if (compressedFile.value) {
+      imageSrc.value = URL.createObjectURL(blob);
+      imagePreviewModal.value = true;
+    } else {
+      imageSrc.value = '';
+    }
+  } catch (err) {
+    throw new Error('error compressing image', { cause: err });
+  } finally {
     loading.value = false;
-    imagePreviewModal.value = true;
-  } else {
-    imageSrc.value = '';
+    loaderStore.toggleLoader({ type: 'common', state: false });
   }
 };
 
@@ -399,10 +461,11 @@ const friendId: any = chatId.replace(userStore.user.uid, '');
 //send msg
 const handleSend = async () => {
   try {
+    loaderStore.toggleLoader({ type: 'image', state: true });
     if (file.value && !newMessage.value && !docx.value) {
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
-      const uploadTask = uploadBytesResumable(storageRef, file.value);
+      const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
 
       uploadTask.on(
         (error) => {
@@ -445,6 +508,7 @@ const handleSend = async () => {
           docx.value = null;
           newMessage.value = '';
           file.value = null;
+          compressedFile.value = null;
         }
       );
     } else if (!file.value && newMessage.value && !docx.value) {
@@ -479,10 +543,11 @@ const handleSend = async () => {
       docx.value = null;
       newMessage.value = '';
       file.value = null;
+      compressedFile.value = null;
     } else if (file.value && newMessage.value && !docx.value) {
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
-      const uploadTask = uploadBytesResumable(storageRef, file.value);
+      const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
 
       uploadTask.on(
         (error) => {
@@ -525,12 +590,13 @@ const handleSend = async () => {
           docx.value = null;
           newMessage.value = '';
           file.value = null;
+          compressedFile.value = null;
         }
       );
     } else if (file.value && newMessage.value && docx.value) {
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
-      const uploadTask = uploadBytesResumable(storageRef, file.value);
+      const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
 
       uploadTask.on(
         (error) => {
@@ -573,6 +639,7 @@ const handleSend = async () => {
           docx.value = null;
           newMessage.value = '';
           file.value = null;
+          compressedFile.value = null;
         }
       );
 
@@ -618,6 +685,7 @@ const handleSend = async () => {
           docx.value = null;
           newMessage.value = '';
           file.value = null;
+          compressedFile.value = null;
         }
       );
     }
@@ -626,9 +694,12 @@ const handleSend = async () => {
     docx.value = null;
     newMessage.value = '';
     file.value = null;
+    compressedFile.value = null;
     if (errString.includes('No document to update')) {
       alert('User has deleted his account');
     }
+  } finally {
+    loaderStore.toggleLoader({ type: 'image', state: false });
   }
 
   scrollToBottom();
