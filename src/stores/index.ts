@@ -26,13 +26,13 @@ declare module 'pinia' {
 export default store((/* { ssrContext } */) => {
   const pinia = createPinia();
 
-  // pinia.use(
-  //   createPersistedState({
-  //     storage: localStorage,
-  //     key: (id: any) => `__persisted__${id}`,
-  //     auto: true,
-  //   })
-  // );
+  pinia.use(
+    createPersistedState({
+      storage: localStorage,
+      key: (id: any) => `__persisted__${id}`,
+      auto: true,
+    })
+  );
 
   // You can add Pinia plugins here
   // pinia.use(SomePiniaPlugin)
