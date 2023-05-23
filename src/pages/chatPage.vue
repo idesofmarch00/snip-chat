@@ -68,13 +68,12 @@
                 class="flex flex-col space-y-2"
                 :class="`${$q.dark.isActive ? '!text-teal-900' : ''}`"
               >
-                <img :src="message.img" />
-                <span class="">{{ message.text }}</span>
+                <img :src="message.img" v-if="message.img" />
+                <span class="" v-if="message.text">{{ message.text }}</span>
                 <span
+                  v-if="message.location"
                   class="underline bg-blue-600 italic"
-                  @click.prevent="
-                    openNav(message.location.lat, message.location.lng)
-                  "
+                  @click.prevent="openNav(message.location)"
                   >See my location</span
                 >
                 <q-chip
@@ -457,13 +456,16 @@ const uploadFileRef = ref<HTMLDivElement | null>();
 const docx = ref<any>();
 const filePreviewModal = ref<boolean>(false);
 
-const coords = ref<any>();
+const coords = ref<any>(null);
 async function getFile() {
   coords.value = await getLocation();
   filePreviewModal.value = true;
 }
 
-async function openNav(destLat: any, destLng: any) {
+async function openNav(dest: any) {
+  const destLat = dest.lat;
+  const destLng = dest.lng;
+  console.log(destLat, destLng);
   if (
     /* if we're on iOS, open in Apple Maps */
     navigator.platform.includes('Mac') ||
@@ -484,7 +486,7 @@ async function openNav(destLat: any, destLng: any) {
 // const uploadFile = async (e: any) => {
 //   coords.value = e.target.files[0];
 
-//   if (coords.value) {
+//   if (coords.value) { console.log("1")
 //     filePreviewModal.value = true;
 //     fileSrc.value = URL.createObjectURL(e.target.files[0]);
 //   } else {
@@ -500,6 +502,7 @@ const handleSend = async () => {
     loaderStore.toggleLoader({ type: 'common', state: true });
 
     if (file.value && !newMessage.value && !coords.value) {
+      console.log('only file');
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
       const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
@@ -549,6 +552,7 @@ const handleSend = async () => {
         }
       );
     } else if (!file.value && newMessage.value && !coords.value) {
+      console.log('only text');
       await updateDoc(doc(db, 'chats', chatId as string), {
         messages: arrayUnion({
           id: uuid(),
@@ -582,6 +586,7 @@ const handleSend = async () => {
       file.value = null;
       compressedFile.value = null;
     } else if (file.value && newMessage.value && !coords.value) {
+      console.log('file and text');
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
       const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
@@ -631,6 +636,7 @@ const handleSend = async () => {
         }
       );
     } else if (file.value && newMessage.value && coords.value) {
+      console.log('all');
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
       const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
@@ -650,7 +656,7 @@ const handleSend = async () => {
                   senderId: userStore.user.uid,
                   date: Timestamp.now(),
                   img: downloadURL,
-                  location: '',
+                  location: coords.value,
                 }),
               });
 
@@ -658,7 +664,7 @@ const handleSend = async () => {
                 [chatId + '.lastMessage']: {
                   text: newMessage.value,
                   img: downloadURL,
-                  location: '',
+                  location: coords.value,
                 },
                 [chatId + '.date']: serverTimestamp(),
               });
@@ -667,7 +673,7 @@ const handleSend = async () => {
                 [chatId + '.lastMessage']: {
                   text: newMessage.value,
                   img: downloadURL,
-                  location: '',
+                  location: coords.value,
                 },
                 [chatId + '.date']: serverTimestamp(),
               });
@@ -679,53 +685,8 @@ const handleSend = async () => {
           compressedFile.value = null;
         }
       );
-
-      // const uploadTask2 = uploadBytesResumable(storageRef, coords.value);
-
-      // uploadTask2.on(
-      //   (error) => {
-      //     //TODO:Handle Error
-      //   },
-      // async () => {
-      const docRef = doc(db, 'chats', chatId as string);
-      // await getDownloadURL(uploadTask.snapshot.ref).then(
-      // async (docxDownloadURL: string) => {
-      await updateDoc(docRef, {
-        messages: arrayUnion({
-          id: uuid(),
-          text: newMessage.value,
-          senderId: userStore.user.uid,
-          date: Timestamp.now(),
-          img: '',
-          location: coords.value,
-        }),
-      });
-      await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-        [chatId + '.lastMessage']: {
-          text: newMessage.value,
-          img: '',
-          location: coords.value,
-        },
-        [chatId + '.date']: serverTimestamp(),
-      });
-
-      await updateDoc(doc(db, 'userChats', friendId), {
-        [chatId + '.lastMessage']: {
-          text: newMessage.value,
-          img: '',
-          location: coords.value,
-        },
-        [chatId + '.date']: serverTimestamp(),
-      });
-      // }
-      // );
-      coords.value = null;
-      newMessage.value = '';
-      file.value = null;
-      compressedFile.value = null;
-      // }
-      // );
     } else if (!file.value && !newMessage.value && coords.value) {
+      console.log('only coords');
       // const storageRef = fireStorageRef(storage, `${uuid()}`);
 
       // const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
@@ -745,7 +706,7 @@ const handleSend = async () => {
           senderId: userStore.user.uid,
           date: Timestamp.now(),
           img: '',
-          location: '',
+          location: coords.value,
         }),
       });
 
@@ -768,13 +729,6 @@ const handleSend = async () => {
       });
       // }
       // );
-      coords.value = null;
-      newMessage.value = '';
-      file.value = null;
-      compressedFile.value = null;
-      // }
-      // );
-
       coords.value = null;
       newMessage.value = '';
       file.value = null;

@@ -29,10 +29,6 @@ import { getLocation } from '../utils/map';
 const mapStore = useMapStore();
 const userStore = useUserStore();
 
-const defaultCoords = ref({
-  lat: 28.509379,
-  lng: 77.08394,
-});
 const coords = ref<any>();
 const markers = ref<any>();
 
@@ -49,7 +45,6 @@ async function fetchAllUsers() {
 
 onMounted(async () => {
   coords.value = await getLocation();
-  defaultCoords.value = coords.value;
   if (coords.value) {
     await fetchAllUsers();
   }
@@ -63,7 +58,6 @@ onMounted(async () => {
         //allowed
         userStore.toggleLocationPopup(false);
         coords.value = await getLocation();
-        defaultCoords.value = coords.value;
       } else {
         //denied
         userStore.toggleLocationPopup(true);
@@ -74,7 +68,7 @@ onMounted(async () => {
     container: 'map',
     style: 'mapbox://styles/mapbox/navigation-night-v1',
     zoom: 13,
-    center: [defaultCoords.value.lng, defaultCoords.value.lat],
+    center: [coords.value.lng, coords.value.lat],
   });
 
   mapStore.map.on('load', () => {
