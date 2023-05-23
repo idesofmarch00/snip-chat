@@ -124,7 +124,7 @@ onMounted(async () => {
     const popup = new mapboxgl.Popup({ offset: 25 })
       .setHTML(` <div class="btn-slot text-zinc-600 max w-40 flex flex-col space-y-2">
     <div class="w-full flex items-center justify-between">
-      <p class="font-bold text-lg w-8/12 truncate">
+      <p class="font-bold w-8/12 overflow-x-auto">
         ${marker.userName}
       </p>
     </div>

@@ -232,9 +232,9 @@ function signUpWithGoogle() {
       const token = credential?.accessToken;
       // The signed-in user info.
       const user = result.user;
-
+      console.log(user);
       const fullName: any = user?.displayName?.split(' ');
-      file.value = user.photoURL;
+      compressedFile.value = user.photoURL;
       firstName.value = fullName[0];
       lastName.value = fullName[1];
       email.value = user.email;
