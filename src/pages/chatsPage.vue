@@ -15,7 +15,6 @@ import { useUserStore } from '../stores/userStore';
 import _ from 'lodash';
 import { useRouter } from 'vue-router';
 
-
 import * as timeago from 'timeago.js';
 
 import { useQuasar } from 'quasar';
@@ -73,12 +72,12 @@ async function saveFriend(friend: any) {
 }
 
 function Sort() {
-  if(allChats){
+  if (allChats) {
     sortedChats.value = Object.entries(allChats)?.sort(
-    (a: any, b: any) =>
-      new Date(b[1]?.date?.toDate().toISOString()).getTime() -
-      new Date(a[1]?.date?.toDate().toISOString()).getTime()
-  );
+      (a: any, b: any) =>
+        new Date(b[1]?.date?.toDate().toISOString()).getTime() -
+        new Date(a[1]?.date?.toDate().toISOString()).getTime()
+    );
   }
   userStore.setUserChats(sortedChats.value);
   loading.value = false;
@@ -140,6 +139,12 @@ function Sort() {
               caption
               v-if="chat[1]?.lastMessage?.text"
               >{{ chat[1]?.lastMessage?.text }}</q-item-label
+            >
+            <q-item-label
+              class="italic"
+              caption
+              v-if="chat[1]?.lastMessage?.location"
+              >Location Shared</q-item-label
             >
           </div>
           <div

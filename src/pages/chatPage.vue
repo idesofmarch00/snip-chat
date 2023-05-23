@@ -72,7 +72,7 @@
                 <span class="" v-if="message.text">{{ message.text }}</span>
                 <span
                   v-if="message.location"
-                  class="underline bg-blue-600 italic"
+                  class="underline text-blue-600 italic"
                   @click.prevent="openNav(message.location)"
                   >See my location</span
                 >
