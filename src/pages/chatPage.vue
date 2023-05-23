@@ -298,37 +298,41 @@
     </q-card>
   </q-dialog>
 
-  <!-- loader modal uploading images-->
-  <!-- <input
-    type="checkbox"
-    id="my-modal"
-    class="modal-toggle"
-    :checked="loaderStore.loaders.image"
-  />
-  <div class="modal">
-    <div class="modal-box bg-white container-center rounded-md">
-      <div class="text-lg flex items-center gap-x-3">
-        <p>Uploading image</p>
-        <q-spinner-hourglass color="violet" />
-      </div>
-    </div>
-  </div> -->
+  <q-dialog
+    v-model="loaderStore.loaders.common"
+    persistent
+    transition-show="scale"
+    transition-hide="scale"
+  >
+    <q-card
+      class="flex flex-col items-center justify-between text-lg bg-white text-violet-900 rounded-md"
+      style="width: 150px"
+    >
+      <q-card-section> Please wait ... </q-card-section>
 
-  <!-- loader modal compressing images-->
-  <!-- <input
-    type="checkbox"
-    id="my-modal"
-    class="modal-toggle"
-    :checked="loaderStore.loaders.common"
-  />
-  <div class="modal">
-    <div class="modal-box bg-white container-center rounded-md">
-      <div class="text-lg flex items-center gap-x-3">
-        <p>Please wait</p>
+      <q-card-section class="q-pt-none">
         <q-spinner-hourglass color="violet" />
-      </div>
-    </div>
-  </div> -->
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog
+    v-model="loaderStore.loaders.image"
+    persistent
+    transition-show="scale"
+    transition-hide="scale"
+  >
+    <q-card
+      class="flex flex-col items-center justify-between text-xl bg-white text-violet-800 rounded-md"
+      style="width: 150px"
+    >
+      <q-card-section> Uploading .... </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-spinner-hourglass color="violet" />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -397,7 +401,7 @@ function clickImage(e: Event) {
 
 const compressedFile = ref<any>();
 const createImage = async (e: any) => {
-  loaderStore.toggleLoader({ type: 'common', state: true });
+  loaderStore.toggleLoader({ type: 'image', state: true });
 
   loading.value = true;
   file.value = e.target.files[0];
@@ -429,7 +433,7 @@ const createImage = async (e: any) => {
     throw new Error('error compressing image', { cause: err });
   } finally {
     loading.value = false;
-    loaderStore.toggleLoader({ type: 'common', state: false });
+    loaderStore.toggleLoader({ type: 'image', state: false });
   }
 };
 
@@ -461,7 +465,7 @@ const friendId: any = chatId.replace(userStore.user.uid, '');
 //send msg
 const handleSend = async () => {
   try {
-    loaderStore.toggleLoader({ type: 'image', state: true });
+    loaderStore.toggleLoader({ type: 'common', state: true });
     if (file.value && !newMessage.value && !docx.value) {
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
@@ -699,7 +703,7 @@ const handleSend = async () => {
       alert('User has deleted his account');
     }
   } finally {
-    loaderStore.toggleLoader({ type: 'image', state: false });
+    loaderStore.toggleLoader({ type: 'common', state: false });
   }
 
   scrollToBottom();

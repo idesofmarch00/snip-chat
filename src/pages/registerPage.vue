@@ -23,7 +23,11 @@ import { $toast } from '../utils/notification';
 import { getLocation } from '../utils/map';
 import imageCompression from 'browser-image-compression';
 
+//store
+import { useLoaderStore } from '../stores/loaderStore';
+
 const router = useRouter();
+const loaderStore = useLoaderStore();
 
 //vars
 const firstName = ref<any>('');
@@ -38,98 +42,125 @@ const coords = ref();
 
 //function
 function submitHandler() {
-  // we set loading state
-  loading.value = true;
+  if (
+    !firstName.value ||
+    !lastName.value ||
+    !userName.value ||
+    !email.value ||
+    !password.value
+  ) {
+    $toast('Please fill the complete details', 'warning', 'top');
+  } else if (
+    firstName.value &&
+    lastName.value &&
+    userName.value &&
+    email.value &&
+    password.value
+  ) {
+    // we set loading state
+    loading.value = true;
 
-  const date = new Date().getTime();
+    const date = new Date().getTime();
 
-  // simulate a delay
-  setTimeout(async () => {
-    // we're done, we reset loading state
-    // alert('successfully registered');
-    // router.replace('/');
+    // simulate a delay
+    setTimeout(async () => {
+      // we're done, we reset loading state
+      // alert('successfully registered');
+      // router.replace('/');
 
-    try {
-      //create user
-      const res = await createUserWithEmailAndPassword(
-        auth,
-        email.value,
-        password.value
-      );
-      //create unique pic name
-      const storageRef = refStorage(storage, `${userName.value + date}`);
+      try {
+        loaderStore.toggleLoader({ type: 'common', state: true });
 
-      const uploadTask = uploadBytesResumable(storageRef, file.value);
-
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          // Observe state change events such as progress, pause, and resume
-          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          switch (snapshot.state) {
-            case 'paused':
-              break;
-            case 'running':
-              break;
-          }
-        },
-        (error) => {
-          // Handle unsuccessful uploads
-          console.log('error uploading coz:', error);
-          $toast('Error Uploading Image', 'error', 'top');
-          loading.value = false;
-        },
-        () => {
-          // Handle successful uploads on complete
-          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-            //update profile
-            await updateProfile(res.user, {
-              displayName: userName.value,
-              photoURL: downloadURL,
-            });
-
-            coords.value = await getLocation();
-
-            try {
-              //create user on firestore
-              await setDoc(doc(db, 'users', res.user.uid), {
-                uid: res.user.uid,
-                userName: userName.value,
-                firstName: firstName.value,
-                lastName: lastName.value,
-                email: email.value,
-                photoURL: downloadURL,
-                location: coords.value,
-                // online:true,
-              });
-
-              //create empty user chats on firestore
-              await setDoc(doc(db, 'userChats', res.user.uid), {});
-              $toast('User Registered', 'success', 'top');
-              router.replace('/');
-            } catch (e) {
-              throw new Error('error creating user on firestore', { cause: e });
-              loading.value = false;
-            }
-          });
-        }
-      );
-    } catch (error: any) {
-      if (error.message.includes('auth/email-already-in-use')) {
-        alert(
-          'User Already Registered with this email.Use another email to Sign Up.'
+        //create user
+        const res = await createUserWithEmailAndPassword(
+          auth,
+          email.value,
+          password.value
         );
-        loading.value = false;
-      } else {
-        $toast('Error Registering User', 'error', 'top');
-        loading.value = false;
+        //create unique pic name
+        const storageRef = refStorage(storage, `${userName.value + date}`);
+
+        const uploadTask = uploadBytesResumable(
+          storageRef,
+          compressedFile.value
+        );
+
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            // Observe state change events such as progress, pause, and resume
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            switch (snapshot.state) {
+              case 'paused':
+                break;
+              case 'running':
+                break;
+            }
+          },
+          (error) => {
+            // Handle unsuccessful uploads
+            console.log('error uploading coz:', error);
+            $toast('Error Uploading Image', 'error', 'top');
+            loading.value = false;
+          },
+          () => {
+            // Handle successful uploads on complete
+            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+            getDownloadURL(uploadTask.snapshot.ref).then(
+              async (downloadURL) => {
+                //update profile
+                await updateProfile(res.user, {
+                  displayName: userName.value,
+                  photoURL: downloadURL,
+                });
+
+                coords.value = await getLocation();
+
+                try {
+                  //create user on firestore
+                  await setDoc(doc(db, 'users', res.user.uid), {
+                    uid: res.user.uid,
+                    userName: userName.value,
+                    firstName: firstName.value,
+                    lastName: lastName.value,
+                    email: email.value,
+                    photoURL: downloadURL,
+                    location: coords.value,
+                    // online:true,
+                  });
+
+                  //create empty user chats on firestore
+                  await setDoc(doc(db, 'userChats', res.user.uid), {});
+                  $toast('User Registered', 'success', 'top');
+                  router.replace('/');
+                } catch (e) {
+                  throw new Error('error creating user on firestore', {
+                    cause: e,
+                  });
+                  loading.value = false;
+                }
+              }
+            );
+          }
+        );
+      } catch (error: any) {
+        if (error.message.includes('auth/email-already-in-use')) {
+          alert(
+            'User Already Registered with this email.Use another email to Sign Up.'
+          );
+          loading.value = false;
+        } else {
+          $toast('Error Registering User', 'error', 'top');
+          loading.value = false;
+        }
+        // ..
+      } finally {
+        loaderStore.toggleLoader({ type: 'common', state: false });
       }
-      // ..
-    }
-  }, 2000);
+    }, 2000);
+  }
 }
 
 //img upload
@@ -145,7 +176,7 @@ function clickImage(e: Event) {
 
 const compressedFile = ref<any>();
 const createImage = async (e: any) => {
-  // loaderStore.toggleLoader({ type: 'common', state: true });
+  loaderStore.toggleLoader({ type: 'image', state: true });
 
   loading.value = true;
   file.value = e.target.files[0];
@@ -176,12 +207,13 @@ const createImage = async (e: any) => {
     throw new Error('error compressing image', { cause: err });
   } finally {
     loading.value = false;
-    // loaderStore.toggleLoader({ type: 'common', state: false });
+    loaderStore.toggleLoader({ type: 'image', state: false });
   }
 };
 
 onBeforeMount(() => {
   if (localStorage.getItem('user') === 'true') {
+    loaderStore.toggleLoader({ type: 'common', state: false });
     router.replace('/dashboard');
   }
 });
@@ -472,6 +504,42 @@ function signUpWithGoogle() {
       </div>
     </form>
   </div>
+
+  <q-dialog
+    v-model="loaderStore.loaders.common"
+    persistent
+    transition-show="scale"
+    transition-hide="scale"
+  >
+    <q-card
+      class="flex flex-col items-center justify-between text-lg bg-white text-violet-900 rounded-md"
+      style="width: 150px"
+    >
+      <q-card-section> Please wait ... </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-spinner-hourglass color="violet" />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog
+    v-model="loaderStore.loaders.image"
+    persistent
+    transition-show="scale"
+    transition-hide="scale"
+  >
+    <q-card
+      class="flex flex-col items-center justify-between text-xl bg-white text-violet-800 rounded-md"
+      style="width: 150px"
+    >
+      <q-card-section> Uploading .... </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-spinner-hourglass color="violet" />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <style scoped>
