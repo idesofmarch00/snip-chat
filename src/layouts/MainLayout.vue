@@ -125,9 +125,8 @@
       </q-item>
     </q-drawer>
 
-    <q-page-container 
-    :class="`${$q.dark.isActive ? 'bg-gray-700 ' : 'bg-white'}`"
-    
+    <q-page-container
+      :class="`${$q.dark.isActive ? 'bg-gray-700 ' : 'bg-white'}`"
     >
       <router-view />
     </q-page-container>
@@ -288,7 +287,7 @@ import {
 } from 'firebase/firestore';
 import { v4 as uuid } from 'uuid';
 import { $toast } from 'src/utils/notification';
-
+import imageCompression from 'browser-image-compression';
 
 //store
 import { useUserStore } from '../stores/userStore';
@@ -384,15 +383,43 @@ function clickImage(e: any) {
   }
 }
 
+const compressedFile = ref<any>();
 const createImage = async (e: any) => {
+  // loaderStore.toggleLoader({ type: 'common', state: true });
+
+  // loading.value = true;
   file.value = e.target.files[0];
-  if (file.value) {
-    imageSrc.value = URL.createObjectURL(e.target.files[0]);
-    chatStore.setCurrentCamPic(imageSrc.value);
-    chatStore.setCurrentCamPicURL(file.value);
-    router.replace('/preview');
-  } else {
-    imageSrc.value = '';
+  const blob = file.value;
+
+  const options = {
+    maxSizeMB: 0.2,
+    useWebWorker: true,
+    maxIteration: 100,
+  };
+  try {
+    compressedFile.value = await imageCompression(blob, options);
+    //todo: remove after demo
+    const compressedBlob = compressedFile.value;
+    console.log('originalFile instanceof Blob', blob instanceof Blob); // true
+    console.log(`originalFile size ${blob.size / 1024} KB`);
+    console.log(
+      'compressedFile instanceof Blob',
+      compressedBlob instanceof Blob
+    ); // true
+    console.log(`compressedFile size ${compressedBlob.size / 1024} KB`); // smaller than maxSizeMB
+    if (compressedFile.value) {
+      imageSrc.value = URL.createObjectURL(blob);
+      chatStore.setCurrentCamPic(imageSrc.value);
+      chatStore.setCurrentCamPicURL(compressedFile.value);
+      router.replace('/preview');
+    } else {
+      imageSrc.value = '';
+    }
+  } catch (err) {
+    throw new Error('error compressing image', { cause: err });
+  } finally {
+    // loading.value = false;
+    // loaderStore.toggleLoader({ type: 'common', state: false });
   }
 };
 

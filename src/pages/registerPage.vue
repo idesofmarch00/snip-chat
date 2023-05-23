@@ -21,6 +21,7 @@ import { doc, setDoc } from 'firebase/firestore';
 //other imports
 import { $toast } from '../utils/notification';
 import { getLocation } from '../utils/map';
+import imageCompression from 'browser-image-compression';
 
 const router = useRouter();
 
@@ -142,12 +143,40 @@ function clickImage(e: Event) {
   }
 }
 
+const compressedFile = ref<any>();
 const createImage = async (e: any) => {
+  // loaderStore.toggleLoader({ type: 'common', state: true });
+
+  loading.value = true;
   file.value = e.target.files[0];
-  if (file.value) {
-    imageSrc.value = URL.createObjectURL(e.target.files[0]);
-  } else {
-    imageSrc.value = '';
+  const blob = file.value;
+
+  const options = {
+    maxSizeMB: 0.2,
+    useWebWorker: true,
+    maxIteration: 100,
+  };
+  try {
+    compressedFile.value = await imageCompression(blob, options);
+    //todo: remove after demo
+    // const compressedBlob = compressedFile.value;
+    // console.log("originalFile instanceof Blob", blob instanceof Blob); // true
+    // console.log(`originalFile size ${blob.size / 1024} KB`);
+    // console.log(
+    //   "compressedFile instanceof Blob",
+    //   compressedBlob instanceof Blob
+    // ); // true
+    // console.log(`compressedFile size ${compressedBlob.size / 1024} KB`); // smaller than maxSizeMB
+    if (compressedFile.value) {
+      imageSrc.value = URL.createObjectURL(blob);
+    } else {
+      imageSrc.value = '';
+    }
+  } catch (err) {
+    throw new Error('error compressing image', { cause: err });
+  } finally {
+    loading.value = false;
+    // loaderStore.toggleLoader({ type: 'common', state: false });
   }
 };
 
@@ -185,7 +214,7 @@ function signUpWithGoogle() {
 
       const storageRef = refStorage(storage, `${userName.value}`);
 
-      const uploadTask = uploadBytesResumable(storageRef, file.value);
+      const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
 
       uploadTask.on(
         'state_changed',
