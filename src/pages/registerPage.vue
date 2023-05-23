@@ -356,7 +356,6 @@ function signUpWithGoogle() {
             placeholder="upload"
             class="text-base"
             accept="image/*"
-            capture="environment"
             ref="clickimage"
             hidden
           />
