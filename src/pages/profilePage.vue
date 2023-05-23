@@ -76,7 +76,7 @@ const emit = defineEmits(['pushURL', 'url.value']);
       $q.dark.isActive ? 'bg-gray-800' : 'bg-white'
     }`"
   >
-    <q-avatar size="100px" font-size="52px"><img :src="img" /></q-avatar>
+    <q-avatar size="100px" font-size="52px" class="border border-violet-300"><img :src="img" /></q-avatar>
     <q-input
       outlined
       v-model="first_name"
