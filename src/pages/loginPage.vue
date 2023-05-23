@@ -40,6 +40,7 @@ function googleSignIn() {
       const token = credential.accessToken;
       // The signed-in user info.
       const user = result.user;
+      console.log(user);
       localStorage.setItem('user', true.toString());
       router.replace('/dashboard');
       loadingG.value = false;

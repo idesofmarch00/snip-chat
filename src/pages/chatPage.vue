@@ -70,6 +70,13 @@
               >
                 <img :src="message.img" />
                 <span class="">{{ message.text }}</span>
+                <span
+                  class="underline bg-blue-600 italic"
+                  @click.prevent="
+                    openNav(message.location.lat, message.location.lng)
+                  "
+                  >See my location</span
+                >
                 <q-chip
                   :class="`${$q.dark.isActive ? '!text-teal-900' : ''}`"
                   class="bg-transparent rounded-lg flex items-center space-x-4 w-full"
@@ -158,7 +165,7 @@
                 ref="clickimage"
                 hidden
               />
-              <input
+              <!-- <input
                 @change="uploadFile"
                 name="upload"
                 type="file"
@@ -166,7 +173,7 @@
                 class="text-base"
                 ref="uploadFileRef"
                 hidden
-              />
+              /> -->
               <template v-slot:after>
                 <q-btn
                   @click="clickImage"
@@ -181,7 +188,7 @@
                   dense
                   flat
                   color="white"
-                  icon="attach_file"
+                  icon="share_location"
                   @click.prevent="getFile"
                 />
 
@@ -264,8 +271,13 @@
       <div
         class="w-full flex flex-col space-y-1 items-center justify-center text-violet-900 text-xl"
       >
-        <q-icon name="task" size="lg" />
-        <p class="font-lg">{{ docx.name }}</p>
+        <q-icon name="navigation" size="lg" />
+        to
+        <q-icon name="my_location" size="lg" />
+        on
+        <q-icon name="map" size="lg" />
+
+        <!-- <mapboxMapMini class="" /> -->
       </div>
 
       <q-card-actions
@@ -360,6 +372,8 @@ import { date } from 'quasar';
 import * as timeago from 'timeago.js';
 import { scroll } from 'quasar';
 import imageCompression from 'browser-image-compression';
+import { getLocation } from '../utils/map';
+import mapboxMapMini from '../components/mapboxMapMini.vue';
 
 import { useRouter } from 'vue-router';
 
@@ -443,22 +457,40 @@ const uploadFileRef = ref<HTMLDivElement | null>();
 const docx = ref<any>();
 const filePreviewModal = ref<boolean>(false);
 
-function getFile(e: Event) {
-  if (e.target) {
-    uploadFileRef.value?.click();
-  }
+const coords = ref<any>();
+async function getFile() {
+  coords.value = await getLocation();
+  filePreviewModal.value = true;
 }
 
-const uploadFile = async (e: any) => {
-  docx.value = e.target.files[0];
-
-  if (docx.value) {
-    filePreviewModal.value = true;
-    fileSrc.value = URL.createObjectURL(e.target.files[0]);
-  } else {
-    fileSrc.value = '';
+async function openNav(destLat: any, destLng: any) {
+  if (
+    /* if we're on iOS, open in Apple Maps */
+    navigator.platform.includes('Mac') ||
+    navigator.platform.includes('iPad') ||
+    navigator.platform.includes('iPhone')
+  ) {
+    window.open(
+      `maps://maps.apple.com/?q=${destLat},${destLng}&t=m&dirflg=d`,
+      '_system'
+    );
+  } /* else use Google */ else {
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&dir_action=navigate&travelmode=driving&destination=${destLat},${destLng}`,
+      '_system'
+    );
   }
-};
+}
+// const uploadFile = async (e: any) => {
+//   coords.value = e.target.files[0];
+
+//   if (coords.value) {
+//     filePreviewModal.value = true;
+//     fileSrc.value = URL.createObjectURL(e.target.files[0]);
+//   } else {
+//     fileSrc.value = '';
+//   }
+// };
 
 const chatId: any = route.params.combinedUserId;
 const friendId: any = chatId.replace(userStore.user.uid, '');
@@ -466,7 +498,8 @@ const friendId: any = chatId.replace(userStore.user.uid, '');
 const handleSend = async () => {
   try {
     loaderStore.toggleLoader({ type: 'common', state: true });
-    if (file.value && !newMessage.value && !docx.value) {
+
+    if (file.value && !newMessage.value && !coords.value) {
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
       const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
@@ -486,7 +519,7 @@ const handleSend = async () => {
                   senderId: userStore.user.uid,
                   date: Timestamp.now(),
                   img: downloadURL,
-                  file: '',
+                  location: '',
                 }),
               });
 
@@ -494,7 +527,7 @@ const handleSend = async () => {
                 [chatId + '.lastMessage']: {
                   text: newMessage.value,
                   img: downloadURL,
-                  file: '',
+                  location: '',
                 },
                 [chatId + '.date']: serverTimestamp(),
               });
@@ -509,13 +542,13 @@ const handleSend = async () => {
               });
             }
           );
-          docx.value = null;
+          coords.value = null;
           newMessage.value = '';
           file.value = null;
           compressedFile.value = null;
         }
       );
-    } else if (!file.value && newMessage.value && !docx.value) {
+    } else if (!file.value && newMessage.value && !coords.value) {
       await updateDoc(doc(db, 'chats', chatId as string), {
         messages: arrayUnion({
           id: uuid(),
@@ -523,7 +556,7 @@ const handleSend = async () => {
           senderId: userStore.user.uid,
           date: Timestamp.now(),
           img: '',
-          file: '',
+          location: '',
         }),
       });
 
@@ -531,7 +564,7 @@ const handleSend = async () => {
         [chatId + '.lastMessage']: {
           text: newMessage.value,
           img: '',
-          file: '',
+          location: '',
         },
         [chatId + '.date']: serverTimestamp(),
       });
@@ -540,15 +573,15 @@ const handleSend = async () => {
         [chatId + '.lastMessage']: {
           text: newMessage.value,
           img: '',
-          file: '',
+          location: '',
         },
         [chatId + '.date']: serverTimestamp(),
       });
-      docx.value = null;
+      coords.value = null;
       newMessage.value = '';
       file.value = null;
       compressedFile.value = null;
-    } else if (file.value && newMessage.value && !docx.value) {
+    } else if (file.value && newMessage.value && !coords.value) {
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
       const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
@@ -568,7 +601,7 @@ const handleSend = async () => {
                   senderId: userStore.user.uid,
                   date: Timestamp.now(),
                   img: downloadURL,
-                  file: '',
+                  location: '',
                 }),
               });
 
@@ -576,7 +609,7 @@ const handleSend = async () => {
                 [chatId + '.lastMessage']: {
                   text: newMessage.value,
                   img: downloadURL,
-                  file: '',
+                  location: '',
                 },
                 [chatId + '.date']: serverTimestamp(),
               });
@@ -585,19 +618,19 @@ const handleSend = async () => {
                 [chatId + '.lastMessage']: {
                   text: newMessage.value,
                   img: downloadURL,
-                  file: '',
+                  location: '',
                 },
                 [chatId + '.date']: serverTimestamp(),
               });
             }
           );
-          docx.value = null;
+          coords.value = null;
           newMessage.value = '';
           file.value = null;
           compressedFile.value = null;
         }
       );
-    } else if (file.value && newMessage.value && docx.value) {
+    } else if (file.value && newMessage.value && coords.value) {
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
       const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
@@ -617,7 +650,7 @@ const handleSend = async () => {
                   senderId: userStore.user.uid,
                   date: Timestamp.now(),
                   img: downloadURL,
-                  file: '',
+                  location: '',
                 }),
               });
 
@@ -625,7 +658,7 @@ const handleSend = async () => {
                 [chatId + '.lastMessage']: {
                   text: newMessage.value,
                   img: downloadURL,
-                  file: '',
+                  location: '',
                 },
                 [chatId + '.date']: serverTimestamp(),
               });
@@ -634,68 +667,124 @@ const handleSend = async () => {
                 [chatId + '.lastMessage']: {
                   text: newMessage.value,
                   img: downloadURL,
-                  file: '',
+                  location: '',
                 },
                 [chatId + '.date']: serverTimestamp(),
               });
             }
           );
-          docx.value = null;
+          coords.value = null;
           newMessage.value = '';
           file.value = null;
           compressedFile.value = null;
         }
       );
 
-      const uploadTask2 = uploadBytesResumable(storageRef, docx.value);
+      // const uploadTask2 = uploadBytesResumable(storageRef, coords.value);
 
-      uploadTask2.on(
-        (error) => {
-          //TODO:Handle Error
+      // uploadTask2.on(
+      //   (error) => {
+      //     //TODO:Handle Error
+      //   },
+      // async () => {
+      const docRef = doc(db, 'chats', chatId as string);
+      // await getDownloadURL(uploadTask.snapshot.ref).then(
+      // async (docxDownloadURL: string) => {
+      await updateDoc(docRef, {
+        messages: arrayUnion({
+          id: uuid(),
+          text: newMessage.value,
+          senderId: userStore.user.uid,
+          date: Timestamp.now(),
+          img: '',
+          location: coords.value,
+        }),
+      });
+      await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+        [chatId + '.lastMessage']: {
+          text: newMessage.value,
+          img: '',
+          location: coords.value,
         },
-        async () => {
-          const docRef = doc(db, 'chats', chatId as string);
-          await getDownloadURL(uploadTask.snapshot.ref).then(
-            async (docxDownloadURL: string) => {
-              await updateDoc(docRef, {
-                messages: arrayUnion({
-                  id: uuid(),
-                  text: newMessage.value,
-                  senderId: userStore.user.uid,
-                  date: Timestamp.now(),
-                  img: '',
-                  file: docxDownloadURL,
-                }),
-              });
-              await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-                [chatId + '.lastMessage']: {
-                  text: newMessage.value,
-                  img: '',
-                  file: docxDownloadURL,
-                },
-                [chatId + '.date']: serverTimestamp(),
-              });
+        [chatId + '.date']: serverTimestamp(),
+      });
 
-              await updateDoc(doc(db, 'userChats', friendId), {
-                [chatId + '.lastMessage']: {
-                  text: newMessage.value,
-                  img: '',
-                  file: docxDownloadURL,
-                },
-                [chatId + '.date']: serverTimestamp(),
-              });
-            }
-          );
-          docx.value = null;
-          newMessage.value = '';
-          file.value = null;
-          compressedFile.value = null;
-        }
-      );
+      await updateDoc(doc(db, 'userChats', friendId), {
+        [chatId + '.lastMessage']: {
+          text: newMessage.value,
+          img: '',
+          location: coords.value,
+        },
+        [chatId + '.date']: serverTimestamp(),
+      });
+      // }
+      // );
+      coords.value = null;
+      newMessage.value = '';
+      file.value = null;
+      compressedFile.value = null;
+      // }
+      // );
+    } else if (!file.value && !newMessage.value && coords.value) {
+      // const storageRef = fireStorageRef(storage, `${uuid()}`);
+
+      // const uploadTask = uploadBytesResumable(storageRef, compressedFile.value);
+
+      // uploadTask.on(
+      //   (error) => {
+      //     //TODO:Handle Error
+      //   },
+      // async () => {
+      const docRef = doc(db, 'chats', chatId as string);
+      // await getDownloadURL(uploadTask.snapshot.ref).then(
+      // async (downloadURL) => {
+      await updateDoc(docRef, {
+        messages: arrayUnion({
+          id: uuid(),
+          text: '',
+          senderId: userStore.user.uid,
+          date: Timestamp.now(),
+          img: '',
+          location: '',
+        }),
+      });
+
+      await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+        [chatId + '.lastMessage']: {
+          text: '',
+          img: '',
+          location: coords.value,
+        },
+        [chatId + '.date']: serverTimestamp(),
+      });
+
+      await updateDoc(doc(db, 'userChats', friendId), {
+        [chatId + '.lastMessage']: {
+          text: '',
+          img: '',
+          location: coords.value,
+        },
+        [chatId + '.date']: serverTimestamp(),
+      });
+      // }
+      // );
+      coords.value = null;
+      newMessage.value = '';
+      file.value = null;
+      compressedFile.value = null;
+      // }
+      // );
+
+      coords.value = null;
+      newMessage.value = '';
+      file.value = null;
+      compressedFile.value = null;
+      // }
+      // );
     }
   } catch (err: any) {
     const errString: string = err.toString();
-    docx.value = null;
+    coords.value = null;
     newMessage.value = '';
     file.value = null;
     compressedFile.value = null;

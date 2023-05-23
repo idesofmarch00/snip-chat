@@ -238,8 +238,7 @@ function signUpWithGoogle() {
       firstName.value = fullName[0];
       lastName.value = fullName[1];
       email.value = user.email;
-      userName.value =
-        fullName[0] + fullName[1] + Math.floor(Math.random() * 100);
+      userName.value = fullName[0] + fullName[1];
       // IdP data available using getAdditionalUserInfo(result)
       // ...
       //create unique pic name
