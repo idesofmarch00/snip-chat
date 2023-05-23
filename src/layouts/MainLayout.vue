@@ -263,6 +263,24 @@
       </q-card>
     </q-card>
   </q-dialog>
+
+  <q-dialog
+    v-model="loaderStore.loaders.common"
+    persistent
+    transition-show="scale"
+    transition-hide="scale"
+  >
+    <q-card
+      class="flex flex-col items-center justify-between text-lg bg-white text-violet-900 rounded-md"
+      style="width: 150px"
+    >
+      <q-card-section> Please wait ... </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-spinner-hourglass color="violet" />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -292,9 +310,11 @@ import imageCompression from 'browser-image-compression';
 //store
 import { useUserStore } from '../stores/userStore';
 import { useChatStore } from '../stores/chatStore';
+import { useLoaderStore } from '../stores/loaderStore';
 
 const userStore = useUserStore();
 const chatStore = useChatStore();
+const loaderStore = useLoaderStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -385,7 +405,7 @@ function clickImage(e: any) {
 
 const compressedFile = ref<any>();
 const createImage = async (e: any) => {
-  // loaderStore.toggleLoader({ type: 'common', state: true });
+  loaderStore.toggleLoader({ type: 'common', state: true });
 
   // loading.value = true;
   file.value = e.target.files[0];
@@ -419,7 +439,7 @@ const createImage = async (e: any) => {
     throw new Error('error compressing image', { cause: err });
   } finally {
     // loading.value = false;
-    // loaderStore.toggleLoader({ type: 'common', state: false });
+    loaderStore.toggleLoader({ type: 'common', state: false });
   }
 };
 
