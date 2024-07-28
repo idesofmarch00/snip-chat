@@ -1,9 +1,10 @@
 <script setup lang="ts" async>
 //dependencies
 import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-
+import { $toast } from 'src/utils/notification';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
@@ -26,6 +27,7 @@ import { useUserStore } from '../stores/userStore';
 import { getLocation } from '../utils/map';
 // import { evData } from '../../data/data';
 
+const router = useRouter();
 const mapStore = useMapStore();
 const userStore = useUserStore();
 
@@ -137,7 +139,7 @@ onMounted(async () => {
     divElement.innerHTML = innerHtmlContent;
     divElement.appendChild(assignBtn);
     assignBtn.addEventListener('click', () => {
-      console.log('Button clicked');
+      addFriend(marker);
     });
 
     const popup = new mapboxgl.Popup({ offset: 25 }).setDOMContent(divElement);
@@ -160,6 +162,47 @@ onMounted(async () => {
     // }
   });
 });
+
+const addFriend = async (friend: any) => {
+  //check whether the group(chats in firestore) exists, if not create
+  const combinedId =
+    userStore.user.uid > friend.uid
+      ? userStore.user.uid + friend.uid
+      : friend.uid + userStore.user.uid;
+  try {
+    const res = await getDoc(doc(db, 'chats', combinedId));
+
+    if (!res.exists()) {
+      //create a chat in chats collection
+      await setDoc(doc(db, 'chats', combinedId), { messages: [] });
+      //create friend chats
+      await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+        [combinedId + '.friendInfo']: {
+          uid: friend.uid,
+          userName: friend.userName,
+          photoURL: friend.photoURL,
+          // online: true,
+        },
+        [combinedId + '.date']: serverTimestamp(),
+      });
+      await updateDoc(doc(db, 'userChats', friend.uid), {
+        [combinedId + '.friendInfo']: {
+          uid: userStore?.user?.uid,
+          userName: userStore?.user?.displayName,
+          photoURL: userStore?.user?.photoURL,
+          // online: '',
+        },
+        [combinedId + '.date']: serverTimestamp(),
+      });
+      $toast('Friend added successfully', 'success', 'top');
+      router.replace('/dashboard');
+    } else {
+      alert('User is already a friend.');
+    }
+  } catch (err) {
+    $toast('Unable to add friend', 'error', 'top');
+  }
+};
 
 // watch(
 //   () => mapStore.filterMarkers,
