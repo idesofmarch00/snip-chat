@@ -115,8 +115,7 @@ onMounted(async () => {
     el.style.width = '20px';
     el.style.height = '20px';
     el.style.borderRadius = '10px';
-    const popup = new mapboxgl.Popup({ offset: 25 })
-      .setHTML(` <div class="btn-slot text-zinc-600 max w-40 flex flex-col space-y-2">
+    const innerHtmlContent = ` <div class="btn-slot text-zinc-600 max w-40 flex flex-col space-y-2">
     <div class="w-full flex items-center justify-between">
       <p class="font-bold w-8/12 overflow-x-auto">
         ${marker.userName}
@@ -124,16 +123,24 @@ onMounted(async () => {
     </div>
     <div class="text-[0.65rem] font-medium flex flex-col space-y-1">
       <p class="m-0 leading-3">${marker.email}</p>
-      <p class="m-0 leading-3"><span class="text-green font-bold">Add as Friend</span></p>
     </div>
     <div class="w-full mt-3 flex items-center justify-between">
       <div class="flex items-center gap-x-4">
       </div>
-
-
     </div>
   </div>
-`);
+`;
+    const divElement = document.createElement('div');
+    const assignBtn = document.createElement('div');
+    assignBtn.innerHTML =
+      '<p class="m-0 leading-3" ><span class="text-green font-bold">Add as Friend</span></p>';
+    divElement.innerHTML = innerHtmlContent;
+    divElement.appendChild(assignBtn);
+    assignBtn.addEventListener('click', () => {
+      console.log('Button clicked');
+    });
+
+    const popup = new mapboxgl.Popup({ offset: 25 }).setDOMContent(divElement);
 
     // <button  class="text-blue-500 font-bold text-xs">
     //   <a href="https://www.google.com/maps/dir/?api=1&dir_action=navigate&travelmode=driving&destination=${defaultCoords.value?.lat},${defaultCoords.value?.lng}&origin=${marker?.location?.lat},${marker?.location?.lng}" target="
