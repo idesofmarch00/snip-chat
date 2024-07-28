@@ -73,7 +73,12 @@
                 <span
                   v-if="message.location"
                   class="underline text-blue-600 italic"
-                  @click.prevent="openNav(message.location)"
+                  @click.prevent="
+                    (e) => {
+                      e.stopPropagation();
+                      openNav(message.location);
+                    }
+                  "
                   >See my location</span
                 >
                 <q-chip
