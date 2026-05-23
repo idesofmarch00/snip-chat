@@ -10,7 +10,7 @@ import { initializeApp } from 'firebase/app';
 // Add the Firebase products that you want to use
 import { getAuth, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -26,7 +26,18 @@ const firebaseConfig = {
 export const firebaseApp = initializeApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
 export const storage = getStorage();
-export const db = getFirestore();
+export const db = getFirestore(firebaseApp);
+
+if (typeof window !== 'undefined') {
+  enableIndexedDbPersistence(db).catch((err) => {
+    if (err.code === 'failed-precondition') {
+      console.warn('Firestore offline persistence failed-precondition: Multiple tabs open.');
+    } else if (err.code === 'unimplemented') {
+      console.warn('Firestore offline persistence unimplemented: Browser does not support IndexedDB.');
+    }
+  });
+}
+
 const gProvider = new GoogleAuthProvider();
 
 onAuthStateChanged(auth, async (user) => {

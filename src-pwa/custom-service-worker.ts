@@ -32,3 +32,61 @@ if (process.env.MODE !== 'ssr' || process.env.PROD) {
     )
   );
 }
+
+// Background Sync Listener
+self.addEventListener('sync', (event: any) => {
+  if (event.tag === 'sync-messages') {
+    event.waitUntil(notifySyncMessages());
+  }
+});
+
+async function notifySyncMessages() {
+  const clientsList = await self.clients.matchAll({ type: 'window' });
+  for (const client of clientsList) {
+    client.postMessage({ type: 'SYNC_MESSAGES' });
+  }
+}
+
+// Push Notification Listener
+self.addEventListener('push', (event: any) => {
+  let data = { title: 'New Message', body: 'You have a new message!' };
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (err) {
+      data = { title: 'New Message', body: event.data.text() };
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: '/icons/icon-128x128.png',
+    badge: '/icons/icon-128x128.png',
+    vibrate: [100, 50, 100],
+    data: {
+      url: '/'
+    }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Notification Click Listener
+self.addEventListener('notificationclick', (event: any) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if ('focus' in client) {
+          return client.focus();
+        }
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow('/');
+      }
+    })
+  );
+});
+

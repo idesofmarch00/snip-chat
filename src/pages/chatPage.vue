@@ -9,9 +9,43 @@
           <span class="text-xl">{{
             userStore.currentChatFriend[1].friendInfo.userName
           }}</span>
+          <q-btn
+            v-if="hasNotificationSupport && notificationPermission !== 'granted'"
+            @click="requestNotificationPermission"
+            flat
+            round
+            dense
+            color="yellow-4"
+            icon="notifications_paused"
+            class="absolute right-6"
+          >
+            <q-tooltip>Enable Notifications</q-tooltip>
+          </q-btn>
+          <q-btn
+            v-else-if="hasNotificationSupport"
+            flat
+            round
+            dense
+            color="green-4"
+            icon="notifications_active"
+            class="absolute right-6"
+          >
+            <q-tooltip>Notifications Active</q-tooltip>
+          </q-btn>
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
+
+    <q-banner
+      v-if="!isOnline"
+      class="bg-red-5 text-white text-center font-bold text-base sticky top-[50px] z-20"
+      inline-actions
+    >
+      <template v-slot:avatar>
+        <q-icon name="wifi_off" color="white" />
+      </template>
+      You are currently offline. Messages will sync in the background when connection is restored.
+    </q-banner>
 
     <!-- <q-banner
       :class="`${
@@ -42,7 +76,7 @@
             class="text-lg font-bold mt-2"
             :label="date.formatDate(Date.now(), 'ddd , Do MMM')"
           />
-          <div v-for="(message, key) in currentChat" :key="key" class="mb-6">
+          <div v-for="(message, key) in allMessages" :key="key" class="mb-6">
             <!-- :name="
                 message.senderId == userStore.user.uid
                   ? 'Me'
@@ -53,9 +87,11 @@
               ref="chatMessageeRef"
               :sent="message.senderId == userStore.user.uid ? true : false"
               :bg-color="
-                message.senderId == userStore.user.uid
-                  ? 'light-blue-3'
-                  : 'light-green-3'
+                message.isOfflinePending
+                  ? 'grey-4'
+                  : message.senderId == userStore.user.uid
+                    ? 'light-blue-3'
+                    : 'light-green-3'
               "
               :class="`${$q.dark.isActive ? 'text-teal-50' : ''}`"
               :avatar="
@@ -108,7 +144,19 @@
               </div>
             </q-chat-message>
             <span
-              v-if="message.date && !message.snap"
+              v-if="message.isOfflinePending"
+              class="font-medium text-[0.65rem] text-gray-500 flex items-center"
+              :class="`${
+                message.senderId == userStore.user.uid
+                  ? 'absolute right-[3.8rem]'
+                  : 'absolute left-[3.8rem]'
+              }`"
+            >
+              <q-icon name="sync" class="animate-spin mr-1 text-orange-5" />
+              <span>Pending Sync</span>
+            </span>
+            <span
+              v-else-if="message.date && !message.snap"
               class="font-medium text-[0.6rem]"
               :class="`${
                 message.senderId == userStore.user.uid
@@ -300,7 +348,7 @@
 
 <script setup lang="ts">
 //dependencies
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed, onBeforeUnmount } from 'vue';
 import { useRoute } from 'vue-router';
 //imports
 import { db, storage } from '../boot/firebase';
@@ -335,6 +383,145 @@ const router = useRouter();
 const userStore = useUserStore();
 const chatStore = useChatStore();
 const { currentChat } = storeToRefs(userStore);
+
+// Network and Sync state
+const isOnline = ref(navigator.onLine);
+const offlineMessagesList = ref<any[]>([]);
+
+// Notification state
+const hasNotificationSupport = ref(typeof window !== 'undefined' && 'Notification' in window);
+const notificationPermission = ref(typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'default');
+
+async function requestNotificationPermission() {
+  if (hasNotificationSupport.value) {
+    const permission = await Notification.requestPermission();
+    notificationPermission.value = permission;
+  }
+}
+
+function showBrowserNotification(body: string, senderName: string) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(`New Message from ${senderName}`, {
+      body: body,
+      icon: '/icons/icon-128x128.png',
+      badge: '/icons/icon-128x128.png',
+    });
+  }
+}
+
+// IndexedDB local storage helpers for offline messages
+function getDB() {
+  return new Promise<IDBDatabase>((resolve, reject) => {
+    const request = indexedDB.open('snip-chat-db', 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains('offline-messages')) {
+        db.createObjectStore('offline-messages', { keyPath: 'id' });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function saveOfflineMessage(msg: any) {
+  const db = await getDB();
+  const tx = db.transaction('offline-messages', 'readwrite');
+  await new Promise<void>((resolve, reject) => {
+    const req = tx.objectStore('offline-messages').put(msg);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function getOfflineMessages() {
+  const db = await getDB();
+  const tx = db.transaction('offline-messages', 'readonly');
+  return new Promise<any[]>((resolve, reject) => {
+    const req = tx.objectStore('offline-messages').getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function clearOfflineMessages() {
+  const db = await getDB();
+  const tx = db.transaction('offline-messages', 'readwrite');
+  await new Promise<void>((resolve, reject) => {
+    const req = tx.objectStore('offline-messages').clear();
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function loadOfflineMessages() {
+  offlineMessagesList.value = await getOfflineMessages();
+}
+
+async function handleServiceWorkerMessage(event: MessageEvent) {
+  if (event.data && event.data.type === 'SYNC_MESSAGES') {
+    await syncOfflineMessages();
+  }
+}
+
+async function updateOnlineStatus() {
+  isOnline.value = navigator.onLine;
+  if (isOnline.value) {
+    await syncOfflineMessages();
+  }
+}
+
+async function syncOfflineMessages() {
+  const offlineMsgs = await getOfflineMessages();
+  if (offlineMsgs.length === 0) return;
+
+  for (const msg of offlineMsgs) {
+    await updateDoc(doc(db, 'chats', chatId as string), {
+      messages: arrayUnion({
+        id: msg.id,
+        text: msg.text,
+        senderId: msg.senderId,
+        date: Timestamp.now(),
+        img: '',
+        file: '',
+      }),
+    });
+
+    await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+      [chatId + '.lastMessage']: {
+        text: msg.text,
+        img: '',
+        file: '',
+      },
+      [chatId + '.date']: serverTimestamp(),
+    });
+
+    await updateDoc(doc(db, 'userChats', friendId), {
+      [chatId + '.lastMessage']: {
+        text: msg.text,
+        img: '',
+        file: '',
+      },
+      [chatId + '.date']: serverTimestamp(),
+    });
+  }
+
+  await clearOfflineMessages();
+  offlineMessagesList.value = [];
+}
+
+const allMessages = computed(() => {
+  const merged = [...(currentChat.value || [])];
+  for (const offlineMsg of offlineMessagesList.value) {
+    if (!merged.find(m => m.id === offlineMsg.id)) {
+      merged.push({
+        ...offlineMsg,
+        isOfflinePending: true
+      });
+    }
+  }
+  return merged;
+});
 
 //lifecycle hooks
 const route = useRoute();
@@ -399,6 +586,34 @@ const friendId: any = chatId.replace(userStore.user.uid, '');
 //send msg
 const handleSend = async () => {
   try {
+    if (!isOnline.value) {
+      if (!newMessage.value.trim()) return;
+      const msgId = uuid();
+      const offlineMsg = {
+        id: msgId,
+        text: newMessage.value,
+        senderId: userStore.user.uid,
+        date: new Date(),
+        img: '',
+        file: '',
+      };
+
+      await saveOfflineMessage(offlineMsg);
+      offlineMessagesList.value.push(offlineMsg);
+      newMessage.value = '';
+
+      if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        try {
+          const reg = await navigator.serviceWorker.ready;
+          await reg.sync.register('sync-messages');
+        } catch (err) {
+          console.warn('Sync registration failed:', err);
+        }
+      }
+      scrollToBottom();
+      return;
+    }
+
     if (file.value && !newMessage.value && !docx.value) {
       const storageRef = fireStorageRef(storage, `${uuid()}`);
 
@@ -654,11 +869,42 @@ async function goToSnap(msg: any) {
 }
 
 onMounted(() => {
-  onSnapshot(doc(db, 'chats', chatId), (doc) => {
-    userStore.setCurrentChat(doc.data()?.messages);
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+  }
+
+  loadOfflineMessages();
+
+  if (hasNotificationSupport.value && notificationPermission.value === 'default') {
+    requestNotificationPermission();
+  }
+
+  onSnapshot(doc(db, 'chats', chatId), (docSnap) => {
+    const messages = docSnap.data()?.messages || [];
+    if (userStore.currentChat && messages.length > userStore.currentChat.length) {
+      const newMsg = messages[messages.length - 1];
+      if (newMsg.senderId !== userStore.user.uid) {
+        if (document.hidden) {
+          showBrowserNotification(newMsg.text || 'Sent a message', userStore.currentChatFriend[1].friendInfo.userName);
+        }
+      }
+    }
+    userStore.setCurrentChat(messages);
   });
 
   scrollToBottom();
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('online', updateOnlineStatus);
+  window.removeEventListener('offline', updateOnlineStatus);
+
+  if ('serviceWorker' in navigator) {
+    navigator.removeEventListener('message', handleServiceWorkerMessage);
+  }
 });
 </script>
 
