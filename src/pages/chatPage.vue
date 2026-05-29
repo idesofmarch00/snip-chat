@@ -87,11 +87,13 @@
               ref="chatMessageeRef"
               :sent="message.senderId == userStore.user.uid ? true : false"
               :bg-color="
-                message.isOfflinePending
-                  ? 'grey-4'
-                  : message.senderId == userStore.user.uid
-                    ? 'light-blue-3'
-                    : 'light-green-3'
+                message.isFailed
+                  ? 'red-2'
+                  : message.isOfflinePending
+                    ? 'grey-4'
+                    : message.senderId == userStore.user.uid
+                      ? 'light-blue-3'
+                      : 'light-green-3'
               "
               :class="`${$q.dark.isActive ? 'text-teal-50' : ''}`"
               :avatar="
@@ -144,7 +146,20 @@
               </div>
             </q-chat-message>
             <span
-              v-if="message.isOfflinePending"
+              v-if="message.isFailed"
+              class="font-medium text-[0.65rem] text-red-5 flex items-center cursor-pointer"
+              :class="`${
+                message.senderId == userStore.user.uid
+                  ? 'absolute right-[3.8rem]'
+                  : 'absolute left-[3.8rem]'
+              }`"
+              @click.prevent="retrySendMessage(message)"
+            >
+              <q-icon name="error" class="mr-1 text-red-5" />
+              <span>Failed to send - Tap to retry</span>
+            </span>
+            <span
+              v-else-if="message.isOfflinePending"
               class="font-medium text-[0.65rem] text-gray-500 flex items-center"
               :class="`${
                 message.senderId == userStore.user.uid
@@ -367,9 +382,8 @@ import {
   Timestamp,
   serverTimestamp,
 } from 'firebase/firestore';
-import { date } from 'quasar';
+import { date, scroll, useQuasar } from 'quasar';
 import * as timeago from 'timeago.js';
-import { scroll } from 'quasar';
 
 import { useRouter } from 'vue-router';
 
@@ -379,6 +393,7 @@ import { useChatStore } from 'src/stores/chatStore';
 import { storeToRefs } from 'pinia';
 
 const router = useRouter();
+const $q = useQuasar();
 
 const userStore = useUserStore();
 const chatStore = useChatStore();
@@ -454,6 +469,16 @@ async function clearOfflineMessages() {
   });
 }
 
+async function deleteOfflineMessage(id: string) {
+  const db = await getDB();
+  const tx = db.transaction('offline-messages', 'readwrite');
+  await new Promise<void>((resolve, reject) => {
+    const req = tx.objectStore('offline-messages').delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
 async function loadOfflineMessages() {
   offlineMessagesList.value = await getOfflineMessages();
 }
@@ -476,38 +501,65 @@ async function syncOfflineMessages() {
   if (offlineMsgs.length === 0) return;
 
   for (const msg of offlineMsgs) {
-    await updateDoc(doc(db, 'chats', chatId as string), {
-      messages: arrayUnion({
-        id: msg.id,
-        text: msg.text,
-        senderId: msg.senderId,
-        date: Timestamp.now(),
-        img: '',
-        file: '',
-      }),
-    });
+    try {
+      await updateDoc(doc(db, 'chats', chatId as string), {
+        messages: arrayUnion({
+          id: msg.id,
+          text: msg.text,
+          senderId: msg.senderId,
+          date: Timestamp.now(),
+          img: '',
+          file: '',
+        }),
+      });
 
-    await updateDoc(doc(db, 'userChats', userStore.user.uid), {
-      [chatId + '.lastMessage']: {
-        text: msg.text,
-        img: '',
-        file: '',
-      },
-      [chatId + '.date']: serverTimestamp(),
-    });
+      await updateDoc(doc(db, 'userChats', userStore.user.uid), {
+        [chatId + '.lastMessage']: {
+          text: msg.text,
+          img: '',
+          file: '',
+        },
+        [chatId + '.date']: serverTimestamp(),
+      });
 
-    await updateDoc(doc(db, 'userChats', friendId), {
-      [chatId + '.lastMessage']: {
-        text: msg.text,
-        img: '',
-        file: '',
-      },
-      [chatId + '.date']: serverTimestamp(),
-    });
+      await updateDoc(doc(db, 'userChats', friendId), {
+        [chatId + '.lastMessage']: {
+          text: msg.text,
+          img: '',
+          file: '',
+        },
+        [chatId + '.date']: serverTimestamp(),
+      });
+
+      // Successfully synced! Delete from IndexedDB.
+      await deleteOfflineMessage(msg.id);
+    } catch (err) {
+      console.error('Failed to sync offline message:', msg.id, err);
+      // Mark as failed and update in IndexedDB
+      msg.isFailed = true;
+      await saveOfflineMessage(msg);
+    }
   }
 
-  await clearOfflineMessages();
-  offlineMessagesList.value = [];
+  // Reload the offline messages list from IndexedDB to refresh UI state
+  await loadOfflineMessages();
+}
+
+async function retrySendMessage(msg: any) {
+  // Clear the failed state
+  msg.isFailed = false;
+  await saveOfflineMessage(msg);
+  await loadOfflineMessages();
+
+  if (isOnline.value) {
+    await syncOfflineMessages();
+  } else {
+    $q.notify({
+      type: 'warning',
+      message: 'Still offline. Message remains queued.',
+      position: 'top',
+    });
+  }
 }
 
 const allMessages = computed(() => {
@@ -516,7 +568,8 @@ const allMessages = computed(() => {
     if (!merged.find(m => m.id === offlineMsg.id)) {
       merged.push({
         ...offlineMsg,
-        isOfflinePending: true
+        isOfflinePending: !offlineMsg.isFailed,
+        isFailed: !!offlineMsg.isFailed
       });
     }
   }
@@ -859,6 +912,10 @@ function scrollToBottom() {
 }
 
 async function goToSnap(msg: any) {
+  if (msg.isFailed) {
+    await retrySendMessage(msg);
+    return;
+  }
   if (msg.snapMessage || userStore.user.uid == msg.senderId) {
     return;
   } else {
